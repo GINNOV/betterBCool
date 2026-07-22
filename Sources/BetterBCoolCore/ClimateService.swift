@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import Foundation
 
 public struct ClimateDevice: Identifiable, Codable, Equatable, Sendable {

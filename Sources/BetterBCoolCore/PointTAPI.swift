@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -30,6 +32,28 @@ public enum JSONValue: Codable, Equatable, Sendable {
         case .number(let value): try container.encode(value)
         case .bool(let value): try container.encode(value)
         case .null: try container.encodeNil()
+        }
+    }
+}
+
+public struct PointTGateway: Equatable, Sendable {
+    public let id: String
+    public let type: String
+
+    public init(id: String, type: String) {
+        self.id = id
+        self.type = type
+    }
+}
+
+public extension JSONValue {
+    var pointTGateways: [PointTGateway] {
+        guard case .array(let entries) = self else { return [] }
+        return entries.compactMap { entry in
+            guard case .object(let object) = entry,
+                  case .string(let id) = object["deviceId"],
+                  case .string(let type) = object["deviceType"] else { return nil }
+            return PointTGateway(id: id, type: type)
         }
     }
 }

@@ -20,7 +20,7 @@ The displayed telemetry currently agrees with the data observed by the device ow
 
 ## Project status
 
-The iOS app builds and runs. It defaults to `DemoClimateService`, so launching the repository as supplied does not contact Bosch or change an AC setting. The in-app Settings panel can switch to live PointT read/write access after an access token and gateway ID are supplied; the token is stored in the iOS Keychain.
+The iOS app builds and runs. It defaults to `DemoClimateService`, so launching the repository as supplied does not contact Bosch or change an AC setting. In Settings, **Sign in with Bosch** opens the SingleKey ID browser flow, exchanges the callback using OAuth 2.0 with PKCE, discovers the compatible RAC gateway, and enables live access without exposing tokens or device identifiers to the user.
 
 The likely cloud interface for this gateway family is:
 
@@ -28,7 +28,7 @@ The likely cloud interface for this gateway family is:
 - PointT gateway discovery
 - REST resources below `airConditioning`
 
-The live adapter reads individual resources and supports power, mode, fan, setpoint, and swing writes followed by a state refresh. An integrated SingleKey browser login and automatic token refresh are still future work, so the current live configuration requires an owner-obtained access token.
+The live adapter reads individual resources and supports power, mode, fan, setpoint, and swing writes followed by a state refresh. Access and refresh tokens are stored in the iOS Keychain, refreshed automatically before expiry, and removed on sign-out.
 
 ## Requirements
 
@@ -102,4 +102,8 @@ When reporting protocol behavior, distinguish clearly between:
 
 ## License
 
-No project license has been selected yet. Until one is added, normal copyright restrictions apply to the original source code in this repository. Third-party names and components remain subject to their respective owners and licenses.
+Copyright 2026 betterBCool contributors.
+
+The original source code in this repository is licensed under the [Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for attribution and trademark information.
+
+Apache-2.0 applies to betterBCool's code; it does not grant rights to Bosch services, APIs, firmware, product names, or trademarks. Third-party components and referenced projects remain subject to their own licenses.

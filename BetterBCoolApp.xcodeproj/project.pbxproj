@@ -10,11 +10,13 @@
 		100000000000000000000001 /* BetterBCoolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000002 /* BetterBCoolApp.swift */; };
 		100000000000000000000003 /* BetterBCoolCore in Frameworks */ = {isa = PBXBuildFile; productRef = 100000000000000000000004 /* BetterBCoolCore */; };
 		100000000000000000000005 /* BetterBCoolUI in Frameworks */ = {isa = PBXBuildFile; productRef = 100000000000000000000006 /* BetterBCoolUI */; };
+		100000000000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000018 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		100000000000000000000002 /* BetterBCoolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterBCoolApp.swift; sourceTree = "<group>"; };
 		100000000000000000000007 /* BetterBCool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterBCool.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000018 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				100000000000000000000002 /* BetterBCoolApp.swift */,
+				100000000000000000000018 /* Assets.xcassets */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -120,6 +123,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				100000000000000000000017 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +171,8 @@
 		100000000000000000000015 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QQ9PTQU945;
@@ -187,6 +193,8 @@
 		100000000000000000000016 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QQ9PTQU945;
