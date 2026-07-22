@@ -1,0 +1,250 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		100000000000000000000001 /* BetterBCoolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000002 /* BetterBCoolApp.swift */; };
+		100000000000000000000003 /* BetterBCoolCore in Frameworks */ = {isa = PBXBuildFile; productRef = 100000000000000000000004 /* BetterBCoolCore */; };
+		100000000000000000000005 /* BetterBCoolUI in Frameworks */ = {isa = PBXBuildFile; productRef = 100000000000000000000006 /* BetterBCoolUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		100000000000000000000002 /* BetterBCoolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterBCoolApp.swift; sourceTree = "<group>"; };
+		100000000000000000000007 /* BetterBCool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterBCool.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		100000000000000000000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000003 /* BetterBCoolCore in Frameworks */,
+				100000000000000000000005 /* BetterBCoolUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		100000000000000000000009 = {
+			isa = PBXGroup;
+			children = (
+				10000000000000000000000A /* App */,
+				10000000000000000000000B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		10000000000000000000000A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000002 /* BetterBCoolApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		10000000000000000000000B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000007 /* BetterBCool.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		10000000000000000000000C /* BetterBCool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 10000000000000000000000D /* Build configuration list for PBXNativeTarget "BetterBCool" */;
+			buildPhases = (
+				10000000000000000000000E /* Sources */,
+				100000000000000000000008 /* Frameworks */,
+				10000000000000000000000F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BetterBCool;
+			packageProductDependencies = (
+				100000000000000000000004 /* BetterBCoolCore */,
+				100000000000000000000006 /* BetterBCoolUI */,
+			);
+			productName = BetterBCool;
+			productReference = 100000000000000000000007 /* BetterBCool.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		100000000000000000000010 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					10000000000000000000000C = {
+						CreatedOnToolsVersion = 26.6;
+					};
+				};
+			};
+			buildConfigurationList = 100000000000000000000011 /* Build configuration list for PBXProject "BetterBCoolApp" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 100000000000000000000009;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				100000000000000000000012 /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 10000000000000000000000B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				10000000000000000000000C /* BetterBCool */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		10000000000000000000000F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		10000000000000000000000E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000001 /* BetterBCoolApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		100000000000000000000013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		100000000000000000000014 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		100000000000000000000015 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QQ9PTQU945;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = betterBCool;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.betterbcool.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000016 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QQ9PTQU945;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = betterBCool;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.betterbcool.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		10000000000000000000000D /* Build configuration list for PBXNativeTarget "BetterBCool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000015 /* Debug */,
+				100000000000000000000016 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000011 /* Build configuration list for PBXProject "BetterBCoolApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000013 /* Debug */,
+				100000000000000000000014 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		100000000000000000000012 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		100000000000000000000004 /* BetterBCoolCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 100000000000000000000012 /* XCLocalSwiftPackageReference "." */;
+			productName = BetterBCoolCore;
+		};
+		100000000000000000000006 /* BetterBCoolUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 100000000000000000000012 /* XCLocalSwiftPackageReference "." */;
+			productName = BetterBCoolUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 100000000000000000000010 /* Project object */;
+}

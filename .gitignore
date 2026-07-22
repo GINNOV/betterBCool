@@ -1,0 +1,13 @@
+.build/
+.DS_Store
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Local captures and secrets should be explicitly reviewed before inclusion.
+Captures/
+Logs/
+device.txt
+.env
+*.p12
+*.mobileprovision
