@@ -46,6 +46,26 @@ final class SingleKeyOAuthTests: XCTestCase {
             .object(["deviceId": .string("gateway-1"), "deviceType": .string("rac")])
         ])
 
-        XCTAssertEqual(payload.pointTGateways, [.init(id: "gateway-1", type: "rac")])
+        XCTAssertEqual(
+            payload.pointTGatewayDiscovery,
+            .init(returnedEntryCount: 1, gateways: [.init(id: "gateway-1", type: "rac")])
+        )
+    }
+
+    func testGatewayDiscoveryParsesWrappedPayloadAndAliases() {
+        let payload: JSONValue = .object([
+            "items": .array([
+                .object(["id": .string("gateway-2"), "type": .string("air-conditioner")]),
+                .object(["gatewayId": .string("gateway-3")])
+            ])
+        ])
+
+        XCTAssertEqual(
+            payload.pointTGatewayDiscovery,
+            .init(returnedEntryCount: 2, gateways: [
+                .init(id: "gateway-2", type: "air-conditioner"),
+                .init(id: "gateway-3", type: "unknown")
+            ])
+        )
     }
 }

@@ -3,6 +3,7 @@
 import AuthenticationServices
 import BetterBCoolCore
 import BetterBCoolUI
+import OSLog
 import Security
 import SwiftUI
 import UIKit
@@ -18,77 +19,310 @@ struct BetterBCoolApp: App {
 
 private struct AppRootView: View {
     @ObservedObject var configuration: AppConfiguration
-    @State private var showingSettings = false
 
     var body: some View {
-        ClimateDashboard(service: configuration.service) { showingSettings = true }
+        ClimateDashboard(
+            service: configuration.service,
+            remoteScheduler: configuration.remoteScheduler
+        ) {
+            SettingsView(configuration: configuration)
+        }
             .id(configuration.revision)
-            .sheet(isPresented: $showingSettings) {
-                SettingsView(configuration: configuration)
-            }
     }
 }
 
 @MainActor
 private final class AppConfiguration: ObservableObject {
+    private static let logger = Logger(subsystem: "dev.betterbcool.app", category: "BoschDiscovery")
+
     @Published var liveAccessEnabled: Bool
     @Published private(set) var gatewayID: String
     @Published private(set) var isSignedIn: Bool
     @Published private(set) var revision = UUID()
+    @Published private(set) var backend: Backend
+    @Published private(set) var baconRegion: BaconRegion
+    @Published private(set) var cloudEnabled: Bool
+    @Published private(set) var cloudURL: String
 
     let oauthClient = SingleKeyOAuthClient()
     let tokenStore = KeychainOAuthTokenStore()
+    let cloudSecretStore = KeychainStringStore(account: "vercel-cloud-api-key")
+    let installationID: String
 
     private enum Key {
         static let liveAccess = "liveAccessEnabled"
         static let gatewayID = "gatewayID"
+        static let backend = "backend"
+        static let baconRegion = "baconRegion"
+        static let cloudEnabled = "cloudEnabled"
+        static let cloudURL = "cloudURL"
+        static let installationID = "cloudInstallationID"
     }
 
+    enum Backend: String { case pointT, bacon }
+
     init() {
-        liveAccessEnabled = UserDefaults.standard.bool(forKey: Key.liveAccess)
-        gatewayID = UserDefaults.standard.string(forKey: Key.gatewayID) ?? ""
-        isSignedIn = (try? tokenStore.loadTokens()) != nil
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing") {
+            liveAccessEnabled = false
+            gatewayID = ""
+            isSignedIn = false
+            backend = .pointT
+            baconRegion = .europe
+            cloudEnabled = false
+            cloudURL = ""
+            installationID = "ui-testing-installation"
+        } else {
+            liveAccessEnabled = UserDefaults.standard.bool(forKey: Key.liveAccess)
+            let startupGatewayID = UserDefaults.standard.string(forKey: Key.gatewayID) ?? ""
+            gatewayID = startupGatewayID
+            backend = Backend(rawValue: UserDefaults.standard.string(forKey: Key.backend) ?? "") ?? .pointT
+            baconRegion = BaconRegion(rawValue: UserDefaults.standard.string(forKey: Key.baconRegion) ?? "") ?? .europe
+            cloudEnabled = UserDefaults.standard.bool(forKey: Key.cloudEnabled)
+            cloudURL = UserDefaults.standard.string(forKey: Key.cloudURL)
+                ?? "https://betterbcool-cloud.vercel.app"
+            let storedInstallationID = UserDefaults.standard.string(forKey: Key.installationID)
+            installationID = storedInstallationID ?? UUID().uuidString
+            if storedInstallationID == nil {
+                UserDefaults.standard.set(installationID, forKey: Key.installationID)
+            }
+            let startupTokenStore = KeychainOAuthTokenStore()
+            let hasTokens = (try? startupTokenStore.loadTokens()) != nil
+            isSignedIn = hasTokens && !startupGatewayID.isEmpty
+            if hasTokens && startupGatewayID.isEmpty {
+                Self.logger.notice("Removing incomplete sign-in tokens left by a failed gateway request")
+                try? startupTokenStore.deleteTokens()
+            }
+        }
         if !isSignedIn { liveAccessEnabled = false }
+        if !isSignedIn || cloudConfiguration == nil { cloudEnabled = false }
+
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-keychain-self-test") {
+            let store = KeychainOAuthTokenStore(
+                service: "dev.betterbcool.app.self-test",
+                account: "temporary-oauth-tokens"
+            )
+            Task.detached {
+                do {
+                    let expected = OAuthTokens(
+                        accessToken: "self-test-access",
+                        refreshToken: "self-test-refresh",
+                        expiresAt: Date().addingTimeInterval(300)
+                    )
+                    try store.saveTokens(expected)
+                    guard try store.loadTokens() == expected else { throw KeychainError.selfTestMismatch }
+                    try store.deleteTokens()
+                    Self.logger.notice("Keychain self-test passed")
+                } catch {
+                    Self.logger.error("Keychain self-test failed: \(String(reflecting: error), privacy: .public)")
+                }
+            }
+        }
+        #endif
     }
 
     var service: any ClimateService {
         guard liveAccessEnabled, isSignedIn, !gatewayID.isEmpty else {
             return DemoClimateService()
         }
+        if cloudEnabled, let cloudConfiguration {
+            return CloudClimateService(configuration: cloudConfiguration)
+        }
         let provider = RefreshingAccessTokenProvider(client: oauthClient, store: tokenStore)
-        return PointTClimateService(api: PointTAPI(tokenProvider: provider), deviceID: gatewayID)
+        switch backend {
+        case .pointT:
+            return PointTClimateService(api: PointTAPI(tokenProvider: provider), deviceID: gatewayID)
+        case .bacon:
+            return BaconClimateService(tokenProvider: provider, deviceID: gatewayID, region: baconRegion)
+        }
+    }
+
+    var remoteScheduler: (any ClimateScheduleRemoteService)? {
+        guard cloudEnabled, let cloudConfiguration else { return nil }
+        return CloudClimateService(configuration: cloudConfiguration)
+    }
+
+    var cloudAPIKey: String { (try? cloudSecretStore.load()) ?? "" }
+
+    private var cloudConfiguration: CloudClimateConfiguration? {
+        guard let url = URL(string: cloudURL), !cloudAPIKey.isEmpty, !gatewayID.isEmpty else { return nil }
+        return CloudClimateConfiguration(
+            baseURL: url,
+            apiKey: cloudAPIKey,
+            installationID: installationID,
+            deviceID: gatewayID,
+            transport: backend.rawValue,
+            region: baconRegion.rawValue
+        )
     }
 
     func completeSignIn(tokens: OAuthTokens) async throws {
-        try tokenStore.saveTokens(tokens)
-        let provider = RefreshingAccessTokenProvider(client: oauthClient, store: tokenStore)
-        let gateways = try await PointTAPI(tokenProvider: provider).gateways().pointTGateways
-        guard let gateway = gateways.first(where: { $0.type.lowercased() == "rac" }) else {
-            try? tokenStore.deleteTokens()
-            throw SignInError.noCompatibleGateway
+        Self.logger.info("Bosch token exchange succeeded; starting PointT gateway discovery")
+        // Discovery runs immediately after the token exchange, so use that fresh token
+        // directly instead of making a redundant Keychain read through the refresh actor.
+        let api = PointTAPI(accessToken: tokens.accessToken)
+        let discovery: PointTGatewayDiscovery
+        do {
+            discovery = try await fetchGatewayDiscovery(accessToken: tokens.accessToken)
+        } catch {
+            Self.logger.error(
+                "PointT gateway request failed: \(String(reflecting: error), privacy: .public)"
+            )
+            throw error
         }
+        Self.logger.info(
+            "PointT discovery returned \(discovery.returnedEntryCount, privacy: .public) entries; parsed \(discovery.gateways.count, privacy: .public) gateways"
+        )
+        guard discovery.returnedEntryCount > 0 else {
+            let baconDevices = try await discoverBaconDevices(accessToken: tokens.accessToken)
+            if !baconDevices.isEmpty {
+                Self.logger.notice(
+                    "Bacon discovery found \(baconDevices.count, privacy: .public) newer HomeCom devices"
+                )
+                let device = baconDevices[0]
+                let mqtt = try BaconMQTTClient(accessToken: tokens.accessToken, region: device.region)
+                let shadow = try await mqtt.readShadow(deviceID: device.id)
+                let fields: [String]
+                if case .object(let reported) = shadow.reported {
+                    fields = reported.keys.sorted()
+                } else {
+                    fields = []
+                }
+                Self.logger.notice(
+                    "Bacon shadow read succeeded with \(fields.count, privacy: .public) reported fields: \(fields.joined(separator: ","), privacy: .public)"
+                )
+                let tokenStore = self.tokenStore
+                Self.logger.info("Bacon gateway verified; saving tokens to Keychain")
+                try await Task.detached { try tokenStore.saveTokens(tokens) }.value
+                Self.logger.info("Bacon tokens saved; enabling live HomeCom MQTT access")
+                gatewayID = device.id
+                backend = .bacon
+                baconRegion = device.region
+                isSignedIn = true
+                liveAccessEnabled = true
+                persistAndReload()
+                return
+            }
+            Self.logger.error("Discovery failed: PointT and Bacon returned zero device entries")
+            throw SignInError.noGatewayEntries
+        }
+        guard !discovery.gateways.isEmpty else {
+            Self.logger.error(
+                "Discovery failed: none of \(discovery.returnedEntryCount, privacy: .public) gateway entries matched a known schema"
+            )
+            throw SignInError.unrecognizedGatewayEntries(discovery.returnedEntryCount)
+        }
+        guard let gateway = try await api.airConditioningGateway(from: discovery.gateways) else {
+            Self.logger.error(
+                "Discovery failed: \(discovery.gateways.count, privacy: .public) parsed gateways did not expose the classic AC resource"
+            )
+            throw SignInError.noCompatibleGateway(discovery.gateways.count)
+        }
+        Self.logger.info("Gateway verified; saving Bosch tokens to Keychain")
+        let tokenStore = self.tokenStore
+        try await Task.detached { try tokenStore.saveTokens(tokens) }.value
+        Self.logger.info("Bosch tokens saved to Keychain")
+        Self.logger.info("Compatible classic AC gateway discovered; enabling live access")
         gatewayID = gateway.id
+        backend = .pointT
         isSignedIn = true
         liveAccessEnabled = true
         persistAndReload()
     }
 
-    func saveAccessMode() {
+    private func fetchGatewayDiscovery(accessToken: String) async throws -> PointTGatewayDiscovery {
+        let url = PointTAPI.productionBaseURL
+            .appending(path: "pointt-api/api/v1/gateways")
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 20
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        Self.logger.info("Direct PointT gateway request started: \(url.path, privacy: .public)")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else { throw PointTError.invalidResponse }
+        Self.logger.info(
+            "Direct PointT gateway response: \(http.statusCode, privacy: .public), \(data.count, privacy: .public) bytes"
+        )
+        guard (200..<300).contains(http.statusCode) else {
+            switch http.statusCode {
+            case 401: throw PointTError.unauthorized
+            case 429: throw PointTError.rateLimited
+            default: throw PointTError.httpStatus(http.statusCode)
+            }
+        }
+        return try JSONDecoder().decode(JSONValue.self, from: data).pointTGatewayDiscovery
+    }
+
+    private func discoverBaconDevices(accessToken: String) async throws -> [BaconDevice] {
+        let api = BaconAPI(accessToken: accessToken)
+        for region in BaconRegion.allCases {
+            do {
+                let devices = try await api.devices(in: region)
+                Self.logger.info(
+                    "Bacon \(region.rawValue, privacy: .public) discovery returned \(devices.count, privacy: .public) devices"
+                )
+                if !devices.isEmpty { return devices }
+            } catch BaconError.unauthorized {
+                throw BaconError.unauthorized
+            } catch {
+                Self.logger.notice(
+                    "Bacon \(region.rawValue, privacy: .public) discovery failed: \(String(reflecting: error), privacy: .public)"
+                )
+            }
+        }
+        return []
+    }
+
+    func saveAccessMode(cloudEnabled: Bool, cloudURL: String, cloudAPIKey: String) async throws {
         if !isSignedIn { liveAccessEnabled = false }
+        let trimmedURL = cloudURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedKey = cloudAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        if cloudEnabled {
+            guard let url = URL(string: trimmedURL), url.scheme == "https", !trimmedKey.isEmpty else {
+                throw CloudSettingsError.invalidConfiguration
+            }
+            let configuration = CloudClimateConfiguration(
+                baseURL: url,
+                apiKey: trimmedKey,
+                installationID: installationID,
+                deviceID: gatewayID,
+                transport: backend.rawValue,
+                region: baconRegion.rawValue
+            )
+            guard let tokens = try tokenStore.loadTokens() else { throw OAuthError.notSignedIn }
+            try await CloudClimateService(configuration: configuration).syncCredentials(tokens: tokens)
+            try cloudSecretStore.save(trimmedKey)
+        } else {
+            try? cloudSecretStore.delete()
+        }
+        self.cloudEnabled = cloudEnabled
+        self.cloudURL = trimmedURL
         persistAndReload()
     }
 
     func signOut() {
+        if let cloudConfiguration {
+            Task { try? await CloudClimateService(configuration: cloudConfiguration).removeCredentials() }
+        }
         try? tokenStore.deleteTokens()
+        try? cloudSecretStore.delete()
         isSignedIn = false
         liveAccessEnabled = false
         gatewayID = ""
+        backend = .pointT
+        baconRegion = .europe
+        cloudEnabled = false
+        cloudURL = ""
         persistAndReload()
     }
 
     private func persistAndReload() {
         UserDefaults.standard.set(liveAccessEnabled, forKey: Key.liveAccess)
         UserDefaults.standard.set(gatewayID, forKey: Key.gatewayID)
+        UserDefaults.standard.set(backend.rawValue, forKey: Key.backend)
+        UserDefaults.standard.set(baconRegion.rawValue, forKey: Key.baconRegion)
+        UserDefaults.standard.set(cloudEnabled, forKey: Key.cloudEnabled)
+        UserDefaults.standard.set(cloudURL, forKey: Key.cloudURL)
         revision = UUID()
     }
 }
@@ -98,16 +332,28 @@ private struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var signInCoordinator = SingleKeySignInCoordinator()
     @State private var showingSignOutConfirmation = false
+    @State private var cloudEnabled: Bool
+    @State private var cloudURL: String
+    @State private var cloudAPIKey: String
+    @State private var cloudErrorMessage: String?
+    @State private var isSaving = false
+
+    init(configuration: AppConfiguration) {
+        self.configuration = configuration
+        _cloudEnabled = State(initialValue: configuration.cloudEnabled)
+        _cloudURL = State(initialValue: configuration.cloudURL)
+        _cloudAPIKey = State(initialValue: configuration.cloudAPIKey)
+    }
 
     var body: some View {
-        NavigationStack {
-            Form {
+        Form {
                 Section {
                     if configuration.isSignedIn {
                         Label("Signed in with Bosch", systemImage: "checkmark.circle.fill")
                             .foregroundStyle(.green)
                         LabeledContent("Gateway", value: configuration.gatewayID)
                             .textSelection(.enabled)
+                        LabeledContent("Transport", value: configuration.backend == .bacon ? "HomeCom MQTT" : "PointT REST")
                         Toggle("Live read/write access", isOn: $configuration.liveAccessEnabled)
                     } else {
                         Button {
@@ -120,6 +366,7 @@ private struct SettingsView: View {
                             }
                         }
                         .disabled(signInCoordinator.isWorking)
+                        .accessibilityIdentifier("settings.signInButton")
                     }
                 } header: {
                     Text("Bosch account")
@@ -139,6 +386,27 @@ private struct SettingsView: View {
                     LabeledContent("Controls", value: configuration.liveAccessEnabled ? "Read & write" : "Disabled")
                 }
 
+                if configuration.isSignedIn {
+                    Section {
+                        Toggle("Reliable cloud schedules", isOn: $cloudEnabled)
+                        if cloudEnabled {
+                            TextField("https://your-project.vercel.app", text: $cloudURL)
+                                .textInputAutocapitalization(.never)
+                                .keyboardType(.URL)
+                            SecureField("Cloud API key", text: $cloudAPIKey)
+                                .textInputAutocapitalization(.never)
+                        }
+                        if let cloudErrorMessage {
+                            Label(cloudErrorMessage, systemImage: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                        }
+                    } header: {
+                        Text("Cloud scheduling")
+                    } footer: {
+                        Text("When enabled, Vercel securely executes routines and manual commands even while this iPhone is offline.")
+                    }
+                }
+
                 Section("Privacy & safety") {
                     Text("Tokens are stored in the iOS Keychain and refreshed automatically. Commands are limited to power, mode, fan, temperature, and swing, then verified with a fresh state read.")
                     Text("This is an independent integration and is not endorsed by Bosch.")
@@ -150,14 +418,29 @@ private struct SettingsView: View {
                     }
                 }
             }
+            .accessibilityIdentifier("settings.screen")
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
-                        configuration.saveAccessMode()
-                        dismiss()
+                        isSaving = true
+                        cloudErrorMessage = nil
+                        Task {
+                            do {
+                                try await configuration.saveAccessMode(
+                                    cloudEnabled: cloudEnabled,
+                                    cloudURL: cloudURL,
+                                    cloudAPIKey: cloudAPIKey
+                                )
+                                dismiss()
+                            } catch {
+                                cloudErrorMessage = "Cloud setup could not be verified. Check the URL and API key."
+                                isSaving = false
+                            }
+                        }
                     }
+                    .disabled(isSaving)
                 }
             }
             .confirmationDialog("Sign out of Bosch?", isPresented: $showingSignOutConfirmation) {
@@ -166,7 +449,6 @@ private struct SettingsView: View {
             } message: {
                 Text("Stored Bosch tokens and the discovered gateway will be removed from this device.")
             }
-        }
     }
 }
 
@@ -196,8 +478,19 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
             try await configuration.completeSignIn(tokens: tokens)
         } catch ASWebAuthenticationSessionError.canceledLogin {
             errorMessage = nil
-        } catch SignInError.noCompatibleGateway {
-            errorMessage = "No compatible PointT air conditioner was found on this Bosch account."
+        } catch SignInError.noGatewayEntries {
+            errorMessage = "Bosch sign-in worked, but neither the classic nor newer HomeCom service returned an AC for this account."
+        } catch SignInError.newHomeComDevices(let count) {
+            let noun = count == 1 ? "air conditioner" : "air conditioners"
+            errorMessage = "Found \(count) newer HomeCom \(noun). MQTT device-shadow control is the next integration step."
+        } catch SignInError.newHomeComShadowRead(let fieldCount) {
+            errorMessage = "Connected to the newer HomeCom AC and read its live state (\(fieldCount) fields). Control mapping is the next step."
+        } catch SignInError.unrecognizedGatewayEntries(let count) {
+            let noun = count == 1 ? "entry" : "entries"
+            errorMessage = "Bosch returned \(count) gateway \(noun), but their format was not recognized."
+        } catch SignInError.noCompatibleGateway(let count) {
+            let noun = count == 1 ? "entry" : "entries"
+            errorMessage = "Bosch returned \(count) gateway \(noun), but none exposed the classic air-conditioning resource."
         } catch {
             errorMessage = "Bosch sign-in could not be completed. Please try again."
         }
@@ -230,8 +523,16 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
 }
 
 private struct KeychainOAuthTokenStore: OAuthTokenStoring, @unchecked Sendable {
-    private let service = "dev.betterbcool.app"
-    private let account = "bosch-singlekey-oauth-tokens"
+    private let service: String
+    private let account: String
+
+    init(
+        service: String = "dev.betterbcool.app",
+        account: String = "bosch-singlekey-oauth-tokens"
+    ) {
+        self.service = service
+        self.account = account
+    }
 
     func loadTokens() throws -> OAuthTokens? {
         let query: [String: Any] = [
@@ -250,15 +551,24 @@ private struct KeychainOAuthTokenStore: OAuthTokenStoring, @unchecked Sendable {
 
     func saveTokens(_ tokens: OAuthTokens) throws {
         let data = try JSONEncoder().encode(tokens)
-        try? deleteTokens()
-        let query: [String: Any] = [
+        let identity: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
+            kSecAttrAccount as String: account
+        ]
+        let updateStatus = SecItemUpdate(
+            identity as CFDictionary,
+            [kSecValueData as String: data] as CFDictionary
+        )
+        if updateStatus == errSecSuccess { return }
+        guard updateStatus == errSecItemNotFound else { throw KeychainError.status(updateStatus) }
+
+        var insertion = identity
+        insertion.merge([
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
             kSecValueData as String: data
-        ]
-        let status = SecItemAdd(query as CFDictionary, nil)
+        ]) { _, new in new }
+        let status = SecItemAdd(insertion as CFDictionary, nil)
         guard status == errSecSuccess else { throw KeychainError.status(status) }
     }
 
@@ -273,5 +583,60 @@ private struct KeychainOAuthTokenStore: OAuthTokenStoring, @unchecked Sendable {
     }
 }
 
-private enum SignInError: Error { case couldNotStartBrowser, noCompatibleGateway }
-private enum KeychainError: Error { case status(OSStatus) }
+private struct KeychainStringStore: @unchecked Sendable {
+    private let service = "dev.betterbcool.app"
+    let account: String
+
+    func load() throws -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        if status == errSecItemNotFound { return nil }
+        guard status == errSecSuccess, let data = result as? Data,
+              let value = String(data: data, encoding: .utf8) else { throw KeychainError.status(status) }
+        return value
+    }
+
+    func save(_ value: String) throws {
+        try? delete()
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+            kSecValueData as String: Data(value.utf8)
+        ]
+        let status = SecItemAdd(query as CFDictionary, nil)
+        guard status == errSecSuccess else { throw KeychainError.status(status) }
+    }
+
+    func delete() throws {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account
+        ]
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else { throw KeychainError.status(status) }
+    }
+}
+
+private enum SignInError: Error {
+    case couldNotStartBrowser
+    case noGatewayEntries
+    case newHomeComDevices(Int)
+    case newHomeComShadowRead(Int)
+    case unrecognizedGatewayEntries(Int)
+    case noCompatibleGateway(Int)
+}
+private enum KeychainError: Error {
+    case status(OSStatus)
+    case selfTestMismatch
+}
+private enum CloudSettingsError: Error { case invalidConfiguration }

@@ -1,0 +1,6 @@
+/.swc
+.vercel
+.env*
+.agents/
+skills-lock.json
+*.tsbuildinfo

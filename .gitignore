@@ -9,5 +9,10 @@ Captures/
 Logs/
 device.txt
 .env
+.env.*.local
+backend/.vercel/
+backend/node_modules/
+backend/.next/
+backend/*.tsbuildinfo
 *.p12
 *.mobileprovision

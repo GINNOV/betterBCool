@@ -51,6 +51,28 @@ final class PointTAPITests: XCTestCase {
         )
     }
 
+    func testAirConditioningDiscoveryProbesNonRACGateway() async throws {
+        URLProtocolStub.handler = { request in
+            XCTAssertEqual(
+                request.url?.path,
+                "/pointt-api/api/v1/gateways/device/resource/airConditioning/standardFunctions"
+            )
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data("[]".utf8))
+        }
+        let api = PointTAPI(
+            baseURL: URL(string: "https://example.invalid")!,
+            tokenProvider: StaticAccessToken("test-token"),
+            session: stubbedSession()
+        )
+
+        let gateway = try await api.airConditioningGateway(
+            from: [.init(id: "device", type: "air-conditioner")]
+        )
+
+        XCTAssertEqual(gateway, .init(id: "device", type: "air-conditioner"))
+    }
+
     private func stubbedSession() -> URLSession {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [URLProtocolStub.self]

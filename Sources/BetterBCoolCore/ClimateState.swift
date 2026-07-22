@@ -7,7 +7,7 @@ public enum OperatingMode: String, Codable, CaseIterable, Sendable {
 }
 
 public enum FanSpeed: String, Codable, CaseIterable, Sendable {
-    case auto, low, medium, quiet
+    case auto, quiet, low, medium, high, turbo
 }
 
 public struct ClimateState: Codable, Equatable, Sendable {
@@ -15,7 +15,7 @@ public struct ClimateState: Codable, Equatable, Sendable {
     public var powerEnabled: Bool
     public var operatingMode: OperatingMode
     public var fanSpeed: FanSpeed?
-    public var roomTemperature: Double
+    public var roomTemperature: Double?
     public var temperatureSetpoint: Double?
     public var breezeAwayEnabled: Bool
     public var ecoEnabled: Bool

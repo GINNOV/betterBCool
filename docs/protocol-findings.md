@@ -27,11 +27,23 @@ The base export exposes these fields:
 
 The extended export contains compressor, coil, fan, voltage/current, and outdoor measurements. Treat these as diagnostic telemetry, not control inputs.
 
-## Architecture inference (not yet verified)
+## Live account findings
+
+An authorized SingleKey session on 2026-07-22 established the following without logging credentials or device identifiers:
+
+- PointT gateway discovery returned HTTP 200 with the body `[]`.
+- Bacon claiming discovery in `euc1` returned one owned device.
+- MQTT 5 over the EU Bacon WebSocket broker connected successfully.
+- A read-only device-shadow request returned 18 reported fields, including `powerEnabled`, `opMode`, `fanSpeed`, `tempSetpoint`, `hSwingEnabled`, and `vSwingEnabled`.
+- The shadow did not include ambient room temperature.
+
+The app therefore routes this account to the Bacon transport. PointT remains supported for classic gateways.
+
+## Architecture evidence
 
 The firmware component list makes an outbound TLS connection to AWS IoT plausible: it includes `aws-iot-sdk`, fleet provisioning, `coreMQTT-Agent`, and secure sockets. It also includes HTTP, JSON, and CBOR stacks. This supports a likely cloud-mediated architecture, but it does **not** reveal whether the mobile app uses REST, MQTT/WebSockets, or another Bosch backend, and it is not evidence of local-LAN control.
 
-No endpoint, OAuth issuer, client identifier, MQTT broker, topic, certificate, or command envelope can be confirmed from the supplied artifacts. Inventing these would risk account lockout or unsafe commands.
+The supplied artifacts alone did not reveal endpoints or topics. The read-only live verification above and the current `homecom_alt` implementation supplied the Bacon claiming and device-shadow contract used by the Swift adapter.
 
 ## External implementation leads
 
@@ -41,7 +53,7 @@ These are useful capture targets, not facts proven by the local artifacts:
 - The third-party `homecom_alt` package reports SingleKey ID OAuth2 plus a REST service at `pointt-api.bosch-thermotechnology.com` for conventional RAC gateways. Its documentation separately describes a newer Matter-commissioned AC path using an AWS-IoT-style MQTT 5 device shadow: <https://pypi.org/project/homecom_alt/>.
 - An independent 2022 API note reports `GET /pointt-api/api/v1/gateways/`, reads below `/gateways/{id}/resource/airConditioning/`, and `PUT` writes to individual resources: <https://gist.github.com/neugartf/364e3a05b03ab8044bb15f8f2bf6e493>.
 
-The supplied identifier begins with `86DM-539`, while `homecom_alt` currently calls out `86DM-580` as an example of the separate Matter path. That makes the PointT REST family a reasonable **first hypothesis**, but prefix-based routing is not reliable enough to enable live requests. A sanitized device-list refresh capture should decide this quickly.
+The supplied identifier prefix was not a reliable transport discriminator: live discovery proved this account uses Bacon despite differing from the example prefix documented by `homecom_alt`.
 
 Do not substitute Bosch Smart Home's documented local API: that is a different product family and there is no evidence the G10-3 gateway exposes it.
 

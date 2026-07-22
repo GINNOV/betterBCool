@@ -5,34 +5,62 @@ import SwiftUI
 
 public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
-    private let onSettings: () -> Void
+    @StateObject private var scheduleController: ScheduleController
+    private let settingsContent: () -> AnyView
 
-    public init(service: any ClimateService, onSettings: @escaping () -> Void = {}) {
+    public init(
+        service: any ClimateService,
+        remoteScheduler: (any ClimateScheduleRemoteService)? = nil
+    ) {
         _model = StateObject(wrappedValue: ClimateViewModel(service: service))
-        self.onSettings = onSettings
+        _scheduleController = StateObject(
+            wrappedValue: ScheduleController(service: service, remoteService: remoteScheduler)
+        )
+        settingsContent = { AnyView(EmptyView()) }
+    }
+
+    public init<SettingsContent: View>(
+        service: any ClimateService,
+        remoteScheduler: (any ClimateScheduleRemoteService)? = nil,
+        @ViewBuilder settingsContent: @escaping () -> SettingsContent
+    ) {
+        _model = StateObject(wrappedValue: ClimateViewModel(service: service))
+        _scheduleController = StateObject(
+            wrappedValue: ScheduleController(service: service, remoteService: remoteScheduler)
+        )
+        self.settingsContent = { AnyView(settingsContent()) }
     }
 
     public var body: some View {
-        ZStack {
-            AppBackground()
+        NavigationStack {
+            ZStack {
+                AppBackground()
 
-            if let state = model.state {
-                dashboard(state)
-            } else if model.isLoading {
-                ProgressView()
-                    .controlSize(.large)
-                    .tint(.white)
-                    .accessibilityLabel("Loading climate data")
-            } else {
-                ContentUnavailableView(
-                    "No climate data",
-                    systemImage: "air.conditioner.horizontal",
-                    description: Text(model.errorMessage ?? "Check your connection settings.")
-                )
-                .foregroundStyle(.white)
+                if let state = model.state {
+                    dashboard(state)
+                } else if model.isLoading {
+                    ProgressView()
+                        .controlSize(.large)
+                        .tint(.white)
+                        .accessibilityLabel("Loading climate data")
+                } else {
+                    ContentUnavailableView(
+                        "No climate data",
+                        systemImage: "air.conditioner.horizontal",
+                        description: Text(model.errorMessage ?? "Check your connection settings.")
+                    )
+                    .foregroundStyle(.white)
+                }
             }
+            .task {
+                scheduleController.activate()
+                await model.load()
+            }
+            .onDisappear { scheduleController.deactivate() }
+#if os(iOS)
+            .toolbar(.hidden, for: .navigationBar)
+#endif
         }
-        .task { await model.load() }
         .preferredColorScheme(.dark)
     }
 
@@ -43,6 +71,7 @@ public struct ClimateDashboard: View {
                 temperatureCard(state)
                 modeCard(state)
                 fanCard(state)
+                scheduleCard
                 quickActions(state)
                 connectionCard(state)
             }
@@ -52,6 +81,11 @@ public struct ClimateDashboard: View {
         }
         .scrollIndicators(.hidden)
         .refreshable { await model.load() }
+        .overlay(alignment: .topTrailing) {
+            settingsLink
+                .padding(.top, 14)
+                .padding(.trailing, 80)
+        }
     }
 
     private func header(_ state: ClimateState) -> some View {
@@ -67,15 +101,6 @@ public struct ClimateDashboard: View {
             }
 
             Spacer()
-
-            Button(action: onSettings) {
-                Image(systemName: "gearshape.fill")
-                    .font(.system(size: 17, weight: .semibold))
-                    .frame(width: 44, height: 44)
-                    .background(.white.opacity(0.08), in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Settings")
 
             Button {
                 Task { await model.apply(.init(powerEnabled: !state.powerEnabled)) }
@@ -94,14 +119,35 @@ public struct ClimateDashboard: View {
         }
     }
 
+    private var settingsLink: some View {
+        NavigationLink {
+            settingsContent()
+        } label: {
+            Image(systemName: "gearshape.fill")
+                .font(.system(size: 17, weight: .semibold))
+                .frame(width: 48, height: 48)
+                .background(.white.opacity(0.08), in: Circle())
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Settings")
+        .accessibilityIdentifier("dashboard.settingsButton")
+    }
+
     private func temperatureCard(_ state: ClimateState) -> some View {
         VStack(spacing: 22) {
             HStack {
                 StatusPill(isOn: state.powerEnabled)
                 Spacer()
-                Label("Room \(state.roomTemperature, specifier: "%.1f")°", systemImage: "house.fill")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.62))
+                if let roomTemperature = state.roomTemperature {
+                    Label("Room \(roomTemperature, specifier: "%.1f")°", systemImage: "house.fill")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.62))
+                } else {
+                    Label("Room temperature unavailable", systemImage: "house.fill")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.62))
+                }
             }
 
             VStack(spacing: 2) {
@@ -213,6 +259,51 @@ public struct ClimateDashboard: View {
                 FeatureTile(title: "Horizontal", symbol: "arrow.left.and.right", enabled: state.horizontalSwingEnabled)
             }
         }
+    }
+
+    private var scheduleCard: some View {
+        NavigationLink {
+            ScheduleListView(controller: scheduleController)
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "calendar.badge.clock")
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundStyle(Color.accentBlue)
+                    .frame(width: 44, height: 44)
+                    .background(Color.accentBlue.opacity(0.13), in: Circle())
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Schedules").font(.headline)
+                    if scheduleController.enabledCount == 0 {
+                        Text("Create a routine for your day")
+                    } else if let event = scheduleController.nextEvent {
+                        Text("Next change \(event.date.formatted(date: .omitted, time: .shortened))")
+                    } else {
+                        Text("\(scheduleController.enabledCount) active")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.white)
+
+                Spacer()
+
+                if scheduleController.enabledCount > 0 {
+                    Text("\(scheduleController.enabledCount)")
+                        .font(.caption.bold())
+                        .foregroundStyle(.white)
+                        .frame(width: 25, height: 25)
+                        .background(Color.accentBlue, in: Circle())
+                }
+                Image(systemName: "chevron.right")
+                    .font(.caption.bold())
+                    .foregroundStyle(.white.opacity(0.35))
+            }
+            .padding(17)
+            .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.075)))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("dashboard.schedulesButton")
     }
 
     private func connectionCard(_ state: ClimateState) -> some View {
@@ -398,7 +489,14 @@ private extension OperatingMode {
 
 private extension FanSpeed {
     var title: String {
-        switch self { case .auto: "Auto"; case .low: "Low"; case .medium: "Medium"; case .quiet: "Quiet" }
+        switch self {
+        case .auto: "Auto"
+        case .quiet: "Quiet"
+        case .low: "Low"
+        case .medium: "Medium"
+        case .high: "High"
+        case .turbo: "Turbo"
+        }
     }
 }
 
