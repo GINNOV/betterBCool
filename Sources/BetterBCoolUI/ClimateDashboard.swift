@@ -81,11 +81,6 @@ public struct ClimateDashboard: View {
         }
         .scrollIndicators(.hidden)
         .refreshable { await model.load() }
-        .overlay(alignment: .topTrailing) {
-            settingsLink
-                .padding(.top, 14)
-                .padding(.trailing, 80)
-        }
     }
 
     private func header(_ state: ClimateState) -> some View {
@@ -101,6 +96,8 @@ public struct ClimateDashboard: View {
             }
 
             Spacer()
+
+            settingsLink
 
             Button {
                 Task { await model.apply(.init(powerEnabled: !state.powerEnabled)) }
@@ -144,9 +141,13 @@ public struct ClimateDashboard: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.white.opacity(0.62))
                 } else {
-                    Label("Room temperature unavailable", systemImage: "house.fill")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.62))
+                    VStack(alignment: .trailing, spacing: 1) {
+                        Label("Room —°", systemImage: "house.fill")
+                            .font(.caption.weight(.semibold))
+                        Text("Not reported by device")
+                            .font(.caption2)
+                    }
+                    .foregroundStyle(.white.opacity(0.62))
                 }
             }
 
@@ -173,16 +174,16 @@ public struct ClimateDashboard: View {
 
             HStack(spacing: 22) {
                 TemperatureButton(systemName: "minus") {
-                    adjustTemperature(state, by: -0.5)
+                    adjustTemperature(state, by: -temperatureStep)
                 }
-                .disabled(!canAdjust(state, by: -0.5))
+                .disabled(!canAdjust(state, by: -temperatureStep))
 
                 modeSummary(state.operatingMode)
 
                 TemperatureButton(systemName: "plus") {
-                    adjustTemperature(state, by: 0.5)
+                    adjustTemperature(state, by: temperatureStep)
                 }
-                .disabled(!canAdjust(state, by: 0.5))
+                .disabled(!canAdjust(state, by: temperatureStep))
             }
         }
         .padding(22)
@@ -236,15 +237,37 @@ public struct ClimateDashboard: View {
 
     private func fanCard(_ state: ClimateState) -> some View {
         DashboardCard(title: "Fan", subtitle: "Airflow intensity") {
-            HStack(spacing: 8) {
-                ForEach(FanSpeed.allCases, id: \.self) { speed in
-                    SelectableText(
-                        title: speed.title,
-                        selected: state.fanSpeed == speed
-                    ) {
-                        Task { await model.apply(.init(fanSpeed: speed)) }
+            VStack(spacing: 16) {
+                HStack(spacing: 12) {
+                    Image(systemName: "fan.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(Color.accentBlue)
+                        .frame(width: 38, height: 38)
+                        .background(Color.accentBlue.opacity(0.12), in: Circle())
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("CURRENT SPEED")
+                            .font(.caption2.weight(.bold))
+                            .tracking(1.1)
+                            .foregroundStyle(.white.opacity(0.42))
+                        Text(state.fanSpeed?.title ?? "Unavailable")
+                            .font(.subheadline.weight(.semibold))
                     }
-                    .disabled(!model.controlsEnabled || model.capabilities?.fanSpeeds.contains(speed) != true)
+
+                    Spacer(minLength: 8)
+                    FanBars(speed: state.fanSpeed)
+                }
+
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 8) {
+                    ForEach(FanSpeed.allCases, id: \.self) { speed in
+                        SelectableText(
+                            title: speed.title,
+                            selected: state.fanSpeed == speed
+                        ) {
+                            Task { await model.apply(.init(fanSpeed: speed)) }
+                        }
+                        .disabled(!model.controlsEnabled || model.capabilities?.fanSpeeds.contains(speed) != true)
+                    }
                 }
             }
         }
@@ -337,6 +360,10 @@ public struct ClimateDashboard: View {
               let value = state.temperatureSetpoint,
               let capabilities = model.capabilities else { return false }
         return value + delta >= capabilities.minimumSetpoint && value + delta <= capabilities.maximumSetpoint
+    }
+
+    private var temperatureStep: Double {
+        model.capabilities?.setpointStep ?? 0.5
     }
 
     private func adjustTemperature(_ state: ClimateState, by delta: Double) {
@@ -457,6 +484,24 @@ private struct SelectableText: View {
     }
 }
 
+private struct FanBars: View {
+    let speed: FanSpeed?
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 4) {
+            ForEach(1...5, id: \.self) { level in
+                RoundedRectangle(cornerRadius: 2.5, style: .continuous)
+                    .fill(level <= (speed?.barLevel ?? 0) ? Color.accentBlue : .white.opacity(0.12))
+                    .frame(width: 6, height: CGFloat(5 + level * 4))
+            }
+        }
+        .frame(height: 25, alignment: .bottom)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Fan speed")
+        .accessibilityValue(speed?.title ?? "Unavailable")
+    }
+}
+
 private struct FeatureTile: View {
     let title: String
     let symbol: String
@@ -496,6 +541,16 @@ private extension FanSpeed {
         case .medium: "Medium"
         case .high: "High"
         case .turbo: "Turbo"
+        }
+    }
+
+    var barLevel: Int {
+        switch self {
+        case .quiet: 1
+        case .low: 2
+        case .medium: 3
+        case .high: 4
+        case .auto, .turbo: 5
         }
     }
 }

@@ -17,7 +17,7 @@ public actor DemoClimateService: ClimateService {
     public func capabilities(for deviceID: String) async throws -> ClimateCapabilities {
         guard deviceID == device.id else { throw ClimateServiceError.deviceNotFound }
         return .init(
-            canWrite: false, operatingModes: Set(OperatingMode.allCases),
+            canWrite: true, operatingModes: Set(OperatingMode.allCases),
             fanSpeeds: Set(FanSpeed.allCases), minimumSetpoint: 15,
             maximumSetpoint: 32.5, setpointStep: 0.5
         )
@@ -27,6 +27,15 @@ public actor DemoClimateService: ClimateService {
         return currentState
     }
     public func apply(_ patch: ClimatePatch, to deviceID: String) async throws -> ClimateState {
-        throw ClimateServiceError.readOnly
+        guard deviceID == device.id else { throw ClimateServiceError.deviceNotFound }
+        try await capabilities(for: deviceID).validate(patch)
+        if let value = patch.powerEnabled { currentState.powerEnabled = value }
+        if let value = patch.operatingMode { currentState.operatingMode = value }
+        if let value = patch.fanSpeed { currentState.fanSpeed = value }
+        if let value = patch.temperatureSetpoint { currentState.temperatureSetpoint = value }
+        if let value = patch.horizontalSwingEnabled { currentState.horizontalSwingEnabled = value }
+        if let value = patch.verticalSwingEnabled { currentState.verticalSwingEnabled = value }
+        currentState.timestamp = Date()
+        return currentState
     }
 }

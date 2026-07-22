@@ -63,7 +63,7 @@ public actor CloudClimateService: ClimateService, ClimateScheduleRemoteService {
                 fanSpeeds: Set(FanSpeed.allCases),
                 minimumSetpoint: 16,
                 maximumSetpoint: 30,
-                setpointStep: 1
+                setpointStep: 0.5
             )
         }
         return .init(

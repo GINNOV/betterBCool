@@ -75,7 +75,9 @@ private final class AppConfiguration: ObservableObject {
             liveAccessEnabled = UserDefaults.standard.bool(forKey: Key.liveAccess)
             let startupGatewayID = UserDefaults.standard.string(forKey: Key.gatewayID) ?? ""
             gatewayID = startupGatewayID
-            backend = Backend(rawValue: UserDefaults.standard.string(forKey: Key.backend) ?? "") ?? .pointT
+            let storedBackend = UserDefaults.standard.string(forKey: Key.backend)
+                .flatMap(Backend.init(rawValue:))
+            backend = storedBackend ?? .pointT
             baconRegion = BaconRegion(rawValue: UserDefaults.standard.string(forKey: Key.baconRegion) ?? "") ?? .europe
             cloudEnabled = UserDefaults.standard.bool(forKey: Key.cloudEnabled)
             cloudURL = UserDefaults.standard.string(forKey: Key.cloudURL)
@@ -87,10 +89,16 @@ private final class AppConfiguration: ObservableObject {
             }
             let startupTokenStore = KeychainOAuthTokenStore()
             let hasTokens = (try? startupTokenStore.loadTokens()) != nil
-            isSignedIn = hasTokens && !startupGatewayID.isEmpty
-            if hasTokens && startupGatewayID.isEmpty {
-                Self.logger.notice("Removing incomplete sign-in tokens left by a failed gateway request")
+            let canResumeSession = storedBackend != nil && !startupGatewayID.isEmpty
+            isSignedIn = hasTokens && canResumeSession
+            if hasTokens && !canResumeSession {
+                Self.logger.notice("Removing legacy or incomplete sign-in state so transport discovery can run")
                 try? startupTokenStore.deleteTokens()
+            }
+            if storedBackend == nil && !startupGatewayID.isEmpty {
+                gatewayID = ""
+                UserDefaults.standard.removeObject(forKey: Key.gatewayID)
+                UserDefaults.standard.set(false, forKey: Key.liveAccess)
             }
         }
         if !isSignedIn { liveAccessEnabled = false }
@@ -403,12 +411,12 @@ private struct SettingsView: View {
                     } header: {
                         Text("Cloud scheduling")
                     } footer: {
-                        Text("When enabled, Vercel securely executes routines and manual commands even while this iPhone is offline.")
+                        Text("When enabled, Cloud service securely executes routines and manual commands even while this iPhone is offline.")
                     }
                 }
 
                 Section("Privacy & safety") {
-                    Text("Tokens are stored in the iOS Keychain and refreshed automatically. Commands are limited to power, mode, fan, temperature, and swing, then verified with a fresh state read.")
+                    Text("Tokens are stored in the iOS Keychain and refreshed automatically.")
                     Text("This is an independent integration and is not endorsed by Bosch.")
                 }
 

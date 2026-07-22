@@ -44,4 +44,34 @@ final class BaseTelemetryCSVTests: XCTestCase {
         XCTAssertThrowsError(try capabilities.validate(.init(temperatureSetpoint: 30.25)))
         XCTAssertNoThrow(try capabilities.validate(.init(temperatureSetpoint: 24.5)))
     }
+
+    func testBaconRangeAcceptsHalfDegreeSetpoint() throws {
+        let capabilities = ClimateCapabilities(
+            canWrite: true,
+            operatingModes: Set(OperatingMode.allCases),
+            fanSpeeds: Set(FanSpeed.allCases),
+            minimumSetpoint: 16,
+            maximumSetpoint: 30,
+            setpointStep: 0.5
+        )
+
+        XCTAssertNoThrow(try capabilities.validate(.init(temperatureSetpoint: 24.5)))
+    }
+}
+
+final class DemoClimateServiceTests: XCTestCase {
+    func testDemoControlsUpdateState() async throws {
+        let service = DemoClimateService()
+        let device = try await service.devices().first!
+
+        let updated = try await service.apply(
+            .init(powerEnabled: false, operatingMode: .dry, temperatureSetpoint: 24.5),
+            to: device.id
+        )
+
+        XCTAssertFalse(updated.powerEnabled)
+        XCTAssertEqual(updated.operatingMode, .dry)
+        XCTAssertEqual(updated.temperatureSetpoint, 24.5)
+        XCTAssertEqual(updated.roomTemperature, 28.5)
+    }
 }
