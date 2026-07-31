@@ -7,13 +7,13 @@ public enum ScheduleWeekday: Int, Codable, CaseIterable, Hashable, Sendable {
 
     public var shortName: String {
         switch self {
-        case .sunday: "Sun"
-        case .monday: "Mon"
-        case .tuesday: "Tue"
-        case .wednesday: "Wed"
-        case .thursday: "Thu"
-        case .friday: "Fri"
-        case .saturday: "Sat"
+        case .sunday: String(localized: "Sun")
+        case .monday: String(localized: "Mon")
+        case .tuesday: String(localized: "Tue")
+        case .wednesday: String(localized: "Wed")
+        case .thursday: String(localized: "Thu")
+        case .friday: String(localized: "Fri")
+        case .saturday: String(localized: "Sat")
         }
     }
 }
@@ -140,23 +140,27 @@ public extension ClimateSchedule {
         let start = calendar.date(bySettingHour: 22, minute: 0, second: 0, of: now) ?? now
         let components = calendar.dateComponents([.hour, .minute], from: start)
         return ClimateSchedule(
-            name: "Night comfort",
+            name: String(localized: "Night comfort"),
             startMinutes: (components.hour ?? 22) * 60 + (components.minute ?? 0),
             weekdays: Set(ScheduleWeekday.allCases),
             steps: [
                 .init(
-                    name: "Cool down",
+                    name: String(localized: "Cool down"),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .medium, temperatureSetpoint: 24),
                     durationMinutes: 120
                 ),
                 .init(
-                    name: "Silent sleep",
+                    name: String(localized: "Silent sleep"),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .quiet, temperatureSetpoint: 25),
                     durationMinutes: 240
                 ),
-                .init(name: "Pause", patch: .init(powerEnabled: false), durationMinutes: 30),
                 .init(
-                    name: "Resume silent",
+                    name: String(localized: "Pause"),
+                    patch: .init(powerEnabled: false),
+                    durationMinutes: 30
+                ),
+                .init(
+                    name: String(localized: "Resume silent"),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .quiet, temperatureSetpoint: 25)
                 )
             ]

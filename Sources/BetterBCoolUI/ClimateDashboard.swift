@@ -3,32 +3,61 @@
 import BetterBCoolCore
 import SwiftUI
 
+@MainActor
 public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
+    @ObservedObject private var sensorTag: SensorTagManager
     private let settingsContent: () -> AnyView
+    private let onSettingsTapped: (() -> Void)?
+    private let onReconnectTapped: (() -> Void)?
 
     public init(
         service: any ClimateService,
-        remoteScheduler: (any ClimateScheduleRemoteService)? = nil
+        remoteScheduler: (any ClimateScheduleRemoteService)? = nil,
+        sensorTag: SensorTagManager? = nil
     ) {
         _model = StateObject(wrappedValue: ClimateViewModel(service: service))
         _scheduleController = StateObject(
             wrappedValue: ScheduleController(service: service, remoteService: remoteScheduler)
         )
+        self.sensorTag = sensorTag ?? .shared
         settingsContent = { AnyView(EmptyView()) }
+        onSettingsTapped = nil
+        onReconnectTapped = nil
     }
 
     public init<SettingsContent: View>(
         service: any ClimateService,
         remoteScheduler: (any ClimateScheduleRemoteService)? = nil,
+        sensorTag: SensorTagManager? = nil,
         @ViewBuilder settingsContent: @escaping () -> SettingsContent
     ) {
         _model = StateObject(wrappedValue: ClimateViewModel(service: service))
         _scheduleController = StateObject(
             wrappedValue: ScheduleController(service: service, remoteService: remoteScheduler)
         )
+        self.sensorTag = sensorTag ?? .shared
         self.settingsContent = { AnyView(settingsContent()) }
+        onSettingsTapped = nil
+        onReconnectTapped = nil
+    }
+
+    public init(
+        service: any ClimateService,
+        remoteScheduler: (any ClimateScheduleRemoteService)? = nil,
+        sensorTag: SensorTagManager? = nil,
+        onSettingsTapped: @escaping () -> Void,
+        onReconnectTapped: (() -> Void)? = nil
+    ) {
+        _model = StateObject(wrappedValue: ClimateViewModel(service: service))
+        _scheduleController = StateObject(
+            wrappedValue: ScheduleController(service: service, remoteService: remoteScheduler)
+        )
+        self.sensorTag = sensorTag ?? .shared
+        settingsContent = { AnyView(EmptyView()) }
+        self.onSettingsTapped = onSettingsTapped
+        self.onReconnectTapped = onReconnectTapped
     }
 
     public var body: some View {
@@ -44,11 +73,31 @@ public struct ClimateDashboard: View {
                         .tint(.white)
                         .accessibilityLabel("Loading climate data")
                 } else {
-                    ContentUnavailableView(
-                        "No climate data",
-                        systemImage: "air.conditioner.horizontal",
-                        description: Text(model.errorMessage ?? "Check your connection settings.")
-                    )
+                    VStack(spacing: 18) {
+                        HStack {
+                            Spacer()
+                            settingsButton
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 14)
+
+                        Spacer()
+
+                        ContentUnavailableView(
+                            "No climate data",
+                            systemImage: "air.conditioner.horizontal",
+                            description: Text(model.errorMessage ?? String(localized: "Check your connection settings."))
+                        )
+                        if model.requiresReauthentication, let onReconnectTapped {
+                            Button("Reconnect Bosch", systemImage: "person.crop.circle.badge.checkmark") {
+                                onReconnectTapped()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .accessibilityIdentifier("dashboard.reconnectButton")
+                        }
+
+                        Spacer()
+                    }
                     .foregroundStyle(.white)
                 }
             }
@@ -65,22 +114,29 @@ public struct ClimateDashboard: View {
     }
 
     private func dashboard(_ state: ClimateState) -> some View {
-        ScrollView {
-            LazyVStack(spacing: 18) {
-                header(state)
-                temperatureCard(state)
-                modeCard(state)
-                fanCard(state)
-                scheduleCard
-                quickActions(state)
-                connectionCard(state)
+        VStack(spacing: 14) {
+            header(state)
+                .padding(.horizontal, 20)
+
+            ScrollView {
+                LazyVStack(spacing: 18) {
+                    temperatureCard(state)
+                    if sensorTag.connectionState == .connected {
+                        sensorTagCard
+                    }
+                    modeCard(state)
+                    fanCard(state)
+                    scheduleCard
+                    quickActions(state)
+                    activityLogCard
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 36)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 14)
-            .padding(.bottom, 36)
+            .scrollIndicators(.hidden)
+            .refreshable { await model.load() }
         }
-        .scrollIndicators(.hidden)
-        .refreshable { await model.load() }
+        .padding(.top, 14)
     }
 
     private func header(_ state: ClimateState) -> some View {
@@ -90,17 +146,26 @@ public struct ClimateDashboard: View {
                     .font(.caption2.weight(.bold))
                     .tracking(1.8)
                     .foregroundStyle(.white.opacity(0.55))
-                Text(model.selectedDevice?.name ?? "betterBCool")
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(.white)
+                HStack(spacing: 7) {
+                    Text(model.selectedDevice?.name ?? "betterBCool")
+                        .font(.title2.weight(.bold))
+                        .foregroundStyle(.white)
+
+                    if model.controlsEnabled {
+                        Image(systemName: "checkmark.shield.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color.mint)
+                            .accessibilityLabel("Connected")
+                    }
+                }
             }
 
             Spacer()
 
-            settingsLink
+            settingsButton
 
             Button {
-                Task { await model.apply(.init(powerEnabled: !state.powerEnabled)) }
+                Task { await model.togglePower() }
             } label: {
                 Image(systemName: "power")
                     .font(.system(size: 18, weight: .bold))
@@ -112,23 +177,40 @@ public struct ClimateDashboard: View {
             .buttonStyle(.plain)
             .disabled(!model.controlsEnabled)
             .opacity(model.controlsEnabled ? 1 : 0.75)
-            .accessibilityLabel(state.powerEnabled ? "Turn air conditioner off" : "Turn air conditioner on")
+            .accessibilityLabel(
+                state.powerEnabled
+                    ? String(localized: "Turn air conditioner off")
+                    : String(localized: "Turn air conditioner on")
+            )
+            .accessibilityIdentifier("dashboard.powerButton")
         }
     }
 
-    private var settingsLink: some View {
-        NavigationLink {
-            settingsContent()
-        } label: {
-            Image(systemName: "gearshape.fill")
-                .font(.system(size: 17, weight: .semibold))
-                .frame(width: 48, height: 48)
-                .background(.white.opacity(0.08), in: Circle())
-                .contentShape(Circle())
+    private var settingsButton: some View {
+        Group {
+            if let onSettingsTapped {
+                Button(action: onSettingsTapped) {
+                    settingsIcon
+                }
+            } else {
+                NavigationLink {
+                    settingsContent()
+                } label: {
+                    settingsIcon
+                }
+            }
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Settings")
         .accessibilityIdentifier("dashboard.settingsButton")
+    }
+
+    private var settingsIcon: some View {
+        Image(systemName: "gearshape.fill")
+            .font(.system(size: 17, weight: .semibold))
+            .frame(width: 48, height: 48)
+            .background(.white.opacity(0.08), in: Circle())
+            .contentShape(Circle())
     }
 
     private func temperatureCard(_ state: ClimateState) -> some View {
@@ -136,8 +218,35 @@ public struct ClimateDashboard: View {
             HStack {
                 StatusPill(isOn: state.powerEnabled)
                 Spacer()
-                if let roomTemperature = state.roomTemperature {
-                    Label("Room \(roomTemperature, specifier: "%.1f")°", systemImage: "house.fill")
+                if let sensorTemperature = sensorTagRoomTemperature {
+                    Label(
+                        String(
+                            format: String(localized: "SensorTag %@°"),
+                            locale: .current,
+                            sensorTemperature.formatted(.number.precision(.fractionLength(1)))
+                        ),
+                        systemImage: "sensor.tag.radiowaves.forward.fill"
+                    )
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.mint)
+                        .accessibilityLabel("SensorTag temperature")
+                        .accessibilityValue(
+                            String(
+                                format: String(localized: "%@ degrees Celsius"),
+                                locale: .current,
+                                sensorTemperature.formatted(.number.precision(.fractionLength(1)))
+                            )
+                        )
+                        .accessibilityIdentifier("dashboard.sensorTagTemperature")
+                } else if let roomTemperature = state.roomTemperature {
+                    Label(
+                        String(
+                            format: String(localized: "Room %@°"),
+                            locale: .current,
+                            roomTemperature.formatted(.number.precision(.fractionLength(1)))
+                        ),
+                        systemImage: "house.fill"
+                    )
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.white.opacity(0.62))
                 } else {
@@ -169,7 +278,15 @@ public struct ClimateDashboard: View {
                 .foregroundStyle(.white)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Set temperature")
-                .accessibilityValue(state.temperatureSetpoint.map { "\($0) degrees Celsius" } ?? "Unavailable")
+                .accessibilityValue(
+                    state.temperatureSetpoint.map {
+                        String(
+                            format: String(localized: "%@ degrees Celsius"),
+                            locale: .current,
+                            $0.formatted(.number.precision(.fractionLength(1)))
+                        )
+                    } ?? String(localized: "Unavailable")
+                )
             }
 
             HStack(spacing: 22) {
@@ -219,7 +336,10 @@ public struct ClimateDashboard: View {
     }
 
     private func modeCard(_ state: ClimateState) -> some View {
-        DashboardCard(title: "Mode", subtitle: "Choose how the room feels") {
+        DashboardCard(
+            title: String(localized: "Mode"),
+            subtitle: String(localized: "Choose how the room feels")
+        ) {
             HStack(spacing: 8) {
                 ForEach(OperatingMode.allCases, id: \.self) { mode in
                     SelectableIcon(
@@ -235,8 +355,61 @@ public struct ClimateDashboard: View {
         }
     }
 
+    private var sensorTagCard: some View {
+        DashboardCard(
+            title: String(localized: "SensorTag"),
+            subtitle: sensorTag.connectedDevice?.name ?? String(localized: "Live room sensors")
+        ) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                SensorMetric(
+                    title: String(localized: "Ambient"),
+                    value: formatted(sensorTag.readings.ambientTemperature, unit: "°C", precision: 1),
+                    symbol: "thermometer.medium"
+                )
+                SensorMetric(
+                    title: String(localized: "Humidity"),
+                    value: formatted(sensorTag.readings.relativeHumidity, unit: "%", precision: 1),
+                    symbol: "humidity.fill"
+                )
+                SensorMetric(
+                    title: String(localized: "Object"),
+                    value: formatted(sensorTag.readings.objectTemperature, unit: "°C", precision: 1),
+                    symbol: "viewfinder"
+                )
+                SensorMetric(
+                    title: String(localized: "Pressure"),
+                    value: formatted(sensorTag.readings.pressure, unit: " hPa", precision: 0),
+                    symbol: "gauge.with.dots.needle.33percent"
+                )
+            }
+
+            if let acceleration = sensorTag.readings.acceleration {
+                VectorMetric(title: String(localized: "Acceleration"), vector: acceleration, unit: "g")
+            }
+            if let angularVelocity = sensorTag.readings.angularVelocity {
+                VectorMetric(title: String(localized: "Gyroscope"), vector: angularVelocity, unit: "°/s")
+            }
+            if let magneticField = sensorTag.readings.magneticField {
+                VectorMetric(title: String(localized: "Magnetic field"), vector: magneticField, unit: "µT")
+            }
+        }
+        .accessibilityIdentifier("dashboard.sensorTagCard")
+    }
+
+    private var sensorTagRoomTemperature: Double? {
+        sensorTag.connectionState == .connected ? sensorTag.readings.ambientTemperature : nil
+    }
+
+    private func formatted(_ value: Double?, unit: String, precision: Int) -> String {
+        guard let value else { return "—" }
+        return value.formatted(.number.precision(.fractionLength(precision))) + unit
+    }
+
     private func fanCard(_ state: ClimateState) -> some View {
-        DashboardCard(title: "Fan", subtitle: "Airflow intensity") {
+        DashboardCard(
+            title: String(localized: "Fan"),
+            subtitle: String(localized: "Airflow intensity")
+        ) {
             VStack(spacing: 16) {
                 HStack(spacing: 12) {
                     Image(systemName: "fan.fill")
@@ -250,7 +423,7 @@ public struct ClimateDashboard: View {
                             .font(.caption2.weight(.bold))
                             .tracking(1.1)
                             .foregroundStyle(.white.opacity(0.42))
-                        Text(state.fanSpeed?.title ?? "Unavailable")
+                        Text(state.fanSpeed?.title ?? String(localized: "Unavailable"))
                             .font(.subheadline.weight(.semibold))
                     }
 
@@ -274,14 +447,90 @@ public struct ClimateDashboard: View {
     }
 
     private func quickActions(_ state: ClimateState) -> some View {
-        DashboardCard(title: "Comfort", subtitle: "Active features") {
+        DashboardCard(
+            title: String(localized: "Comfort"),
+            subtitle: String(localized: "Status and swing controls")
+        ) {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                FeatureTile(title: "Eco", symbol: "leaf.fill", enabled: state.ecoEnabled)
-                FeatureTile(title: "Sleep", symbol: "moon.stars.fill", enabled: state.sleepEnabled)
-                FeatureTile(title: "Vertical swing", symbol: "arrow.up.and.down", enabled: state.verticalSwingEnabled)
-                FeatureTile(title: "Horizontal", symbol: "arrow.left.and.right", enabled: state.horizontalSwingEnabled)
+                FeatureTile(title: String(localized: "Eco"), symbol: "leaf.fill", enabled: state.ecoEnabled)
+                FeatureTile(title: String(localized: "Sleep"), symbol: "moon.stars.fill", enabled: state.sleepEnabled)
+                FeatureTile(
+                    title: String(localized: "Vertical swing"),
+                    symbol: "arrow.up.and.down",
+                    enabled: state.verticalSwingEnabled,
+                    action: {
+                        Task {
+                            await model.apply(.init(verticalSwingEnabled: !state.verticalSwingEnabled))
+                        }
+                    }
+                )
+                .disabled(!model.controlsEnabled)
+                .accessibilityIdentifier("dashboard.verticalSwingButton")
+
+                FeatureTile(
+                    title: String(localized: "Horizontal"),
+                    symbol: "arrow.left.and.right",
+                    enabled: state.horizontalSwingEnabled,
+                    action: {
+                        Task {
+                            await model.apply(.init(horizontalSwingEnabled: !state.horizontalSwingEnabled))
+                        }
+                    }
+                )
+                .disabled(!model.controlsEnabled)
+                .accessibilityIdentifier("dashboard.horizontalSwingButton")
             }
         }
+    }
+
+    private var activityLogCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Activity").font(.headline)
+                    Text("Recent unit changes").font(.caption).foregroundStyle(.white.opacity(0.45))
+                }
+
+                Spacer()
+
+                Button("Clear") {
+                    model.clearActivities()
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(model.activities.isEmpty ? .white.opacity(0.3) : Color.accentBlue)
+                .disabled(model.activities.isEmpty)
+                .accessibilityIdentifier("dashboard.clearActivityButton")
+            }
+
+            if model.activities.isEmpty {
+                HStack(spacing: 12) {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.38))
+                        .frame(width: 38, height: 38)
+                        .background(.white.opacity(0.045), in: Circle())
+                    Text("Unit changes will appear here.")
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.5))
+                    Spacer()
+                }
+            } else {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(model.activities.enumerated()), id: \.element.id) { index, activity in
+                        ActivityRow(activity: activity)
+                        if index < model.activities.count - 1 {
+                            Divider().overlay(.white.opacity(0.08)).padding(.leading, 50)
+                        }
+                    }
+                }
+                .accessibilityIdentifier("dashboard.activityLog")
+            }
+        }
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(18)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.075)))
     }
 
     private var scheduleCard: some View {
@@ -300,9 +549,21 @@ public struct ClimateDashboard: View {
                     if scheduleController.enabledCount == 0 {
                         Text("Create a routine for your day")
                     } else if let event = scheduleController.nextEvent {
-                        Text("Next change \(event.date.formatted(date: .omitted, time: .shortened))")
+                        Text(
+                            String(
+                                format: String(localized: "Next change %@"),
+                                locale: .current,
+                                event.date.formatted(date: .omitted, time: .shortened)
+                            )
+                        )
                     } else {
-                        Text("\(scheduleController.enabledCount) active")
+                        Text(
+                            String(
+                                format: String(localized: "%lld active"),
+                                locale: .current,
+                                Int64(scheduleController.enabledCount)
+                            )
+                        )
                     }
                 }
                 .font(.caption)
@@ -327,32 +588,6 @@ public struct ClimateDashboard: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("dashboard.schedulesButton")
-    }
-
-    private func connectionCard(_ state: ClimateState) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: model.controlsEnabled ? "checkmark.shield.fill" : "lock.shield.fill")
-                .font(.title3)
-                .foregroundStyle(model.controlsEnabled ? Color.mint : .white.opacity(0.5))
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(model.controlsEnabled ? "Connected" : "Read-only connection")
-                    .font(.subheadline.weight(.semibold))
-                Text("Updated \(state.timestamp.formatted(.relative(presentation: .named)))")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.48))
-            }
-
-            Spacer()
-
-            Circle()
-                .fill(model.controlsEnabled ? Color.mint : Color.white.opacity(0.28))
-                .frame(width: 8, height: 8)
-        }
-        .foregroundStyle(.white)
-        .padding(16)
-        .background(.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(.white.opacity(0.07)))
     }
 
     private func canAdjust(_ state: ClimateState, by delta: Double) -> Bool {
@@ -411,12 +646,62 @@ private struct DashboardCard<Content: View>: View {
     }
 }
 
+private struct SensorMetric: View {
+    let title: String
+    let value: String
+    let symbol: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: symbol)
+                .foregroundStyle(Color.accentBlue)
+                .frame(width: 30, height: 30)
+                .background(Color.accentBlue.opacity(0.12), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.caption2).foregroundStyle(.white.opacity(0.48))
+                Text(value).font(.subheadline.weight(.semibold).monospacedDigit())
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(10)
+        .background(.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 15))
+    }
+}
+
+private struct VectorMetric: View {
+    let title: String
+    let vector: SensorVector
+    let unit: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(title).font(.caption.weight(.semibold)).foregroundStyle(.white.opacity(0.58))
+            HStack {
+                axis("X", vector.x)
+                axis("Y", vector.y)
+                axis("Z", vector.z)
+            }
+        }
+        .padding(.top, 2)
+    }
+
+    private func axis(_ name: String, _ value: Double) -> some View {
+        HStack(spacing: 4) {
+            Text(name).foregroundStyle(Color.accentBlue)
+            Text(value.formatted(.number.precision(.fractionLength(2))))
+            Text(unit).foregroundStyle(.white.opacity(0.42))
+        }
+        .font(.caption2.monospacedDigit())
+        .frame(maxWidth: .infinity)
+    }
+}
+
 private struct StatusPill: View {
     let isOn: Bool
     var body: some View {
         HStack(spacing: 7) {
             Circle().fill(isOn ? Color.mint : .white.opacity(0.45)).frame(width: 7, height: 7)
-            Text(isOn ? "COOLING" : "OFF")
+            Text(isOn ? String(localized: "COOLING") : String(localized: "OFF"))
                 .font(.caption2.weight(.bold))
                 .tracking(1.1)
         }
@@ -441,7 +726,11 @@ private struct TemperatureButton: View {
         }
         .buttonStyle(.plain)
         .opacity(isEnabled ? 1 : 0.45)
-        .accessibilityLabel(systemName == "plus" ? "Increase temperature" : "Decrease temperature")
+        .accessibilityLabel(
+            systemName == "plus"
+                ? String(localized: "Increase temperature")
+                : String(localized: "Decrease temperature")
+        )
     }
 }
 
@@ -450,6 +739,7 @@ private struct SelectableIcon: View {
     let symbol: String
     let selected: Bool
     let action: () -> Void
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         Button(action: action) {
@@ -459,10 +749,27 @@ private struct SelectableIcon: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .foregroundStyle(selected ? .white : .white.opacity(0.46))
-            .background(selected ? Color.accentBlue : .white.opacity(0.045), in: RoundedRectangle(cornerRadius: 15))
+            .foregroundStyle(foregroundColor)
+            .background(backgroundColor, in: RoundedRectangle(cornerRadius: 15))
+            .overlay {
+                if !isEnabled {
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(.white.opacity(0.035), lineWidth: 1)
+                }
+            }
         }
         .buttonStyle(.plain)
+        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable"))
+    }
+
+    private var foregroundColor: Color {
+        guard isEnabled else { return .white.opacity(0.20) }
+        return selected ? .white : .white.opacity(0.46)
+    }
+
+    private var backgroundColor: Color {
+        guard isEnabled else { return .white.opacity(0.015) }
+        return selected ? Color.accentBlue : .white.opacity(0.045)
     }
 }
 
@@ -470,6 +777,7 @@ private struct SelectableText: View {
     let title: String
     let selected: Bool
     let action: () -> Void
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         Button(action: action) {
@@ -477,10 +785,26 @@ private struct SelectableText: View {
                 .font(.caption.weight(.semibold))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
-                .foregroundStyle(selected ? .white : .white.opacity(0.5))
-                .background(selected ? Color.accentBlue : .white.opacity(0.045), in: Capsule())
+                .foregroundStyle(foregroundColor)
+                .background(backgroundColor, in: Capsule())
+                .overlay {
+                    if !isEnabled {
+                        Capsule().stroke(.white.opacity(0.035), lineWidth: 1)
+                    }
+                }
         }
         .buttonStyle(.plain)
+        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable"))
+    }
+
+    private var foregroundColor: Color {
+        guard isEnabled else { return .white.opacity(0.20) }
+        return selected ? .white : .white.opacity(0.5)
+    }
+
+    private var backgroundColor: Color {
+        guard isEnabled else { return .white.opacity(0.015) }
+        return selected ? Color.accentBlue : .white.opacity(0.045)
     }
 }
 
@@ -498,7 +822,7 @@ private struct FanBars: View {
         .frame(height: 25, alignment: .bottom)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Fan speed")
-        .accessibilityValue(speed?.title ?? "Unavailable")
+        .accessibilityValue(speed?.title ?? String(localized: "Unavailable"))
     }
 }
 
@@ -506,8 +830,26 @@ private struct FeatureTile: View {
     let title: String
     let symbol: String
     let enabled: Bool
+    var action: (() -> Void)? = nil
+    @Environment(\.isEnabled) private var isAvailable
 
     var body: some View {
+        Group {
+            if let action {
+                Button(action: action) {
+                    content
+                }
+                .buttonStyle(.plain)
+            } else {
+                content
+                    .accessibilityElement(children: .combine)
+            }
+        }
+        .accessibilityLabel(title)
+        .accessibilityValue(enabled ? String(localized: "On") : String(localized: "Off"))
+    }
+
+    private var content: some View {
         HStack(spacing: 10) {
             Image(systemName: symbol)
                 .font(.system(size: 15, weight: .semibold))
@@ -516,16 +858,58 @@ private struct FeatureTile: View {
                 .background(.white.opacity(0.06), in: Circle())
             Text(title).font(.caption.weight(.semibold)).lineLimit(1)
             Spacer(minLength: 0)
+            Text(enabled ? String(localized: "On") : String(localized: "Off"))
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(enabled ? Color.mint : .white.opacity(0.34))
         }
         .padding(10)
         .foregroundStyle(enabled ? .white : .white.opacity(0.43))
         .background(.white.opacity(enabled ? 0.075 : 0.035), in: RoundedRectangle(cornerRadius: 15))
+        .opacity(isAvailable ? 1 : 0.5)
+        .contentShape(RoundedRectangle(cornerRadius: 15))
+    }
+}
+
+private struct ActivityRow: View {
+    let activity: ClimateActivity
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: activity.symbol)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Color.accentBlue)
+                .frame(width: 38, height: 38)
+                .background(Color.accentBlue.opacity(0.12), in: Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(activity.title)
+                    .font(.subheadline.weight(.semibold))
+                Text(activity.detail)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.52))
+            }
+
+            Spacer(minLength: 8)
+
+            Text(activity.timestamp, format: .dateTime.hour().minute())
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.white.opacity(0.42))
+        }
+        .padding(.vertical, 10)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(activity.title), \(activity.detail)")
     }
 }
 
 private extension OperatingMode {
     var title: String {
-        switch self { case .auto: "Auto"; case .cool: "Cool"; case .dry: "Dry"; case .fan: "Fan"; case .heat: "Heat" }
+        switch self {
+        case .auto: String(localized: "Auto")
+        case .cool: String(localized: "Cool")
+        case .dry: String(localized: "Dry")
+        case .fan: String(localized: "Fan")
+        case .heat: String(localized: "Heat")
+        }
     }
     var symbol: String {
         switch self { case .auto: "sparkles"; case .cool: "snowflake"; case .dry: "drop.fill"; case .fan: "fan.fill"; case .heat: "sun.max.fill" }
@@ -535,12 +919,12 @@ private extension OperatingMode {
 private extension FanSpeed {
     var title: String {
         switch self {
-        case .auto: "Auto"
-        case .quiet: "Quiet"
-        case .low: "Low"
-        case .medium: "Medium"
-        case .high: "High"
-        case .turbo: "Turbo"
+        case .auto: String(localized: "Auto")
+        case .quiet: String(localized: "Quiet")
+        case .low: String(localized: "Low")
+        case .medium: String(localized: "Medium")
+        case .high: String(localized: "High")
+        case .turbo: String(localized: "Turbo")
         }
     }
 

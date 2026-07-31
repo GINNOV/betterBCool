@@ -19,6 +19,18 @@ export async function PUT(request: Request, context: Context) {
 
   await ensureSchema();
   const previous = await loadSchedule(identity.installationID, id);
+  const scheduleUnchanged = previous
+    && previous.timezone === parsed.data.timezone
+    && canonicalJSON(previous.body) === canonicalJSON(parsed.data.schedule);
+  if (scheduleUnchanged && (!parsed.data.schedule.isEnabled || previous.workflow_run_id)) {
+    return Response.json({
+      ok: true,
+      revision: Number(previous.revision),
+      status: parsed.data.schedule.isEnabled ? "scheduled" : "disabled",
+      runID: previous.workflow_run_id ?? undefined,
+    });
+  }
+
   const revision = Number(previous?.revision ?? 0) + 1;
   if (previous?.workflow_run_id) await getRun(previous.workflow_run_id).cancel().catch(() => undefined);
 
@@ -56,6 +68,15 @@ export async function PUT(request: Request, context: Context) {
     `;
     return Response.json({ error: "Unable to start schedule workflow" }, { status: 503 });
   }
+}
+
+function canonicalJSON(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJSON).join(",")}]`;
+  if (value !== null && typeof value === "object") {
+    const object = value as Record<string, unknown>;
+    return `{${Object.keys(object).sort().map((key) => `${JSON.stringify(key)}:${canonicalJSON(object[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value) ?? "undefined";
 }
 
 export async function DELETE(request: Request, context: Context) {

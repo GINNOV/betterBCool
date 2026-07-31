@@ -121,10 +121,10 @@ async function requiredInstallation(id: string): Promise<InstallationRow> {
   return row;
 }
 
-function validatePatch(patch: ClimatePatch, row: InstallationRow): void {
+export function validatePatch(patch: ClimatePatch, row: InstallationRow): void {
   const min = row.transport === "bacon" ? 16 : 15;
   const max = row.transport === "bacon" ? 30 : 32.5;
-  const step = row.transport === "bacon" ? 1 : 0.5;
+  const step = 0.5;
   if (patch.temperatureSetpoint !== undefined) {
     const value = patch.temperatureSetpoint;
     if (!Number.isFinite(value) || value < min || value > max || Math.abs((value - min) / step - Math.round((value - min) / step)) > 1e-7) {

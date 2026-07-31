@@ -12,7 +12,9 @@ public actor DemoClimateService: ClimateService {
         sleepEnabled: false, verticalSwingEnabled: false
     )
 
-    public init() {}
+    public init(initialPowerEnabled: Bool = true) {
+        currentState.powerEnabled = initialPowerEnabled
+    }
     public func devices() async throws -> [ClimateDevice] { [device] }
     public func capabilities(for deviceID: String) async throws -> ClimateCapabilities {
         guard deviceID == device.id else { throw ClimateServiceError.deviceNotFound }

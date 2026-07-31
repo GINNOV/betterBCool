@@ -76,7 +76,7 @@ final class ScheduleController: ObservableObject {
                 for id in deletedIDs { try await remoteService.delete(scheduleID: id) }
                 errorMessage = nil
             } catch {
-                errorMessage = "The routine was removed locally, but cloud deletion will need to be retried."
+                errorMessage = String(localized: "The routine was removed locally, but cloud deletion will need to be retried.")
             }
         }
     }
@@ -98,26 +98,32 @@ final class ScheduleController: ObservableObject {
     private func run() async {
         while !Task.isCancelled {
             do {
-                guard let device = try await service.devices().first else { return }
-                let capabilities = try await service.capabilities(for: device.id)
                 let now = Date()
-                if capabilities.canWrite,
-                   let event = ClimateScheduleTimeline.currentEvent(in: schedules, at: now),
-                   event.id != lastAppliedEventID {
+                refreshNextEvent(after: now)
+                guard let event = nextEvent else {
+                    try await Task.sleep(for: .seconds(60 * 60))
+                    continue
+                }
+
+                let delay = max(0, event.date.timeIntervalSinceNow)
+                try await Task.sleep(for: .seconds(delay))
+
+                // Only execute transitions that this runner actually observed. Replaying the
+                // current step on launch can unexpectedly power on a unit hours after it began.
+                let lateness = Date().timeIntervalSince(event.date)
+                if lateness <= 60, event.id != lastAppliedEventID {
+                    guard let device = try await service.devices().first else { return }
+                    let capabilities = try await service.capabilities(for: device.id)
+                    guard capabilities.canWrite else { continue }
                     try capabilities.validate(event.patch)
                     _ = try await service.apply(event.patch, to: device.id)
                     lastAppliedEventID = event.id
                     errorMessage = nil
                 }
-
-                refreshNextEvent(after: now)
-                let wakeDate = nextEvent?.date ?? now.addingTimeInterval(60 * 60)
-                let delay = max(1, wakeDate.timeIntervalSinceNow)
-                try await Task.sleep(for: .seconds(delay))
             } catch is CancellationError {
                 return
             } catch {
-                errorMessage = "A scheduled change could not be applied. Retrying shortly."
+                errorMessage = String(localized: "A scheduled change could not be applied. Retrying shortly.")
                 try? await Task.sleep(for: .seconds(60))
             }
         }
@@ -137,7 +143,7 @@ final class ScheduleController: ObservableObject {
                 }
                 errorMessage = nil
             } catch {
-                errorMessage = "Cloud schedules could not be synchronized. The app will retry when reopened."
+                errorMessage = String(localized: "Cloud schedules could not be synchronized. The app will retry when reopened.")
             }
         }
     }
@@ -149,7 +155,7 @@ final class ScheduleController: ObservableObject {
                 try await remoteService.sync(schedule: schedule, timezone: TimeZone.current.identifier)
                 errorMessage = nil
             } catch {
-                errorMessage = "This routine is saved locally but has not reached the cloud yet."
+                errorMessage = String(localized: "This routine is saved locally but has not reached the cloud yet.")
             }
         }
     }
@@ -204,11 +210,16 @@ struct ScheduleListView: View {
             }
 
             Section {
-                Label(controller.usesCloud ? "Vercel cloud scheduling" : "On-device scheduling", systemImage: controller.usesCloud ? "cloud.fill" : "iphone")
+                Label(
+                    controller.usesCloud
+                        ? String(localized: "Vercel cloud scheduling")
+                        : String(localized: "On-device scheduling"),
+                    systemImage: controller.usesCloud ? "cloud.fill" : "iphone"
+                )
             } footer: {
                 Text(controller.usesCloud
-                     ? "Routines run in the cloud with durable waits and automatic retries, even while this iPhone is offline."
-                     : "Routines are private to this device. iOS can delay network changes while the app is suspended; the correct step is restored when betterBCool becomes active again.")
+                     ? String(localized: "Routines run in the cloud with durable waits and automatic retries, even while this iPhone is offline.")
+                     : String(localized: "Routines are private to this device and run while betterBCool is active. Missed changes are not replayed when the app opens."))
             }
         }
         .navigationTitle("Schedules")
@@ -227,12 +238,12 @@ struct ScheduleListView: View {
 
     private func newSchedule() -> ClimateSchedule {
         .init(
-            name: "My routine",
+            name: String(localized: "My routine"),
             startMinutes: 22 * 60,
             weekdays: Set(ScheduleWeekday.allCases),
             steps: [
                 .init(
-                    name: "Start cooling",
+                    name: String(localized: "Start cooling"),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .auto, temperatureSetpoint: 24),
                     durationMinutes: nil
                 )
@@ -249,7 +260,20 @@ private struct ScheduleRow: View {
         HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 5) {
                 Text(schedule.name).font(.headline)
-                Text("\(schedule.startMinutes.clockText) · \(schedule.steps.count) \(schedule.steps.count == 1 ? "step" : "steps")")
+                Text(
+                    schedule.steps.count == 1
+                        ? String(
+                            format: String(localized: "%@ · 1 step"),
+                            locale: .current,
+                            schedule.startMinutes.clockText
+                        )
+                        : String(
+                            format: String(localized: "%1$@ · %2$lld steps"),
+                            locale: .current,
+                            schedule.startMinutes.clockText,
+                            Int64(schedule.steps.count)
+                        )
+                )
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Text(schedule.weekdays.repeatSummary)
@@ -290,11 +314,16 @@ private struct ScheduleEditor: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .onDelete { schedule.steps.remove(atOffsets: $0) }
+                .onDelete {
+                    schedule.steps.remove(atOffsets: $0)
+                    if let last = schedule.steps.indices.last {
+                        schedule.steps[last].durationMinutes = nil
+                    }
+                }
 
                 Button {
                     editingStep = .init(
-                        name: "Next step",
+                        name: String(localized: "Next step"),
                         patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .quiet, temperatureSetpoint: 25)
                     )
                 } label: {
@@ -303,7 +332,7 @@ private struct ScheduleEditor: View {
             } header: {
                 Text("Timeline")
             } footer: {
-                Text("Each step starts when the previous one finishes. Leave the last step on “Keep running” to hold that setting.")
+                Text("Each step starts when the previous one finishes. The final step stays in effect until you make a manual change or another routine changes it.")
             }
         }
         .navigationTitle(schedule.name)
@@ -311,7 +340,11 @@ private struct ScheduleEditor: View {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    onSave(schedule)
+                    var savedSchedule = schedule
+                    if let last = savedSchedule.steps.indices.last {
+                        savedSchedule.steps[last].durationMinutes = nil
+                    }
+                    onSave(savedSchedule)
                     dismiss()
                 }
                 .disabled(schedule.name.trimmingCharacters(in: .whitespaces).isEmpty || schedule.weekdays.isEmpty || schedule.steps.isEmpty)
@@ -319,7 +352,10 @@ private struct ScheduleEditor: View {
         }
         .sheet(item: $editingStep) { step in
             NavigationStack {
-                ScheduleStepEditor(step: step, isFinalStep: schedule.steps.last?.id == step.id) { updated in
+                ScheduleStepEditor(
+                    step: step,
+                    isFinalStep: schedule.steps.last?.id == step.id || !schedule.steps.contains(where: { $0.id == step.id })
+                ) { updated in
                     if let index = schedule.steps.firstIndex(where: { $0.id == updated.id }) {
                         schedule.steps[index] = updated
                     } else {
@@ -383,13 +419,28 @@ private struct TimelineStepRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(step.name).font(.body.weight(.semibold))
                 Text(step.summary).font(.caption).foregroundStyle(.secondary)
-                Text(step.durationMinutes.map { "For \($0.durationText)" } ?? (isLast ? "Keep running" : "Until changed"))
+                Text(
+                    step.durationMinutes.map {
+                        String(
+                            format: String(localized: "For %@"),
+                            locale: .current,
+                            $0.durationText
+                        )
+                    } ?? finalStepDescription
+                )
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
             Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
         }
         .padding(.vertical, 5)
+    }
+
+    private var finalStepDescription: String {
+        guard isLast else { return String(localized: "Until changed") }
+        return step.patch.powerEnabled == false
+            ? String(localized: "Stay off until changed")
+            : String(localized: "Keep this setting until changed")
     }
 }
 
@@ -426,22 +477,32 @@ private struct ScheduleStepEditor: View {
 
             Section {
                 if isFinalStep {
-                    Toggle("Keep running", isOn: keepRunning)
-                }
-                if step.durationMinutes != nil || !isFinalStep {
+                    Label(
+                        step.patch.powerEnabled == false
+                            ? String(localized: "Stay off until changed")
+                            : String(localized: "Keep this setting until changed"),
+                        systemImage: "infinity"
+                    )
+                } else {
                     Stepper(value: durationMinutes, in: 15...(12 * 60), step: 15) {
                         LabeledContent("Duration", value: (step.durationMinutes ?? 60).durationText)
                     }
                 }
+            } header: {
+                Text("After this step")
             } footer: {
-                Text("The next step begins automatically when this duration ends.")
+                Text(afterStepExplanation)
             }
         }
         .navigationTitle(step.name)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Done") { onSave(step); dismiss() }
+                Button("Done") {
+                    if isFinalStep { step.durationMinutes = nil }
+                    onSave(step)
+                    dismiss()
+                }
                     .disabled(step.name.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
@@ -462,18 +523,29 @@ private struct ScheduleStepEditor: View {
     private var durationMinutes: Binding<Int> {
         Binding(get: { step.durationMinutes ?? 60 }, set: { step.durationMinutes = $0 })
     }
-    private var keepRunning: Binding<Bool> {
-        Binding(
-            get: { step.durationMinutes == nil },
-            set: { step.durationMinutes = $0 ? nil : 60 }
-        )
+
+    private var afterStepExplanation: String {
+        if isFinalStep {
+            return step.patch.powerEnabled == false
+                ? String(localized: "The unit stays off until you turn it on manually or another routine changes it.")
+                : String(localized: "This setting stays active until you change it manually or another routine changes it.")
+        }
+        if step.patch.powerEnabled == false {
+            return String(localized: "The unit stays off for this duration, then the next step begins. To keep it off, make this the final step.")
+        }
+        return String(localized: "The next step begins automatically when this duration ends.")
     }
 }
 
 extension ClimateScheduleStep {
     fileprivate var summary: String {
-        guard patch.powerEnabled != false else { return "Turn off" }
-        var values = [patch.operatingMode?.scheduleTitle, patch.fanSpeed.map { "\($0.scheduleTitle) fan" }].compactMap { $0 }
+        guard patch.powerEnabled != false else { return String(localized: "Turn off") }
+        var values = [
+            patch.operatingMode?.scheduleTitle,
+            patch.fanSpeed.map {
+                String(format: String(localized: "%@ fan"), locale: .current, $0.scheduleTitle)
+            }
+        ].compactMap { $0 }
         if let temperature = patch.temperatureSetpoint { values.append(String(format: "%.1f°", temperature)) }
         return values.joined(separator: " · ")
     }
@@ -489,25 +561,53 @@ extension Int {
     }
 
     fileprivate var durationText: String {
-        if self < 60 { return "\(self) min" }
-        if self % 60 == 0 { return "\(self / 60) hr" }
-        return "\(self / 60) hr \(self % 60) min"
+        if self < 60 {
+            return String(format: String(localized: "%lld min"), locale: .current, Int64(self))
+        }
+        if self % 60 == 0 {
+            return String(format: String(localized: "%lld hr"), locale: .current, Int64(self / 60))
+        }
+        return String(
+            format: String(localized: "%1$lld hr %2$lld min"),
+            locale: .current,
+            Int64(self / 60),
+            Int64(self % 60)
+        )
     }
 }
 
 extension Set where Element == ScheduleWeekday {
     fileprivate var repeatSummary: String {
-        if count == 7 { return "Every day" }
-        if self == Set([.monday, .tuesday, .wednesday, .thursday, .friday]) { return "Weekdays" }
-        if self == Set([.saturday, .sunday]) { return "Weekends" }
+        if count == 7 { return String(localized: "Every day") }
+        if self == Set([.monday, .tuesday, .wednesday, .thursday, .friday]) {
+            return String(localized: "Weekdays")
+        }
+        if self == Set([.saturday, .sunday]) { return String(localized: "Weekends") }
         return ScheduleWeekday.allCases.filter(contains).map(\.shortName).joined(separator: ", ")
     }
 }
 
 extension OperatingMode {
-    fileprivate var scheduleTitle: String { rawValue.capitalized }
+    fileprivate var scheduleTitle: String {
+        switch self {
+        case .auto: String(localized: "Auto")
+        case .cool: String(localized: "Cool")
+        case .dry: String(localized: "Dry")
+        case .fan: String(localized: "Fan")
+        case .heat: String(localized: "Heat")
+        }
+    }
 }
 
 extension FanSpeed {
-    fileprivate var scheduleTitle: String { rawValue.capitalized }
+    fileprivate var scheduleTitle: String {
+        switch self {
+        case .auto: String(localized: "Auto")
+        case .quiet: String(localized: "Quiet")
+        case .low: String(localized: "Low")
+        case .medium: String(localized: "Medium")
+        case .high: String(localized: "High")
+        case .turbo: String(localized: "Turbo")
+        }
+    }
 }

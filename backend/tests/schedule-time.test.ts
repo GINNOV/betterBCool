@@ -28,6 +28,12 @@ test("finds the next overnight step", () => {
   assert.equal(event?.executeAt, "2026-07-21T04:30:00.000Z");
 });
 
+test("a newly started runner can skip the current step", () => {
+  const event = plannedTransition(schedule, 1, new Date("2026-07-21T04:10:00Z"), "UTC", false);
+  assert.equal(event?.stepID, "resume");
+  assert.equal(event?.patch.powerEnabled, true);
+});
+
 test("honors local time across daylight-saving offsets", () => {
   const event = plannedTransition(schedule, 1, new Date("2026-07-20T18:00:00Z"), "Europe/Rome", false);
   assert.equal(event?.executeAt, "2026-07-20T20:00:00.000Z");

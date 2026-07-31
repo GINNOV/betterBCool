@@ -38,12 +38,19 @@ public protocol ClimateScheduleRemoteService: Sendable {
 public actor CloudClimateService: ClimateService, ClimateScheduleRemoteService {
     private let configuration: CloudClimateConfiguration
     private let session: URLSession
+    private let credentialRecovery: (@Sendable () throws -> OAuthTokens?)?
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
+    private var hasRecoveredMissingCredentials = false
 
-    public init(configuration: CloudClimateConfiguration, session: URLSession = .shared) {
+    public init(
+        configuration: CloudClimateConfiguration,
+        session: URLSession = .shared,
+        credentialRecovery: (@Sendable () throws -> OAuthTokens?)? = nil
+    ) {
         self.configuration = configuration
         self.session = session
+        self.credentialRecovery = credentialRecovery
         encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         decoder = JSONDecoder()
@@ -144,7 +151,8 @@ public actor CloudClimateService: ClimateService, ClimateScheduleRemoteService {
         path: String,
         method: String,
         encodedBody: Data?,
-        response: Response.Type
+        response: Response.Type,
+        allowsCredentialRecovery: Bool = true
     ) async throws -> Response {
         guard configuration.baseURL.scheme == "https" || configuration.baseURL.host == "localhost" else {
             throw CloudClimateError.insecureURL
@@ -165,6 +173,27 @@ public actor CloudClimateService: ClimateService, ClimateScheduleRemoteService {
         guard let http = urlResponse as? HTTPURLResponse else { throw CloudClimateError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else {
             let payload = try? decoder.decode(ErrorResponse.self, from: data)
+            if allowsCredentialRecovery,
+               http.statusCode == 502,
+               payload?.error == "Installation credentials are missing",
+               !hasRecoveredMissingCredentials,
+               let credentialRecovery,
+               let tokens = try credentialRecovery() {
+                hasRecoveredMissingCredentials = true
+                do {
+                    try await syncCredentials(tokens: tokens)
+                    return try await self.request(
+                        path: path,
+                        method: method,
+                        encodedBody: encodedBody,
+                        response: response,
+                        allowsCredentialRecovery: false
+                    )
+                } catch {
+                    hasRecoveredMissingCredentials = false
+                    throw error
+                }
+            }
             throw CloudClimateError.httpStatus(http.statusCode, payload?.error)
         }
         do { return try decoder.decode(Response.self, from: data) }
@@ -192,4 +221,9 @@ public enum CloudClimateError: Error, Equatable {
     case insecureURL
     case invalidResponse
     case httpStatus(Int, String?)
+
+    public var requiresBoschReauthentication: Bool {
+        guard case .httpStatus(502, let message) = self else { return false }
+        return message?.hasPrefix("Bosch token refresh failed (") == true
+    }
 }

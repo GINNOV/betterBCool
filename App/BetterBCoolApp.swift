@@ -19,15 +19,42 @@ struct BetterBCoolApp: App {
 
 private struct AppRootView: View {
     @ObservedObject var configuration: AppConfiguration
+    @StateObject private var sensorTag = SensorTagManager.shared
+    @StateObject private var signInCoordinator = SingleKeySignInCoordinator()
+    @State private var isShowingSettings = false
 
     var body: some View {
         ClimateDashboard(
             service: configuration.service,
-            remoteScheduler: configuration.remoteScheduler
-        ) {
-            SettingsView(configuration: configuration)
-        }
+            remoteScheduler: configuration.remoteScheduler,
+            sensorTag: sensorTag,
+            onSettingsTapped: { isShowingSettings = true },
+            onReconnectTapped: {
+                Task { await signInCoordinator.signIn(configuration: configuration) }
+            }
+        )
             .id(configuration.revision)
+            .sheet(isPresented: $isShowingSettings) {
+                NavigationStack {
+                    SettingsView(configuration: configuration, sensorTag: sensorTag)
+                }
+            }
+            .alert(
+                "Bosch sign-in failed",
+                isPresented: Binding(
+                    get: { signInCoordinator.errorMessage != nil },
+                    set: { if !$0 { signInCoordinator.clearError() } }
+                )
+            ) {
+                Button("OK") { signInCoordinator.clearError() }
+            } message: {
+                Text(signInCoordinator.errorMessage ?? "")
+            }
+            .task {
+                if ProcessInfo.processInfo.arguments.contains("-ui-testing-sensortag-preview") {
+                    sensorTag.loadPreviewReadings()
+                }
+            }
     }
 }
 
@@ -63,6 +90,27 @@ private final class AppConfiguration: ObservableObject {
 
     init() {
         if ProcessInfo.processInfo.arguments.contains("-ui-testing") {
+            let defaults = UserDefaults.standard
+            let scheduleStorageKey = "betterBCool.climateSchedules.v1"
+            defaults.removeObject(forKey: scheduleStorageKey)
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-with-active-power-on-schedule") {
+                let components = Calendar.current.dateComponents([.hour, .minute], from: Date())
+                let currentMinute = (components.hour ?? 0) * 60 + (components.minute ?? 0)
+                let schedule = ClimateSchedule(
+                    name: "Startup regression",
+                    startMinutes: max(0, currentMinute - 1),
+                    weekdays: Set(ScheduleWeekday.allCases),
+                    steps: [
+                        ClimateScheduleStep(
+                            name: "Turn on",
+                            patch: ClimatePatch(powerEnabled: true)
+                        )
+                    ]
+                )
+                if let data = try? JSONEncoder().encode([schedule]) {
+                    defaults.set(data, forKey: scheduleStorageKey)
+                }
+            }
             liveAccessEnabled = false
             gatewayID = ""
             isSignedIn = false
@@ -110,6 +158,7 @@ private final class AppConfiguration: ObservableObject {
                 service: "dev.betterbcool.app.self-test",
                 account: "temporary-oauth-tokens"
             )
+            let logger = Self.logger
             Task.detached {
                 do {
                     let expected = OAuthTokens(
@@ -120,9 +169,9 @@ private final class AppConfiguration: ObservableObject {
                     try store.saveTokens(expected)
                     guard try store.loadTokens() == expected else { throw KeychainError.selfTestMismatch }
                     try store.deleteTokens()
-                    Self.logger.notice("Keychain self-test passed")
+                    logger.notice("Keychain self-test passed")
                 } catch {
-                    Self.logger.error("Keychain self-test failed: \(String(reflecting: error), privacy: .public)")
+                    logger.error("Keychain self-test failed: \(String(reflecting: error), privacy: .public)")
                 }
             }
         }
@@ -131,10 +180,11 @@ private final class AppConfiguration: ObservableObject {
 
     var service: any ClimateService {
         guard liveAccessEnabled, isSignedIn, !gatewayID.isEmpty else {
-            return DemoClimateService()
+            let startsPoweredOff = ProcessInfo.processInfo.arguments.contains("-ui-testing-power-off")
+            return DemoClimateService(initialPowerEnabled: !startsPoweredOff)
         }
         if cloudEnabled, let cloudConfiguration {
-            return CloudClimateService(configuration: cloudConfiguration)
+            return recoveringCloudService(configuration: cloudConfiguration)
         }
         let provider = RefreshingAccessTokenProvider(client: oauthClient, store: tokenStore)
         switch backend {
@@ -147,7 +197,17 @@ private final class AppConfiguration: ObservableObject {
 
     var remoteScheduler: (any ClimateScheduleRemoteService)? {
         guard cloudEnabled, let cloudConfiguration else { return nil }
-        return CloudClimateService(configuration: cloudConfiguration)
+        return recoveringCloudService(configuration: cloudConfiguration)
+    }
+
+    private func recoveringCloudService(
+        configuration: CloudClimateConfiguration
+    ) -> CloudClimateService {
+        let tokenStore = self.tokenStore
+        return CloudClimateService(
+            configuration: configuration,
+            credentialRecovery: { try tokenStore.loadTokens() }
+        )
     }
 
     var cloudAPIKey: String { (try? cloudSecretStore.load()) ?? "" }
@@ -208,6 +268,7 @@ private final class AppConfiguration: ObservableObject {
                 baconRegion = device.region
                 isSignedIn = true
                 liveAccessEnabled = true
+                await restoreCloudCredentialsIfNeeded(tokens: tokens)
                 persistAndReload()
                 return
             }
@@ -235,7 +296,20 @@ private final class AppConfiguration: ObservableObject {
         backend = .pointT
         isSignedIn = true
         liveAccessEnabled = true
+        await restoreCloudCredentialsIfNeeded(tokens: tokens)
         persistAndReload()
+    }
+
+    private func restoreCloudCredentialsIfNeeded(tokens: OAuthTokens) async {
+        guard cloudEnabled, let cloudConfiguration else { return }
+        do {
+            try await CloudClimateService(configuration: cloudConfiguration).syncCredentials(tokens: tokens)
+        } catch {
+            Self.logger.error(
+                "Cloud credentials could not be restored after sign-in; using direct access: \(String(reflecting: error), privacy: .public)"
+            )
+            cloudEnabled = false
+        }
     }
 
     private func fetchGatewayDiscovery(accessToken: String) async throws -> PointTGatewayDiscovery {
@@ -337,6 +411,7 @@ private final class AppConfiguration: ObservableObject {
 
 private struct SettingsView: View {
     @ObservedObject var configuration: AppConfiguration
+    @ObservedObject var sensorTag: SensorTagManager
     @Environment(\.dismiss) private var dismiss
     @StateObject private var signInCoordinator = SingleKeySignInCoordinator()
     @State private var showingSignOutConfirmation = false
@@ -346,8 +421,9 @@ private struct SettingsView: View {
     @State private var cloudErrorMessage: String?
     @State private var isSaving = false
 
-    init(configuration: AppConfiguration) {
+    init(configuration: AppConfiguration, sensorTag: SensorTagManager) {
         self.configuration = configuration
+        self.sensorTag = sensorTag
         _cloudEnabled = State(initialValue: configuration.cloudEnabled)
         _cloudURL = State(initialValue: configuration.cloudURL)
         _cloudAPIKey = State(initialValue: configuration.cloudAPIKey)
@@ -390,8 +466,106 @@ private struct SettingsView: View {
                 }
 
                 Section("Access") {
-                    LabeledContent("Dashboard data", value: configuration.liveAccessEnabled ? "Live" : "Demo")
-                    LabeledContent("Controls", value: configuration.liveAccessEnabled ? "Read & write" : "Disabled")
+                    LabeledContent(
+                        "Dashboard data",
+                        value: configuration.liveAccessEnabled
+                            ? String(localized: "Live")
+                            : String(localized: "Demo")
+                    )
+                    LabeledContent(
+                        "Controls",
+                        value: configuration.liveAccessEnabled
+                            ? String(localized: "Read & write")
+                            : String(localized: "Disabled")
+                    )
+                }
+
+                Section {
+                    switch sensorTag.connectionState {
+                    case .connected:
+                        Label("Connected", systemImage: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                        if let device = sensorTag.connectedDevice {
+                            LabeledContent("Device", value: device.name)
+                        }
+                        if let temperature = sensorTag.readings.ambientTemperature {
+                            LabeledContent(
+                                "Temperature",
+                                value: temperature.formatted(
+                                    .number.precision(.fractionLength(1))
+                                ) + " °C"
+                            )
+                            .accessibilityIdentifier("settings.sensorTagTemperature")
+                        } else {
+                            HStack {
+                                Text("Waiting for temperature…")
+                                Spacer()
+                                ProgressView()
+                            }
+                        }
+                        Button("Disconnect", role: .destructive) { sensorTag.disconnect() }
+                            .accessibilityIdentifier("settings.sensorTagDisconnectButton")
+                    case .scanning:
+                        HStack {
+                            Label("Looking for SensorTag…", systemImage: "sensor.tag.radiowaves.forward.fill")
+                            Spacer()
+                            ProgressView()
+                        }
+                        Button("Stop scanning") { sensorTag.stopScanning() }
+                    case .connecting:
+                        HStack {
+                            Text("Connecting…")
+                            Spacer()
+                            ProgressView()
+                        }
+                        Button("Cancel") { sensorTag.cancelConnectionAttempt() }
+                    case .unavailable:
+                        Label(bluetoothUnavailableMessage, systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+#if targetEnvironment(simulator)
+                        Button("Find SensorTag", systemImage: "dot.radiowaves.left.and.right") {}
+                            .disabled(true)
+                            .accessibilityIdentifier("settings.sensorTagScanButton")
+                        Button("Preview SensorTag readings", systemImage: "play.circle") {
+                            sensorTag.loadPreviewReadings()
+                        }
+                        .accessibilityIdentifier("settings.sensorTagPreviewButton")
+#endif
+                    case .failed(let message):
+                        Label(message, systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                        Button("Scan again") { sensorTag.scan() }
+                    case .idle:
+                        Button("Find SensorTag", systemImage: "dot.radiowaves.left.and.right") {
+                            sensorTag.scan()
+                        }
+                        .accessibilityIdentifier("settings.sensorTagScanButton")
+                    }
+
+                    ForEach(sensorTag.discoveredDevices) { device in
+                        Button {
+                            sensorTag.connect(to: device)
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(device.name)
+                                    Text(device.id.uuidString)
+                                        .font(.caption2.monospaced())
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "antenna.radiowaves.left.and.right")
+                                Text("\(device.signalStrength) dBm")
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .disabled(sensorTag.connectionState == .connecting)
+                    }
+                } header: {
+                    Text("TI CC2541 SensorTag")
+                } footer: {
+                    Text(sensorTagFooter)
                 }
 
                 if configuration.isSignedIn {
@@ -429,6 +603,7 @@ private struct SettingsView: View {
             .accessibilityIdentifier("settings.screen")
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
@@ -443,7 +618,7 @@ private struct SettingsView: View {
                                 )
                                 dismiss()
                             } catch {
-                                cloudErrorMessage = "Cloud setup could not be verified. Check the URL and API key."
+                                cloudErrorMessage = String(localized: "Cloud setup could not be verified. Check the URL and API key.")
                                 isSaving = false
                             }
                         }
@@ -457,6 +632,23 @@ private struct SettingsView: View {
             } message: {
                 Text("Stored Bosch tokens and the discovered gateway will be removed from this device.")
             }
+            .onDisappear { sensorTag.stopScanning() }
+    }
+
+    private var sensorTagFooter: String {
+#if targetEnvironment(simulator)
+        String(localized: "The iOS Simulator cannot access physical Bluetooth devices. Preview sample readings here, or run the app on an iPhone to find your SensorTag.")
+#else
+        String(localized: "Press the SensorTag side button before scanning. Live temperature, humidity, pressure and motion readings appear on the dashboard.")
+#endif
+    }
+
+    private var bluetoothUnavailableMessage: String {
+#if targetEnvironment(simulator)
+        String(localized: "Bluetooth devices are unavailable in Simulator")
+#else
+        String(localized: "Bluetooth is unavailable")
+#endif
     }
 }
 
@@ -465,6 +657,10 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
     @Published private(set) var isWorking = false
     @Published private(set) var errorMessage: String?
     private var session: ASWebAuthenticationSession?
+
+    func clearError() {
+        errorMessage = nil
+    }
 
     func signIn(configuration: AppConfiguration) async {
         guard !isWorking else { return }
@@ -487,20 +683,30 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
         } catch ASWebAuthenticationSessionError.canceledLogin {
             errorMessage = nil
         } catch SignInError.noGatewayEntries {
-            errorMessage = "Bosch sign-in worked, but neither the classic nor newer HomeCom service returned an AC for this account."
+            errorMessage = String(localized: "Bosch sign-in worked, but neither the classic nor newer HomeCom service returned an AC for this account.")
         } catch SignInError.newHomeComDevices(let count) {
-            let noun = count == 1 ? "air conditioner" : "air conditioners"
-            errorMessage = "Found \(count) newer HomeCom \(noun). MQTT device-shadow control is the next integration step."
+            let format = count == 1
+                ? String(localized: "Found %lld newer HomeCom air conditioner. MQTT device-shadow control is the next integration step.")
+                : String(localized: "Found %lld newer HomeCom air conditioners. MQTT device-shadow control is the next integration step.")
+            errorMessage = String(format: format, locale: .current, Int64(count))
         } catch SignInError.newHomeComShadowRead(let fieldCount) {
-            errorMessage = "Connected to the newer HomeCom AC and read its live state (\(fieldCount) fields). Control mapping is the next step."
+            errorMessage = String(
+                format: String(localized: "Connected to the newer HomeCom AC and read its live state (%lld fields). Control mapping is the next step."),
+                locale: .current,
+                Int64(fieldCount)
+            )
         } catch SignInError.unrecognizedGatewayEntries(let count) {
-            let noun = count == 1 ? "entry" : "entries"
-            errorMessage = "Bosch returned \(count) gateway \(noun), but their format was not recognized."
+            let format = count == 1
+                ? String(localized: "Bosch returned %lld gateway entry, but its format was not recognized.")
+                : String(localized: "Bosch returned %lld gateway entries, but their format was not recognized.")
+            errorMessage = String(format: format, locale: .current, Int64(count))
         } catch SignInError.noCompatibleGateway(let count) {
-            let noun = count == 1 ? "entry" : "entries"
-            errorMessage = "Bosch returned \(count) gateway \(noun), but none exposed the classic air-conditioning resource."
+            let format = count == 1
+                ? String(localized: "Bosch returned %lld gateway entry, but it did not expose the classic air-conditioning resource.")
+                : String(localized: "Bosch returned %lld gateway entries, but none exposed the classic air-conditioning resource.")
+            errorMessage = String(format: format, locale: .current, Int64(count))
         } catch {
-            errorMessage = "Bosch sign-in could not be completed. Please try again."
+            errorMessage = String(localized: "Bosch sign-in could not be completed. Please try again.")
         }
     }
 
@@ -526,7 +732,13 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
 
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-        return scenes.flatMap(\.windows).first(where: \.isKeyWindow) ?? ASPresentationAnchor()
+        if let keyWindow = scenes.flatMap(\.windows).first(where: \.isKeyWindow) {
+            return keyWindow
+        }
+        guard let windowScene = scenes.first else {
+            preconditionFailure("Authentication requires a connected window scene")
+        }
+        return ASPresentationAnchor(windowScene: windowScene)
     }
 }
 

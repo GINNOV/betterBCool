@@ -10,6 +10,7 @@ This project is not affiliated with or endorsed by Bosch.
 
 - Native SwiftUI dashboard for iPhone and iPad
 - Power, room temperature, temperature setpoint, operating mode, and fan-state display
+- Direct Bluetooth connection to the CC2541 SensorTag for live ambient/object temperature, humidity, pressure, acceleration, gyroscope, and magnetometer readings
 - Parsing of the supplied HomeCom RAC base telemetry export
 - Typed climate state and capability models
 - Read-only historical/demo data service
@@ -46,6 +47,8 @@ The live adapters support power, mode, fan, setpoint, and swing writes followed 
 4. Press Run.
 
 No Bosch credentials are required for the bundled read-only demo.
+
+To use a TI CC2541 SensorTag, open **Settings**, press the SensorTag's side button so it advertises, then choose **Find SensorTag**. The app remembers the selected tag and reconnects when iOS can retrieve it. While connected, the SensorTag ambient temperature becomes the dashboard room reading and all six sensor streams appear in a separate card.
 
 ## Run the tests
 

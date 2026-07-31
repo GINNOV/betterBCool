@@ -12,7 +12,9 @@ export async function climateRoutineWorkflow(
   "use workflow";
 
   let cursor = new Date();
-  let includeCurrent = true;
+  // A workflow may be created while its routine is already in progress. Starting with
+  // the next boundary avoids turning on a unit merely because settings were synchronized.
+  let includeCurrent = false;
   while (true) {
     const transition = await findTransition(installationID, scheduleID, revision, cursor, includeCurrent);
     if (!transition) return { status: "superseded" };
