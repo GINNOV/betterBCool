@@ -6,10 +6,6 @@ xcuserdata/
 
 # Local captures and secrets should be explicitly reviewed before inclusion.
 Captures/
-!Captures/
-Captures/*
-!Captures/2026-08-03-WT701/
-!Captures/2026-08-03-WT701/**
 Logs/
 device.txt
 .env
