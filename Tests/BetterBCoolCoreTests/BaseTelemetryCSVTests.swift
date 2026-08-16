@@ -65,7 +65,13 @@ final class DemoClimateServiceTests: XCTestCase {
         let device = try await service.devices().first!
 
         let updated = try await service.apply(
-            .init(powerEnabled: false, operatingMode: .dry, temperatureSetpoint: 24.5),
+            .init(
+                powerEnabled: false,
+                operatingMode: .dry,
+                temperatureSetpoint: 24.5,
+                ecoEnabled: true,
+                sleepEnabled: true
+            ),
             to: device.id
         )
 
@@ -73,5 +79,7 @@ final class DemoClimateServiceTests: XCTestCase {
         XCTAssertEqual(updated.operatingMode, .dry)
         XCTAssertEqual(updated.temperatureSetpoint, 24.5)
         XCTAssertEqual(updated.roomTemperature, 28.5)
+        XCTAssertTrue(updated.ecoEnabled)
+        XCTAssertTrue(updated.sleepEnabled)
     }
 }

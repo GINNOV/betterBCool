@@ -16,6 +16,7 @@ final class ScheduleController: ObservableObject {
     private let storageKey = "betterBCool.climateSchedules.v1"
     private var runner: Task<Void, Never>?
     private var lastAppliedEventID: String?
+    private var scheduleChangeObserver: NSObjectProtocol?
 
     init(
         service: any ClimateService,
@@ -31,7 +32,22 @@ final class ScheduleController: ObservableObject {
         } else {
             schedules = []
         }
+        scheduleChangeObserver = NotificationCenter.default.addObserver(
+            forName: .betterBCoolSchedulesDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.reloadFromStorage()
+            }
+        }
         refreshNextEvent()
+    }
+
+    deinit {
+        if let scheduleChangeObserver {
+            NotificationCenter.default.removeObserver(scheduleChangeObserver)
+        }
     }
 
     var enabledCount: Int { schedules.filter(\.isEnabled).count }
@@ -85,6 +101,17 @@ final class ScheduleController: ObservableObject {
         if let data = try? JSONEncoder().encode(schedules) {
             defaults.set(data, forKey: storageKey)
         }
+        NotificationCenter.default.post(name: .betterBCoolSchedulesDidChange, object: nil)
+        lastAppliedEventID = nil
+        refreshNextEvent()
+        if remoteService == nil { restartRunner() }
+    }
+
+    private func reloadFromStorage() {
+        guard let data = defaults.data(forKey: storageKey),
+              let decoded = try? JSONDecoder().decode([ClimateSchedule].self, from: data),
+              decoded != schedules else { return }
+        schedules = decoded.sorted { $0.startMinutes < $1.startMinutes }
         lastAppliedEventID = nil
         refreshNextEvent()
         if remoteService == nil { restartRunner() }
@@ -231,7 +258,11 @@ struct ScheduleListView: View {
         }
         .sheet(item: $draft) { schedule in
             NavigationStack {
-                ScheduleEditor(schedule: schedule) { controller.save($0) }
+                ScheduleEditor(
+                    schedule: schedule,
+                    onSave: { controller.save($0) },
+                    onCancel: { draft = nil }
+                )
             }
         }
     }
@@ -290,9 +321,9 @@ private struct ScheduleRow: View {
 }
 
 private struct ScheduleEditor: View {
-    @Environment(\.dismiss) private var dismiss
     @State var schedule: ClimateSchedule
     let onSave: (ClimateSchedule) -> Void
+    let onCancel: () -> Void
     @State private var editingStep: ClimateScheduleStep?
 
     var body: some View {
@@ -337,7 +368,7 @@ private struct ScheduleEditor: View {
         }
         .navigationTitle(schedule.name)
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            ToolbarItem(placement: .cancellationAction) { Button("Cancel") { onCancel() } }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
                     var savedSchedule = schedule
@@ -345,8 +376,9 @@ private struct ScheduleEditor: View {
                         savedSchedule.steps[last].durationMinutes = nil
                     }
                     onSave(savedSchedule)
-                    dismiss()
+                    onCancel()
                 }
+                .accessibilityIdentifier("schedule.saveButton")
                 .disabled(schedule.name.trimmingCharacters(in: .whitespaces).isEmpty || schedule.weekdays.isEmpty || schedule.steps.isEmpty)
             }
         }
@@ -354,17 +386,19 @@ private struct ScheduleEditor: View {
             NavigationStack {
                 ScheduleStepEditor(
                     step: step,
-                    isFinalStep: schedule.steps.last?.id == step.id || !schedule.steps.contains(where: { $0.id == step.id })
-                ) { updated in
-                    if let index = schedule.steps.firstIndex(where: { $0.id == updated.id }) {
-                        schedule.steps[index] = updated
-                    } else {
-                        if let last = schedule.steps.indices.last, schedule.steps[last].durationMinutes == nil {
-                            schedule.steps[last].durationMinutes = 60
+                    isFinalStep: schedule.steps.last?.id == step.id || !schedule.steps.contains(where: { $0.id == step.id }),
+                    onSave: { updated in
+                        if let index = schedule.steps.firstIndex(where: { $0.id == updated.id }) {
+                            schedule.steps[index] = updated
+                        } else {
+                            if let last = schedule.steps.indices.last, schedule.steps[last].durationMinutes == nil {
+                                schedule.steps[last].durationMinutes = 60
+                            }
+                            schedule.steps.append(updated)
                         }
-                        schedule.steps.append(updated)
-                    }
-                }
+                    },
+                    onCancel: { editingStep = nil }
+                )
             }
         }
     }
@@ -445,10 +479,10 @@ private struct TimelineStepRow: View {
 }
 
 private struct ScheduleStepEditor: View {
-    @Environment(\.dismiss) private var dismiss
     @State var step: ClimateScheduleStep
     let isFinalStep: Bool
     let onSave: (ClimateScheduleStep) -> Void
+    let onCancel: () -> Void
 
     var body: some View {
         Form {
@@ -458,7 +492,9 @@ private struct ScheduleStepEditor: View {
                     Text("On").tag(true)
                     Text("Off").tag(false)
                 }
+#if os(iOS)
                 .pickerStyle(.segmented)
+#endif
             }
 
             if step.patch.powerEnabled != false {
@@ -496,14 +532,15 @@ private struct ScheduleStepEditor: View {
         }
         .navigationTitle(step.name)
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            ToolbarItem(placement: .cancellationAction) { Button("Cancel") { onCancel() } }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Done") {
                     if isFinalStep { step.durationMinutes = nil }
                     onSave(step)
-                    dismiss()
+                    onCancel()
                 }
-                    .disabled(step.name.trimmingCharacters(in: .whitespaces).isEmpty)
+                .accessibilityIdentifier("schedule.stepDoneButton")
+                .disabled(step.name.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
     }

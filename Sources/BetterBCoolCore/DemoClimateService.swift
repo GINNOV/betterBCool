@@ -35,6 +35,8 @@ public actor DemoClimateService: ClimateService {
         if let value = patch.operatingMode { currentState.operatingMode = value }
         if let value = patch.fanSpeed { currentState.fanSpeed = value }
         if let value = patch.temperatureSetpoint { currentState.temperatureSetpoint = value }
+        if let value = patch.ecoEnabled { currentState.ecoEnabled = value }
+        if let value = patch.sleepEnabled { currentState.sleepEnabled = value }
         if let value = patch.horizontalSwingEnabled { currentState.horizontalSwingEnabled = value }
         if let value = patch.verticalSwingEnabled { currentState.verticalSwingEnabled = value }
         currentState.timestamp = Date()

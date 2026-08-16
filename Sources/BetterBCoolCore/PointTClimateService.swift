@@ -86,6 +86,12 @@ public actor PointTClimateService: ClimateService {
         if let temperature = patch.temperatureSetpoint {
             try await set(["airConditioning", "temperatureSetpoint"], .number(temperature))
         }
+        if let enabled = patch.ecoEnabled {
+            try await set(["airConditioning", "ecoMode"], .string(enabled ? "on" : "off"))
+        }
+        if let enabled = patch.sleepEnabled {
+            try await set(["airConditioning", "sleepMode"], .string(enabled ? "on" : "off"))
+        }
         if let enabled = patch.verticalSwingEnabled {
             try await set(["airConditioning", "airFlowVertical"], .string(enabled ? "on" : "off"))
         }

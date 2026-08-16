@@ -18,6 +18,8 @@ export const patchSchema = z.object({
   operatingMode: z.enum(["auto", "cool", "dry", "fan", "heat"]).optional(),
   fanSpeed: z.enum(["auto", "quiet", "low", "medium", "high", "turbo"]).optional(),
   temperatureSetpoint: z.number().finite().optional(),
+  ecoEnabled: z.boolean().optional(),
+  sleepEnabled: z.boolean().optional(),
   horizontalSwingEnabled: z.boolean().optional(),
   verticalSwingEnabled: z.boolean().optional(),
 });

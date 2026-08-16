@@ -32,6 +32,8 @@ public struct ClimatePatch: Codable, Equatable, Sendable {
     public var operatingMode: OperatingMode?
     public var fanSpeed: FanSpeed?
     public var temperatureSetpoint: Double?
+    public var ecoEnabled: Bool?
+    public var sleepEnabled: Bool?
     public var horizontalSwingEnabled: Bool?
     public var verticalSwingEnabled: Bool?
 
@@ -40,6 +42,8 @@ public struct ClimatePatch: Codable, Equatable, Sendable {
         operatingMode: OperatingMode? = nil,
         fanSpeed: FanSpeed? = nil,
         temperatureSetpoint: Double? = nil,
+        ecoEnabled: Bool? = nil,
+        sleepEnabled: Bool? = nil,
         horizontalSwingEnabled: Bool? = nil,
         verticalSwingEnabled: Bool? = nil
     ) {
@@ -47,6 +51,8 @@ public struct ClimatePatch: Codable, Equatable, Sendable {
         self.operatingMode = operatingMode
         self.fanSpeed = fanSpeed
         self.temperatureSetpoint = temperatureSetpoint
+        self.ecoEnabled = ecoEnabled
+        self.sleepEnabled = sleepEnabled
         self.horizontalSwingEnabled = horizontalSwingEnabled
         self.verticalSwingEnabled = verticalSwingEnabled
     }

@@ -19,24 +19,41 @@ struct BetterBCoolApp: App {
 
 private struct AppRootView: View {
     @ObservedObject var configuration: AppConfiguration
-    @StateObject private var sensorTag = SensorTagManager.shared
+    @StateObject private var bodyTemperature = BodyTemperatureManager.shared
     @StateObject private var signInCoordinator = SingleKeySignInCoordinator()
+    @StateObject private var watchSession: WatchSessionManager
     @State private var isShowingSettings = false
 
+    init(configuration: AppConfiguration) {
+        self.configuration = configuration
+        _watchSession = StateObject(wrappedValue: WatchSessionManager(configuration: configuration))
+    }
+
     var body: some View {
-        ClimateDashboard(
-            service: configuration.service,
-            remoteScheduler: configuration.remoteScheduler,
-            sensorTag: sensorTag,
-            onSettingsTapped: { isShowingSettings = true },
-            onReconnectTapped: {
-                Task { await signInCoordinator.signIn(configuration: configuration) }
-            }
-        )
-            .id(configuration.revision)
-            .sheet(isPresented: $isShowingSettings) {
+        ZStack {
+            ClimateDashboard(
+                service: configuration.service,
+                remoteScheduler: configuration.remoteScheduler,
+                bodyTemperature: bodyTemperature,
+                onSettingsTapped: { isShowingSettings = true },
+                onReconnectTapped: {
+                    Task { await signInCoordinator.signIn(configuration: configuration) }
+                }
+            )
+                .id(configuration.revision)
+        }
+            .sheet(isPresented: $isShowingSettings, onDismiss: {
+                Task { @MainActor in
+                    await Task.yield()
+                    configuration.reloadDashboard()
+                }
+            }) {
                 NavigationStack {
-                    SettingsView(configuration: configuration, sensorTag: sensorTag)
+                    SettingsView(
+                        configuration: configuration,
+                        bodyTemperature: bodyTemperature,
+                        onFinished: { isShowingSettings = false }
+                    )
                 }
             }
             .alert(
@@ -51,18 +68,34 @@ private struct AppRootView: View {
                 Text(signInCoordinator.errorMessage ?? "")
             }
             .task {
-                if ProcessInfo.processInfo.arguments.contains("-ui-testing-sensortag-preview") {
-                    sensorTag.loadPreviewReadings()
+                if ProcessInfo.processInfo.arguments.contains("-ui-testing-wrist-temperature-preview") {
+                    bodyTemperature.loadPreviewSnapshot()
+                } else {
+                    bodyTemperature.startMonitoring()
+                    await bodyTemperature.refresh()
                 }
             }
+            .onChange(of: bodyTemperature.snapshot?.sampleID, initial: true) { _, _ in
+                evaluateCurrentBodyTemperature()
+            }
+            .onChange(of: configuration.bodyTemperatureAutomationEnabled) { _, _ in
+                evaluateCurrentBodyTemperature()
+            }
+            .onChange(of: configuration.bodyTemperatureDeltaThreshold) { _, _ in
+                evaluateCurrentBodyTemperature()
+            }
+    }
+
+    private func evaluateCurrentBodyTemperature() {
+        guard let snapshot = bodyTemperature.snapshot else { return }
+        Task { await configuration.evaluateBodyTemperatureAutomation(snapshot) }
     }
 }
 
 @MainActor
-private final class AppConfiguration: ObservableObject {
+final class AppConfiguration: ObservableObject {
     private static let logger = Logger(subsystem: "dev.betterbcool.app", category: "BoschDiscovery")
 
-    @Published var liveAccessEnabled: Bool
     @Published private(set) var gatewayID: String
     @Published private(set) var isSignedIn: Bool
     @Published private(set) var revision = UUID()
@@ -70,20 +103,30 @@ private final class AppConfiguration: ObservableObject {
     @Published private(set) var baconRegion: BaconRegion
     @Published private(set) var cloudEnabled: Bool
     @Published private(set) var cloudURL: String
+    @Published var bodyTemperatureAutomationEnabled: Bool {
+        didSet { UserDefaults.standard.set(bodyTemperatureAutomationEnabled, forKey: Key.bodyTemperatureAutomation) }
+    }
+    @Published var bodyTemperatureDeltaThreshold: Double {
+        didSet { UserDefaults.standard.set(bodyTemperatureDeltaThreshold, forKey: Key.bodyTemperatureThreshold) }
+    }
+    @Published private(set) var bodyTemperatureAutomationMessage: String?
 
-    let oauthClient = SingleKeyOAuthClient()
-    let tokenStore = KeychainOAuthTokenStore()
-    let cloudSecretStore = KeychainStringStore(account: "vercel-cloud-api-key")
+    fileprivate let oauthClient = SingleKeyOAuthClient()
+    fileprivate let tokenStore = KeychainOAuthTokenStore()
+    fileprivate let cloudSecretStore = KeychainStringStore(account: "vercel-cloud-api-key")
     let installationID: String
 
     private enum Key {
-        static let liveAccess = "liveAccessEnabled"
         static let gatewayID = "gatewayID"
         static let backend = "backend"
         static let baconRegion = "baconRegion"
         static let cloudEnabled = "cloudEnabled"
         static let cloudURL = "cloudURL"
         static let installationID = "cloudInstallationID"
+        static let bodyTemperatureAutomation = "bodyTemperatureAutomationEnabled"
+        static let bodyTemperatureThreshold = "bodyTemperatureDeltaThreshold"
+        static let bodyTemperatureLastSample = "bodyTemperatureLastActivatedSample"
+        static let scheduleStorage = "betterBCool.climateSchedules.v1"
     }
 
     enum Backend: String { case pointT, bacon }
@@ -91,8 +134,7 @@ private final class AppConfiguration: ObservableObject {
     init() {
         if ProcessInfo.processInfo.arguments.contains("-ui-testing") {
             let defaults = UserDefaults.standard
-            let scheduleStorageKey = "betterBCool.climateSchedules.v1"
-            defaults.removeObject(forKey: scheduleStorageKey)
+            defaults.removeObject(forKey: Key.scheduleStorage)
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-with-active-power-on-schedule") {
                 let components = Calendar.current.dateComponents([.hour, .minute], from: Date())
                 let currentMinute = (components.hour ?? 0) * 60 + (components.minute ?? 0)
@@ -108,19 +150,20 @@ private final class AppConfiguration: ObservableObject {
                     ]
                 )
                 if let data = try? JSONEncoder().encode([schedule]) {
-                    defaults.set(data, forKey: scheduleStorageKey)
+                    defaults.set(data, forKey: Key.scheduleStorage)
                 }
             }
-            liveAccessEnabled = false
             gatewayID = ""
             isSignedIn = false
             backend = .pointT
             baconRegion = .europe
             cloudEnabled = false
             cloudURL = ""
+            bodyTemperatureAutomationEnabled = false
+            bodyTemperatureDeltaThreshold = 0.5
+            bodyTemperatureAutomationMessage = nil
             installationID = "ui-testing-installation"
         } else {
-            liveAccessEnabled = UserDefaults.standard.bool(forKey: Key.liveAccess)
             let startupGatewayID = UserDefaults.standard.string(forKey: Key.gatewayID) ?? ""
             gatewayID = startupGatewayID
             let storedBackend = UserDefaults.standard.string(forKey: Key.backend)
@@ -130,6 +173,10 @@ private final class AppConfiguration: ObservableObject {
             cloudEnabled = UserDefaults.standard.bool(forKey: Key.cloudEnabled)
             cloudURL = UserDefaults.standard.string(forKey: Key.cloudURL)
                 ?? "https://betterbcool-cloud.vercel.app"
+            bodyTemperatureAutomationEnabled = UserDefaults.standard.bool(forKey: Key.bodyTemperatureAutomation)
+            let savedTemperatureThreshold = UserDefaults.standard.double(forKey: Key.bodyTemperatureThreshold)
+            bodyTemperatureDeltaThreshold = savedTemperatureThreshold > 0 ? savedTemperatureThreshold : 0.5
+            bodyTemperatureAutomationMessage = nil
             let storedInstallationID = UserDefaults.standard.string(forKey: Key.installationID)
             installationID = storedInstallationID ?? UUID().uuidString
             if storedInstallationID == nil {
@@ -146,10 +193,8 @@ private final class AppConfiguration: ObservableObject {
             if storedBackend == nil && !startupGatewayID.isEmpty {
                 gatewayID = ""
                 UserDefaults.standard.removeObject(forKey: Key.gatewayID)
-                UserDefaults.standard.set(false, forKey: Key.liveAccess)
             }
         }
-        if !isSignedIn { liveAccessEnabled = false }
         if !isSignedIn || cloudConfiguration == nil { cloudEnabled = false }
 
         #if DEBUG
@@ -179,7 +224,7 @@ private final class AppConfiguration: ObservableObject {
     }
 
     var service: any ClimateService {
-        guard liveAccessEnabled, isSignedIn, !gatewayID.isEmpty else {
+        guard isSignedIn, !gatewayID.isEmpty else {
             let startsPoweredOff = ProcessInfo.processInfo.arguments.contains("-ui-testing-power-off")
             return DemoClimateService(initialPowerEnabled: !startsPoweredOff)
         }
@@ -198,6 +243,124 @@ private final class AppConfiguration: ObservableObject {
     var remoteScheduler: (any ClimateScheduleRemoteService)? {
         guard cloudEnabled, let cloudConfiguration else { return nil }
         return recoveringCloudService(configuration: cloudConfiguration)
+    }
+
+    func handleWatchRequest(_ request: WatchRequest) async -> WatchSnapshot {
+        guard isSignedIn else {
+            return watchSnapshot(errorMessage: String(localized: "Open betterBCool on your iPhone to connect Bosch."))
+        }
+
+        let climateService = service
+        do {
+            switch request.action {
+            case .refresh:
+                break
+            case .togglePower:
+                guard let device = try await climateService.devices().first else {
+                    throw ClimateServiceError.deviceNotFound
+                }
+                let state = try await climateService.state(for: device.id)
+                _ = try await climateService.apply(
+                    ClimatePatch(powerEnabled: !state.powerEnabled),
+                    to: device.id
+                )
+            case .setTemperature:
+                guard let temperature = request.temperature, temperature.isFinite,
+                      let device = try await climateService.devices().first else {
+                    throw ClimateServiceError.unsupportedValue
+                }
+                let capabilities = try await climateService.capabilities(for: device.id)
+                try capabilities.validate(ClimatePatch(temperatureSetpoint: temperature))
+                _ = try await climateService.apply(
+                    ClimatePatch(temperatureSetpoint: temperature),
+                    to: device.id
+                )
+            case .setSchedulesEnabled:
+                guard let enabled = request.schedulesEnabled else {
+                    throw ClimateServiceError.unsupportedValue
+                }
+                try await setAllSchedulesEnabled(enabled)
+            }
+            return await watchSnapshot(using: climateService)
+        } catch let error as CloudClimateError where error.requiresBoschReauthentication {
+            return watchSnapshot(errorMessage: String(localized: "Reconnect Bosch on your iPhone to continue."))
+        } catch ClimateServiceError.unsupportedValue {
+            return watchSnapshot(errorMessage: String(localized: "That setting is not supported by this air conditioner."))
+        } catch {
+            return watchSnapshot(errorMessage: String(localized: "The iPhone could not reach the air conditioner."))
+        }
+    }
+
+    func watchSnapshot() async -> WatchSnapshot {
+        guard isSignedIn else {
+            return watchSnapshot(errorMessage: String(localized: "Open betterBCool on your iPhone to connect Bosch."))
+        }
+        return await watchSnapshot(using: service)
+    }
+
+    private func watchSnapshot(errorMessage: String) -> WatchSnapshot {
+        let schedules = storedSchedules()
+        return WatchSnapshot(
+            schedules: schedules.map(WatchScheduleSummary.init),
+            nextScheduleDate: ClimateScheduleTimeline.nextEvent(in: schedules, after: Date())?.date,
+            errorMessage: errorMessage
+        )
+    }
+
+    private func watchSnapshot(using climateService: any ClimateService) async -> WatchSnapshot {
+        let schedules = storedSchedules()
+        do {
+            guard let device = try await climateService.devices().first else {
+                return WatchSnapshot(
+                    schedules: schedules.map(WatchScheduleSummary.init),
+                    nextScheduleDate: ClimateScheduleTimeline.nextEvent(in: schedules, after: Date())?.date,
+                    errorMessage: String(localized: "No air conditioner is available.")
+                )
+            }
+            async let fetchedCapabilities = climateService.capabilities(for: device.id)
+            async let fetchedState = climateService.state(for: device.id)
+            let capabilities = try await fetchedCapabilities
+            let state = try await fetchedState
+            return WatchSnapshot(
+                deviceName: device.name,
+                state: state,
+                canWrite: capabilities.canWrite,
+                minimumSetpoint: capabilities.minimumSetpoint,
+                maximumSetpoint: capabilities.maximumSetpoint,
+                setpointStep: capabilities.setpointStep,
+                schedules: schedules.map(WatchScheduleSummary.init),
+                nextScheduleDate: ClimateScheduleTimeline.nextEvent(in: schedules, after: Date())?.date
+            )
+        } catch let error as CloudClimateError where error.requiresBoschReauthentication {
+            return watchSnapshot(errorMessage: String(localized: "Reconnect Bosch on your iPhone to continue."))
+        } catch {
+            return watchSnapshot(errorMessage: String(localized: "The iPhone could not reach the air conditioner."))
+        }
+    }
+
+    private func storedSchedules() -> [ClimateSchedule] {
+        guard let data = UserDefaults.standard.data(forKey: Key.scheduleStorage),
+              let schedules = try? JSONDecoder().decode([ClimateSchedule].self, from: data) else {
+            return []
+        }
+        return schedules.sorted { $0.startMinutes < $1.startMinutes }
+    }
+
+    private func setAllSchedulesEnabled(_ enabled: Bool) async throws {
+        var schedules = storedSchedules()
+        guard !schedules.isEmpty else { return }
+        for index in schedules.indices {
+            schedules[index].isEnabled = enabled
+        }
+        let data = try JSONEncoder().encode(schedules)
+        UserDefaults.standard.set(data, forKey: Key.scheduleStorage)
+        NotificationCenter.default.post(name: .betterBCoolSchedulesDidChange, object: nil)
+
+        if let remoteScheduler {
+            for schedule in schedules {
+                try await remoteScheduler.sync(schedule: schedule, timezone: TimeZone.current.identifier)
+            }
+        }
     }
 
     private func recoveringCloudService(
@@ -224,7 +387,7 @@ private final class AppConfiguration: ObservableObject {
         )
     }
 
-    func completeSignIn(tokens: OAuthTokens) async throws {
+    func completeSignIn(tokens: OAuthTokens, reloadDashboard: Bool = true) async throws {
         Self.logger.info("Bosch token exchange succeeded; starting PointT gateway discovery")
         // Discovery runs immediately after the token exchange, so use that fresh token
         // directly instead of making a redundant Keychain read through the refresh actor.
@@ -267,9 +430,8 @@ private final class AppConfiguration: ObservableObject {
                 backend = .bacon
                 baconRegion = device.region
                 isSignedIn = true
-                liveAccessEnabled = true
                 await restoreCloudCredentialsIfNeeded(tokens: tokens)
-                persistAndReload()
+                persistConfiguration(reloadDashboard: reloadDashboard)
                 return
             }
             Self.logger.error("Discovery failed: PointT and Bacon returned zero device entries")
@@ -295,9 +457,8 @@ private final class AppConfiguration: ObservableObject {
         gatewayID = gateway.id
         backend = .pointT
         isSignedIn = true
-        liveAccessEnabled = true
         await restoreCloudCredentialsIfNeeded(tokens: tokens)
-        persistAndReload()
+        persistConfiguration(reloadDashboard: reloadDashboard)
     }
 
     private func restoreCloudCredentialsIfNeeded(tokens: OAuthTokens) async {
@@ -355,8 +516,12 @@ private final class AppConfiguration: ObservableObject {
         return []
     }
 
-    func saveAccessMode(cloudEnabled: Bool, cloudURL: String, cloudAPIKey: String) async throws {
-        if !isSignedIn { liveAccessEnabled = false }
+    func saveAccessMode(
+        cloudEnabled: Bool,
+        cloudURL: String,
+        cloudAPIKey: String,
+        reloadDashboard: Bool = false
+    ) async throws {
         let trimmedURL = cloudURL.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedKey = cloudAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
         if cloudEnabled {
@@ -379,40 +544,93 @@ private final class AppConfiguration: ObservableObject {
         }
         self.cloudEnabled = cloudEnabled
         self.cloudURL = trimmedURL
-        persistAndReload()
+        persistConfiguration(reloadDashboard: reloadDashboard)
     }
 
-    func signOut() {
+    func signOut(reloadDashboard: Bool = false) {
         if let cloudConfiguration {
             Task { try? await CloudClimateService(configuration: cloudConfiguration).removeCredentials() }
         }
         try? tokenStore.deleteTokens()
         try? cloudSecretStore.delete()
         isSignedIn = false
-        liveAccessEnabled = false
         gatewayID = ""
         backend = .pointT
         baconRegion = .europe
         cloudEnabled = false
         cloudURL = ""
-        persistAndReload()
+        persistConfiguration(reloadDashboard: reloadDashboard)
     }
 
-    private func persistAndReload() {
-        UserDefaults.standard.set(liveAccessEnabled, forKey: Key.liveAccess)
+    func evaluateBodyTemperatureAutomation(_ snapshot: BodyTemperatureSnapshot) async {
+        guard bodyTemperatureAutomationEnabled else {
+            bodyTemperatureAutomationMessage = nil
+            return
+        }
+        guard snapshot.shouldActivateCooling(threshold: bodyTemperatureDeltaThreshold) else {
+            if !snapshot.isFresh() {
+                bodyTemperatureAutomationMessage = String(localized: "Latest wrist temperature is too old for automation.")
+            } else if snapshot.baselineSampleCount < 3 {
+                bodyTemperatureAutomationMessage = String(localized: "At least three prior nights are needed for a personal baseline.")
+            } else {
+                bodyTemperatureAutomationMessage = String(localized: "Wrist temperature is below the cooling trigger.")
+            }
+            return
+        }
+        guard isSignedIn else {
+            bodyTemperatureAutomationMessage = String(localized: "Live Bosch access is required for automatic cooling.")
+            return
+        }
+        guard UserDefaults.standard.string(forKey: Key.bodyTemperatureLastSample) != snapshot.sampleID.uuidString else {
+            return
+        }
+
+        do {
+            let climateService = service
+            guard let device = try await climateService.devices().first else {
+                bodyTemperatureAutomationMessage = String(localized: "No air conditioner is available for temperature automation.")
+                return
+            }
+            let capabilities = try await climateService.capabilities(for: device.id)
+            guard capabilities.canWrite else {
+                bodyTemperatureAutomationMessage = String(localized: "The air conditioner is read-only.")
+                return
+            }
+            let state = try await climateService.state(for: device.id)
+            if !state.powerEnabled {
+                let patch = ClimatePatch(
+                    powerEnabled: true,
+                    operatingMode: capabilities.operatingModes.contains(.cool) ? .cool : nil
+                )
+                _ = try await climateService.apply(patch, to: device.id)
+            }
+            UserDefaults.standard.set(snapshot.sampleID.uuidString, forKey: Key.bodyTemperatureLastSample)
+            bodyTemperatureAutomationMessage = state.powerEnabled
+                ? String(localized: "Cooling was already active when the elevated temperature arrived.")
+                : String(localized: "Cooling activated from elevated Apple Watch wrist temperature.")
+        } catch {
+            bodyTemperatureAutomationMessage = String(localized: "Automatic cooling could not reach the air conditioner.")
+        }
+    }
+
+    func reloadDashboard() {
+        revision = UUID()
+    }
+
+    private func persistConfiguration(reloadDashboard shouldReloadDashboard: Bool) {
         UserDefaults.standard.set(gatewayID, forKey: Key.gatewayID)
         UserDefaults.standard.set(backend.rawValue, forKey: Key.backend)
         UserDefaults.standard.set(baconRegion.rawValue, forKey: Key.baconRegion)
         UserDefaults.standard.set(cloudEnabled, forKey: Key.cloudEnabled)
         UserDefaults.standard.set(cloudURL, forKey: Key.cloudURL)
-        revision = UUID()
+        if shouldReloadDashboard { reloadDashboard() }
     }
 }
 
 private struct SettingsView: View {
     @ObservedObject var configuration: AppConfiguration
-    @ObservedObject var sensorTag: SensorTagManager
-    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var bodyTemperature: BodyTemperatureManager
+    let onFinished: () -> Void
     @StateObject private var signInCoordinator = SingleKeySignInCoordinator()
     @State private var showingSignOutConfirmation = false
     @State private var cloudEnabled: Bool
@@ -421,9 +639,14 @@ private struct SettingsView: View {
     @State private var cloudErrorMessage: String?
     @State private var isSaving = false
 
-    init(configuration: AppConfiguration, sensorTag: SensorTagManager) {
+    init(
+        configuration: AppConfiguration,
+        bodyTemperature: BodyTemperatureManager,
+        onFinished: @escaping () -> Void
+    ) {
         self.configuration = configuration
-        self.sensorTag = sensorTag
+        self.bodyTemperature = bodyTemperature
+        self.onFinished = onFinished
         _cloudEnabled = State(initialValue: configuration.cloudEnabled)
         _cloudURL = State(initialValue: configuration.cloudURL)
         _cloudAPIKey = State(initialValue: configuration.cloudAPIKey)
@@ -438,10 +661,11 @@ private struct SettingsView: View {
                         LabeledContent("Gateway", value: configuration.gatewayID)
                             .textSelection(.enabled)
                         LabeledContent("Transport", value: configuration.backend == .bacon ? "HomeCom MQTT" : "PointT REST")
-                        Toggle("Live read/write access", isOn: $configuration.liveAccessEnabled)
                     } else {
                         Button {
-                            Task { await signInCoordinator.signIn(configuration: configuration) }
+                            Task {
+                                await signInCoordinator.signIn(configuration: configuration, reloadDashboard: false)
+                            }
                         } label: {
                             HStack {
                                 Label("Sign in with Bosch", systemImage: "person.crop.circle.badge.checkmark")
@@ -455,7 +679,9 @@ private struct SettingsView: View {
                 } header: {
                     Text("Bosch account")
                 } footer: {
-                    Text("Sign-in opens Bosch SingleKey ID. betterBCool never sees or stores your password.")
+                    if !configuration.isSignedIn {
+                        Text("Sign-in opens Bosch SingleKey ID. betterBCool never sees or stores your password.")
+                    }
                 }
 
                 if let message = signInCoordinator.errorMessage {
@@ -465,112 +691,30 @@ private struct SettingsView: View {
                     }
                 }
 
-                Section("Access") {
-                    LabeledContent(
-                        "Dashboard data",
-                        value: configuration.liveAccessEnabled
-                            ? String(localized: "Live")
-                            : String(localized: "Demo")
-                    )
-                    LabeledContent(
-                        "Controls",
-                        value: configuration.liveAccessEnabled
-                            ? String(localized: "Read & write")
-                            : String(localized: "Disabled")
-                    )
-                }
-
                 Section {
-                    switch sensorTag.connectionState {
-                    case .connected:
-                        Label("Connected", systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                        if let device = sensorTag.connectedDevice {
-                            LabeledContent("Device", value: device.name)
-                        }
-                        if let temperature = sensorTag.readings.ambientTemperature {
-                            LabeledContent(
-                                "Temperature",
-                                value: temperature.formatted(
-                                    .number.precision(.fractionLength(1))
-                                ) + " °C"
-                            )
-                            .accessibilityIdentifier("settings.sensorTagTemperature")
-                        } else {
-                            HStack {
-                                Text("Waiting for temperature…")
-                                Spacer()
-                                ProgressView()
-                            }
-                        }
-                        Button("Disconnect", role: .destructive) { sensorTag.disconnect() }
-                            .accessibilityIdentifier("settings.sensorTagDisconnectButton")
-                    case .scanning:
-                        HStack {
-                            Label("Looking for SensorTag…", systemImage: "sensor.tag.radiowaves.forward.fill")
-                            Spacer()
-                            ProgressView()
-                        }
-                        Button("Stop scanning") { sensorTag.stopScanning() }
-                    case .connecting:
-                        HStack {
-                            Text("Connecting…")
-                            Spacer()
-                            ProgressView()
-                        }
-                        Button("Cancel") { sensorTag.cancelConnectionAttempt() }
-                    case .unavailable:
-                        Label(bluetoothUnavailableMessage, systemImage: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.orange)
-#if targetEnvironment(simulator)
-                        Button("Find SensorTag", systemImage: "dot.radiowaves.left.and.right") {}
-                            .disabled(true)
-                            .accessibilityIdentifier("settings.sensorTagScanButton")
-                        Button("Preview SensorTag readings", systemImage: "play.circle") {
-                            sensorTag.loadPreviewReadings()
-                        }
-                        .accessibilityIdentifier("settings.sensorTagPreviewButton")
-#endif
-                    case .failed(let message):
-                        Label(message, systemImage: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.orange)
-                        Button("Scan again") { sensorTag.scan() }
-                    case .idle:
-                        Button("Find SensorTag", systemImage: "dot.radiowaves.left.and.right") {
-                            sensorTag.scan()
-                        }
-                        .accessibilityIdentifier("settings.sensorTagScanButton")
-                    }
-
-                    ForEach(sensorTag.discoveredDevices) { device in
-                        Button {
-                            sensorTag.connect(to: device)
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(device.name)
-                                    Text(device.id.uuidString)
-                                        .font(.caption2.monospaced())
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                Image(systemName: "antenna.radiowaves.left.and.right")
-                                Text("\(device.signalStrength) dBm")
-                                    .font(.caption.monospacedDigit())
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .disabled(sensorTag.connectionState == .connecting)
+                    Toggle(
+                        "Cool based on Apple Watch",
+                        isOn: bodyTemperatureAutomationBinding
+                    )
+                    Stepper(
+                        value: $configuration.bodyTemperatureDeltaThreshold,
+                        in: 0.2...2.0,
+                        step: 0.1
+                    ) {
+                        LabeledContent(
+                            "Trigger above baseline",
+                            value: "+" + configuration.bodyTemperatureDeltaThreshold.formatted(
+                                .number.precision(.fractionLength(1))
+                            ) + " °C"
+                        )
                     }
                 } header: {
-                    Text("TI CC2541 SensorTag")
-                } footer: {
-                    Text(sensorTagFooter)
+                    Text("Apple Watch cooling")
                 }
 
                 if configuration.isSignedIn {
                     Section {
-                        Toggle("Reliable cloud schedules", isOn: $cloudEnabled)
+                        Toggle("Cloud schedule", isOn: $cloudEnabled)
                         if cloudEnabled {
                             TextField("https://your-project.vercel.app", text: $cloudURL)
                                 .textInputAutocapitalization(.never)
@@ -589,9 +733,20 @@ private struct SettingsView: View {
                     }
                 }
 
-                Section("Privacy & safety") {
-                    Text("Tokens are stored in the iOS Keychain and refreshed automatically.")
-                    Text("This is an independent integration and is not endorsed by Bosch.")
+                Section {
+                    NavigationLink("Understand your AC") {
+                        UnderstandYourACView()
+                    }
+                    NavigationLink("Privacy & safety") {
+                        PrivacyAndSafetyView()
+                    }
+                    HStack {
+                        Spacer()
+                        Text("Version \(appVersion) • Build \(buildNumber)")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
                 }
 
                 if configuration.isSignedIn {
@@ -599,6 +754,7 @@ private struct SettingsView: View {
                         Button("Sign out", role: .destructive) { showingSignOutConfirmation = true }
                     }
                 }
+
             }
             .accessibilityIdentifier("settings.screen")
             .navigationTitle("Settings")
@@ -607,48 +763,184 @@ private struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
-                        isSaving = true
-                        cloudErrorMessage = nil
-                        Task {
-                            do {
-                                try await configuration.saveAccessMode(
-                                    cloudEnabled: cloudEnabled,
-                                    cloudURL: cloudURL,
-                                    cloudAPIKey: cloudAPIKey
-                                )
-                                dismiss()
-                            } catch {
-                                cloudErrorMessage = String(localized: "Cloud setup could not be verified. Check the URL and API key.")
-                                isSaving = false
-                            }
-                        }
+                        saveAndFinish()
                     }
+                    .accessibilityIdentifier("settings.doneButton")
                     .disabled(isSaving)
                 }
             }
             .confirmationDialog("Sign out of Bosch?", isPresented: $showingSignOutConfirmation) {
-                Button("Sign out", role: .destructive) { configuration.signOut() }
+                Button("Sign out", role: .destructive) {
+                    configuration.signOut(reloadDashboard: false)
+                    cloudEnabled = false
+                    cloudURL = ""
+                    cloudAPIKey = ""
+                }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Stored Bosch tokens and the discovered gateway will be removed from this device.")
             }
-            .onDisappear { sensorTag.stopScanning() }
     }
 
-    private var sensorTagFooter: String {
-#if targetEnvironment(simulator)
-        String(localized: "The iOS Simulator cannot access physical Bluetooth devices. Preview sample readings here, or run the app on an iPhone to find your SensorTag.")
-#else
-        String(localized: "Press the SensorTag side button before scanning. Live temperature, humidity, pressure and motion readings appear on the dashboard.")
-#endif
+    private func saveAndFinish() {
+        guard !isSaving else { return }
+        isSaving = true
+        cloudErrorMessage = nil
+        Task { @MainActor in
+            do {
+                try await configuration.saveAccessMode(
+                    cloudEnabled: cloudEnabled,
+                    cloudURL: cloudURL,
+                    cloudAPIKey: cloudAPIKey,
+                    reloadDashboard: false
+                )
+                onFinished()
+            } catch is CancellationError {
+                isSaving = false
+            } catch {
+                cloudErrorMessage = String(localized: "Cloud setup could not be verified. Check the URL and API key.")
+                isSaving = false
+            }
+        }
     }
 
-    private var bluetoothUnavailableMessage: String {
-#if targetEnvironment(simulator)
-        String(localized: "Bluetooth devices are unavailable in Simulator")
-#else
-        String(localized: "Bluetooth is unavailable")
-#endif
+    private var bodyTemperatureAutomationBinding: Binding<Bool> {
+        Binding(
+            get: { configuration.bodyTemperatureAutomationEnabled },
+            set: { enabled in
+                configuration.bodyTemperatureAutomationEnabled = enabled
+                guard enabled, !bodyTemperature.hasRequestedAuthorization else { return }
+                Task { await bodyTemperature.requestAuthorization() }
+            }
+        )
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+    }
+
+    private var buildNumber: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "—"
+    }
+}
+
+private struct UnderstandYourACView: View {
+    var body: some View {
+        Form {
+            Section("Modes") {
+                ACGuideItem(
+                    title: "Auto",
+                    symbol: "sparkles",
+                    description: "Lets the AC choose how to reach and maintain the selected temperature."
+                )
+                ACGuideItem(
+                    title: "Cool",
+                    symbol: "snowflake",
+                    description: "Lowers the room temperature toward your selected setpoint."
+                )
+                ACGuideItem(
+                    title: "Dry",
+                    symbol: "drop.fill",
+                    description: "Reduces humidity with gentle, intermittent cooling. Fan speed is automatic, so Quiet, Low, Medium, High and Turbo should not work. Climate 3000i, 5000i and 6000i units normally still allow a temperature setpoint in Dry; some Climate Class models lock it. Eco, Sleep and swing availability depends on the AC model."
+                )
+                ACGuideItem(
+                    title: "Fan",
+                    symbol: "fan.fill",
+                    description: "Circulates room air without actively heating or cooling it."
+                )
+                ACGuideItem(
+                    title: "Heat",
+                    symbol: "sun.max.fill",
+                    description: "Warms the room toward your selected setpoint on supported AC models."
+                )
+            }
+
+            Section("Fan speeds") {
+                ACGuideItem(
+                    title: "Auto",
+                    symbol: "gauge.with.dots.needle.50percent",
+                    description: "Adjusts airflow automatically according to the current mode and room conditions."
+                )
+                ACGuideItem(
+                    title: "Quiet",
+                    symbol: "speaker.slash.fill",
+                    description: "Uses the gentlest airflow to reduce noise."
+                )
+                ACGuideItem(
+                    title: "Low, medium and high",
+                    symbol: "fan.fill",
+                    description: "Provide progressively stronger airflow. Higher speeds change the room faster but create more noise."
+                )
+                ACGuideItem(
+                    title: "Turbo",
+                    symbol: "bolt.fill",
+                    description: "Uses maximum output for a rapid temperature change, with greater noise and energy use."
+                )
+            }
+
+            Section {
+                ACGuideItem(
+                    title: "Eco",
+                    symbol: "leaf.fill",
+                    description: "Reduces energy use by limiting output and, on some Bosch models, selecting at least 24 °C with Auto fan. Bosch does not publish one guaranteed saving versus Cool across all Climate models, and betterBCool does not receive power-use data from this AC, so it cannot show a trustworthy percentage."
+                )
+                ACGuideItem(
+                    title: "Sleep",
+                    symbol: "moon.stars.fill",
+                    description: "Prioritizes quieter overnight operation and may adjust the temperature gradually."
+                )
+                ACGuideItem(
+                    title: "Vertical swing",
+                    symbol: "arrow.up.and.down",
+                    description: "Moves the louvers up and down to distribute air through the room."
+                )
+                ACGuideItem(
+                    title: "Horizontal swing",
+                    symbol: "arrow.left.and.right",
+                    description: "Moves the louvers left and right to spread airflow across the room."
+                )
+            } header: {
+                Text("Comfort features")
+            } footer: {
+                Text("Available modes and features depend on your AC model. betterBCool disables options that your unit does not report as supported. Eco, Sleep and swing can be controlled from the dashboard when the unit accepts them.")
+            }
+        }
+        .navigationTitle("Understand your AC")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct ACGuideItem: View {
+    let title: LocalizedStringKey
+    let symbol: String
+    let description: LocalizedStringKey
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label(title, systemImage: symbol)
+                .font(.headline)
+            Text(description)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+private struct PrivacyAndSafetyView: View {
+    var body: some View {
+        Form {
+            Section("Apple Watch cooling") {
+                Text("Apple Watch provides one wrist-temperature aggregate after sleep—not a live body-temperature stream. Automation uses only samples under 18 hours old and requires at least three prior nights for a personal baseline. This is not a medical feature.")
+            }
+
+            Section("Privacy & safety") {
+                Text("Tokens are stored in the iOS Keychain and refreshed automatically.")
+                Text("This is an independent integration and is not endorsed by Bosch.")
+            }
+        }
+        .navigationTitle("Privacy & safety")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -662,7 +954,7 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
         errorMessage = nil
     }
 
-    func signIn(configuration: AppConfiguration) async {
+    func signIn(configuration: AppConfiguration, reloadDashboard: Bool = true) async {
         guard !isWorking else { return }
         isWorking = true
         errorMessage = nil
@@ -679,7 +971,7 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
                 code: code,
                 verifier: authorization.codeVerifier
             )
-            try await configuration.completeSignIn(tokens: tokens)
+            try await configuration.completeSignIn(tokens: tokens, reloadDashboard: reloadDashboard)
         } catch ASWebAuthenticationSessionError.canceledLogin {
             errorMessage = nil
         } catch SignInError.noGatewayEntries {

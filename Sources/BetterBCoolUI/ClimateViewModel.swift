@@ -38,6 +38,7 @@ public final class ClimateViewModel: ObservableObject {
     @Published public private(set) var activities: [ClimateActivity] = []
 
     private let service: any ClimateService
+    private var loadGeneration = 0
     private var applyGeneration = 0
     private var pendingApplyCount = 0
 
@@ -57,36 +58,63 @@ public final class ClimateViewModel: ObservableObject {
     }
 
     public func load() async {
+        loadGeneration += 1
+        let generation = loadGeneration
         isLoading = true
         errorMessage = nil
         requiresReauthentication = false
-        defer { isLoading = false }
+        defer {
+            if generation == loadGeneration {
+                isLoading = false
+            }
+        }
 
         do {
-            devices = try await service.devices()
-            guard let device = devices.first else {
-                selectedDevice = nil
-                state = nil
-                return
-            }
-            selectedDevice = device
-            async let fetchedCapabilities = service.capabilities(for: device.id)
-            async let fetchedState = service.state(for: device.id)
-            capabilities = try await fetchedCapabilities
-            state = try await fetchedState
-        } catch let error as CloudClimateError where error.requiresBoschReauthentication {
-            requiresReauthentication = true
-            errorMessage = String(
-                localized: "Your Bosch session has expired. Reconnect to continue."
-            )
-        } catch OAuthError.tokenHTTPStatus(_) {
-            requiresReauthentication = true
-            errorMessage = String(
-                localized: "Your Bosch session has expired. Reconnect to continue."
-            )
+            try await loadData(generation: generation)
         } catch {
-            errorMessage = String(localized: "Unable to load climate data.")
+            // A freshly authenticated session can briefly race the first API request.
+            // Retry once, but abandon the retry if a newer load has started.
+            guard generation == loadGeneration, !Task.isCancelled else { return }
+            try? await Task.sleep(for: .milliseconds(500))
+            guard generation == loadGeneration, !Task.isCancelled else { return }
+
+            do {
+                try await loadData(generation: generation)
+            } catch let error as CloudClimateError where error.requiresBoschReauthentication {
+                requiresReauthentication = true
+                errorMessage = String(
+                    localized: "Your Bosch session has expired. Reconnect to continue."
+                )
+            } catch OAuthError.tokenHTTPStatus(_) {
+                requiresReauthentication = true
+                errorMessage = String(
+                    localized: "Your Bosch session has expired. Reconnect to continue."
+                )
+            } catch {
+                errorMessage = String(localized: "Unable to load climate data.")
+            }
         }
+    }
+
+    private func loadData(generation: Int) async throws {
+        let fetchedDevices = try await service.devices()
+        guard generation == loadGeneration else { return }
+
+        devices = fetchedDevices
+        guard let device = fetchedDevices.first else {
+            selectedDevice = nil
+            state = nil
+            return
+        }
+        selectedDevice = device
+
+        async let fetchedCapabilities = service.capabilities(for: device.id)
+        async let fetchedState = service.state(for: device.id)
+        let loadedCapabilities = try await fetchedCapabilities
+        let loadedState = try await fetchedState
+        guard generation == loadGeneration else { return }
+        capabilities = loadedCapabilities
+        state = loadedState
     }
 
     public func apply(_ patch: ClimatePatch) async {
@@ -180,6 +208,22 @@ public final class ClimateViewModel: ObservableObject {
                 symbol: "thermometer.medium"
             ))
         }
+        if let enabled = patch.ecoEnabled {
+            newActivities.append(.init(
+                timestamp: timestamp,
+                title: String(localized: "Eco"),
+                detail: enabled ? String(localized: "Enabled") : String(localized: "Disabled"),
+                symbol: "leaf.fill"
+            ))
+        }
+        if let enabled = patch.sleepEnabled {
+            newActivities.append(.init(
+                timestamp: timestamp,
+                title: String(localized: "Sleep"),
+                detail: enabled ? String(localized: "Enabled") : String(localized: "Disabled"),
+                symbol: "moon.stars.fill"
+            ))
+        }
         if let enabled = patch.horizontalSwingEnabled {
             newActivities.append(.init(
                 timestamp: timestamp,
@@ -246,6 +290,8 @@ private extension ClimateState {
         if let value = patch.operatingMode { updated.operatingMode = value }
         if let value = patch.fanSpeed { updated.fanSpeed = value }
         if let value = patch.temperatureSetpoint { updated.temperatureSetpoint = value }
+        if let value = patch.ecoEnabled { updated.ecoEnabled = value }
+        if let value = patch.sleepEnabled { updated.sleepEnabled = value }
         if let value = patch.horizontalSwingEnabled { updated.horizontalSwingEnabled = value }
         if let value = patch.verticalSwingEnabled { updated.verticalSwingEnabled = value }
         return updated

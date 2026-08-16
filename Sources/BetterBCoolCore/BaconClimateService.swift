@@ -51,6 +51,8 @@ public actor BaconClimateService: ClimateService {
         if let value = patch.operatingMode { desired["opMode"] = .string(value.rawValue) }
         if let value = patch.fanSpeed { desired["fanSpeed"] = .string(value.rawValue) }
         if let value = patch.temperatureSetpoint { desired["tempSetpoint"] = .number(value) }
+        if let value = patch.ecoEnabled { desired["ecoEnabled"] = .bool(value) }
+        if let value = patch.sleepEnabled { desired["sleepEnabled"] = .bool(value) }
         if let value = patch.horizontalSwingEnabled { desired["hSwingEnabled"] = .bool(value) }
         if let value = patch.verticalSwingEnabled { desired["vSwingEnabled"] = .bool(value) }
         guard !desired.isEmpty else { return try await state(for: requestedID) }

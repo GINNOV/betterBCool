@@ -25,24 +25,94 @@ final class BetterBCoolUITests: XCTestCase {
         )
     }
 
-    func testSensorTagTemperatureAppearsAsRoomTemperatureSource() {
+    func testSettingsDoneDismissesSettings() {
         let app = XCUIApplication()
-        app.launchArguments = ["-ui-testing", "-ui-testing-sensortag-preview"]
+        app.launchArguments = ["-ui-testing"]
         app.launch()
 
-        let sensorTemperature = app.staticTexts["dashboard.sensorTagTemperature"]
+        let settingsButton = app.buttons["dashboard.settingsButton"]
+        XCTAssertTrue(settingsButton.waitForExistence(timeout: 5))
+        settingsButton.tap()
+
+        let doneButton = app.buttons["settings.doneButton"]
+        XCTAssertTrue(doneButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(doneButton.isEnabled)
+        doneButton.tap()
+
         XCTAssertTrue(
-            sensorTemperature.waitForExistence(timeout: 5),
-            "The SensorTag temperature label did not appear"
+            app.buttons["dashboard.settingsButton"].waitForExistence(timeout: 5),
+            "The dashboard did not return after closing Settings"
         )
-        XCTAssertEqual(sensorTemperature.label, "SensorTag temperature")
-        XCTAssertEqual(sensorTemperature.value as? String, "23.4 degrees Celsius")
-        XCTAssertTrue(app.staticTexts["SensorTag 23.4°"].exists)
+        XCTAssertFalse(app.navigationBars["Settings"].exists)
+    }
+
+    func testScheduleStepDoneReturnsToScheduleEditor() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launch()
+
+        let schedulesButton = app.buttons["dashboard.schedulesButton"]
+        XCTAssertTrue(schedulesButton.waitForExistence(timeout: 5))
+        schedulesButton.tap()
+
+        let addRoutineButton = app.buttons["Add routine"]
+        XCTAssertTrue(addRoutineButton.waitForExistence(timeout: 5))
+        addRoutineButton.tap()
+
+        let addStepButton = app.buttons["Add a step"]
+        XCTAssertTrue(addStepButton.waitForExistence(timeout: 5))
+        addStepButton.tap()
+
+        let doneButton = app.buttons["schedule.stepDoneButton"]
+        XCTAssertTrue(doneButton.waitForExistence(timeout: 5))
+        doneButton.tap()
+
+        XCTAssertTrue(addStepButton.waitForExistence(timeout: 5))
+        XCTAssertFalse(doneButton.exists)
+    }
+
+    func testAppleWatchWristTemperatureAppearsOnDashboard() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-wrist-temperature-preview"]
+        app.launch()
+
+        let wristTemperature = app.staticTexts["dashboard.wristTemperature"]
+        XCTAssertTrue(
+            wristTemperature.waitForExistence(timeout: 5),
+            "The Apple Watch wrist temperature label did not appear"
+        )
+        XCTAssertEqual(wristTemperature.label, "Apple Watch wrist temperature")
+        XCTAssertEqual(wristTemperature.value as? String, "36.2 degrees Celsius")
+        XCTAssertTrue(
+            app.staticTexts["Wrist temperature"].waitForExistence(timeout: 5),
+            "The wrist-temperature detail card did not appear"
+        )
+        let wristCard = app.otherElements["dashboard.bodyTemperatureCard"]
+        let activityTitle = app.staticTexts["Activity"]
+        for _ in 0..<8 where !activityTitle.exists {
+            app.swipeUp()
+        }
+        XCTAssertTrue(wristCard.exists)
+        XCTAssertTrue(activityTitle.exists)
 
         let screenshot = XCTAttachment(screenshot: app.screenshot())
-        screenshot.name = "SensorTag temperature on climate dashboard"
+        screenshot.name = "Apple Watch wrist temperature on climate dashboard"
         screenshot.lifetime = .keepAlways
         add(screenshot)
+    }
+
+    func testAppleWatchSettingsOnlyShowAutomationControls() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launch()
+
+        app.buttons["dashboard.settingsButton"].tap()
+
+        XCTAssertTrue(app.switches["Cool based on Apple Watch"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Trigger above baseline"].exists)
+        XCTAssertFalse(app.buttons["settings.healthAuthorizationButton"].exists)
+        XCTAssertFalse(app.staticTexts["Latest wrist temperature"].exists)
+        XCTAssertFalse(app.buttons["Refresh temperature"].exists)
     }
 
     func testPowerButtonChangesState() {
@@ -95,6 +165,53 @@ final class BetterBCoolUITests: XCTestCase {
         let enabledState = NSPredicate(format: "value == %@", "On")
         expectation(for: enabledState, evaluatedWith: verticalSwing)
         waitForExpectations(timeout: 5)
+    }
+
+    func testEcoAndSleepControlsChangeState() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launch()
+
+        for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
+            let button = app.buttons[identifier]
+            XCTAssertTrue(button.waitForExistence(timeout: 5))
+            for _ in 0..<6 where !button.isHittable {
+                app.swipeUp()
+            }
+
+            XCTAssertTrue(button.isHittable)
+            XCTAssertEqual(button.value as? String, "Off")
+            button.tap()
+
+            let enabledState = NSPredicate(format: "value == %@", "On")
+            expectation(for: enabledState, evaluatedWith: button)
+            waitForExpectations(timeout: 5)
+        }
+    }
+
+    func testDryModeDisablesIncompatibleComfortControls() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launch()
+
+        let dryMode = app.buttons["Dry"]
+        XCTAssertTrue(dryMode.waitForExistence(timeout: 5))
+        dryMode.tap()
+
+        for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
+            let button = app.buttons[identifier]
+            XCTAssertTrue(button.waitForExistence(timeout: 5))
+            XCTAssertFalse(button.isEnabled)
+            XCTAssertEqual(button.value as? String, "Unavailable")
+        }
+
+        XCTAssertTrue(app.staticTexts["Managed automatically in Dry mode"].exists)
+        for fanSpeed in ["Auto", "Quiet", "Low", "Medium", "High", "Turbo"] {
+            let matchingButtons = app.buttons.matching(NSPredicate(format: "label == %@", fanSpeed))
+            let fanButton = matchingButtons.element(boundBy: matchingButtons.count - 1)
+            XCTAssertTrue(fanButton.exists, "Missing \(fanSpeed) fan-speed button")
+            XCTAssertFalse(fanButton.isEnabled, "\(fanSpeed) should be disabled in Dry mode")
+        }
     }
 
     func testLaunchDoesNotReplayAnAlreadyStartedPowerOnSchedule() {

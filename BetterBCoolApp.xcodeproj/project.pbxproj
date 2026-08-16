@@ -12,7 +12,16 @@
 		100000000000000000000005 /* BetterBCoolUI in Frameworks */ = {isa = PBXBuildFile; productRef = 100000000000000000000006 /* BetterBCoolUI */; };
 		100000000000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000018 /* Assets.xcassets */; };
 		100000000000000000000019 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000001A /* Localizable.xcstrings */; };
+		100000000000000000000020 /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000021 /* WatchSessionManager.swift */; };
+		100000000000000000000022 /* BetterBCoolWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 500000000000000000000006 /* BetterBCoolWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; platformFilter = ios; };
 		200000000000000000000001 /* BetterBCoolUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* BetterBCoolUITests.swift */; };
+		400000000000000000000001 /* FeverFridaExplorerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400000000000000000000004 /* FeverFridaExplorerApp.swift */; };
+		400000000000000000000002 /* ExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400000000000000000000005 /* ExplorerView.swift */; };
+		400000000000000000000003 /* FeverFridaKit in Frameworks */ = {isa = PBXBuildFile; productRef = 400000000000000000000013 /* FeverFridaKit */; };
+		500000000000000000000001 /* BetterBCoolWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500000000000000000000002 /* BetterBCoolWatchApp.swift */; };
+		500000000000000000000003 /* WatchSessionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500000000000000000000004 /* WatchSessionClient.swift */; };
+		500000000000000000000018 /* WatchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500000000000000000000019 /* WatchModels.swift */; };
+		600000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000002 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,6 +32,13 @@
 			remoteGlobalIDString = 10000000000000000000000C;
 			remoteInfo = BetterBCool;
 		};
+		500000000000000000000010 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 100000000000000000000010 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 500000000000000000000014;
+			remoteInfo = BetterBCoolWatch;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -30,8 +46,17 @@
 		100000000000000000000007 /* BetterBCool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterBCool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		100000000000000000000018 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		10000000000000000000001A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		100000000000000000000021 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		200000000000000000000002 /* BetterBCoolUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterBCoolUITests.swift; sourceTree = "<group>"; };
 		200000000000000000000003 /* BetterBCoolUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BetterBCoolUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		400000000000000000000004 /* FeverFridaExplorerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeverFridaExplorerApp.swift; sourceTree = "<group>"; };
+		400000000000000000000005 /* ExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorerView.swift; sourceTree = "<group>"; };
+		400000000000000000000006 /* FeverFridaExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FeverFridaExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		500000000000000000000002 /* BetterBCoolWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterBCoolWatchApp.swift; sourceTree = "<group>"; };
+		500000000000000000000004 /* WatchSessionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionClient.swift; sourceTree = "<group>"; };
+		500000000000000000000019 /* WatchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchModels.swift; sourceTree = "<group>"; };
+		500000000000000000000006 /* BetterBCoolWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterBCoolWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		600000000000000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,10 +69,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		500000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		200000000000000000000006 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		400000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				400000000000000000000003 /* FeverFridaKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,6 +98,8 @@
 			isa = PBXGroup;
 			children = (
 				10000000000000000000000A /* App */,
+				400000000000000000000008 /* FeverFridaExplorer */,
+				500000000000000000000008 /* BetterBCoolWatch */,
 				200000000000000000000004 /* UITests */,
 				10000000000000000000000B /* Products */,
 			);
@@ -67,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				100000000000000000000002 /* BetterBCoolApp.swift */,
+				100000000000000000000021 /* WatchSessionManager.swift */,
 				100000000000000000000018 /* Assets.xcassets */,
 				10000000000000000000001A /* Localizable.xcstrings */,
 			);
@@ -77,6 +120,8 @@
 			isa = PBXGroup;
 			children = (
 				100000000000000000000007 /* BetterBCool.app */,
+				400000000000000000000006 /* FeverFridaExplorer.app */,
+				500000000000000000000006 /* BetterBCoolWatch.app */,
 				200000000000000000000003 /* BetterBCoolUITests.xctest */,
 			);
 			name = Products;
@@ -90,6 +135,26 @@
 			path = UITests;
 			sourceTree = "<group>";
 		};
+		400000000000000000000008 /* FeverFridaExplorer */ = {
+			isa = PBXGroup;
+			children = (
+				400000000000000000000004 /* FeverFridaExplorerApp.swift */,
+				400000000000000000000005 /* ExplorerView.swift */,
+			);
+			path = Examples/FeverFridaExplorer;
+			sourceTree = "<group>";
+		};
+		500000000000000000000008 /* BetterBCoolWatch */ = {
+			isa = PBXGroup;
+			children = (
+				500000000000000000000002 /* BetterBCoolWatchApp.swift */,
+				500000000000000000000004 /* WatchSessionClient.swift */,
+				500000000000000000000019 /* WatchModels.swift */,
+				600000000000000000000002 /* Assets.xcassets */,
+			);
+			path = Watch;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -100,10 +165,13 @@
 				10000000000000000000000E /* Sources */,
 				100000000000000000000008 /* Frameworks */,
 				10000000000000000000000F /* Resources */,
+				500000000000000000000009 /* Embed Watch Content */,
+				300000000000000000000001 /* Increment Build Number */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				500000000000000000000011 /* PBXTargetDependency */,
 			);
 			name = BetterBCool;
 			packageProductDependencies = (
@@ -134,6 +202,45 @@
 			productReference = 200000000000000000000003 /* BetterBCoolUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		400000000000000000000009 /* FeverFridaExplorer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 400000000000000000000010 /* Build configuration list for PBXNativeTarget "FeverFridaExplorer" */;
+			buildPhases = (
+				400000000000000000000011 /* Sources */,
+				400000000000000000000007 /* Frameworks */,
+				400000000000000000000012 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FeverFridaExplorer;
+			packageProductDependencies = (
+				400000000000000000000013 /* FeverFridaKit */,
+			);
+			productName = FeverFridaExplorer;
+			productReference = 400000000000000000000006 /* FeverFridaExplorer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		500000000000000000000014 /* BetterBCoolWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 500000000000000000000015 /* Build configuration list for PBXNativeTarget "BetterBCoolWatch" */;
+			buildPhases = (
+				500000000000000000000012 /* Sources */,
+				500000000000000000000007 /* Frameworks */,
+				500000000000000000000013 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BetterBCoolWatch;
+			packageProductDependencies = (
+			);
+			productName = BetterBCoolWatch;
+			productReference = 500000000000000000000006 /* BetterBCoolWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -150,6 +257,12 @@
 					200000000000000000000008 = {
 						CreatedOnToolsVersion = 26.6;
 						TestTargetID = 10000000000000000000000C;
+					};
+					400000000000000000000009 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					500000000000000000000014 = {
+						CreatedOnToolsVersion = 26.6;
 					};
 				};
 			};
@@ -175,6 +288,8 @@
 			projectRoot = "";
 			targets = (
 				10000000000000000000000C /* BetterBCool */,
+				400000000000000000000009 /* FeverFridaExplorer */,
+				500000000000000000000014 /* BetterBCoolWatch */,
 				200000000000000000000008 /* BetterBCoolUITests */,
 			);
 		};
@@ -197,7 +312,59 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		400000000000000000000012 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		500000000000000000000013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				600000000000000000000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		500000000000000000000009 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				100000000000000000000022 /* BetterBCoolWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		300000000000000000000001 /* Increment Build Number */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Increment Build Number";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -eu\ncounter_file=\"$SRCROOT/App/BuildNumber.txt\"\nproduct_info=\"$TARGET_BUILD_DIR/$INFOPLIST_PATH\"\nlast_build=$(tr -d '[:space:]' < \"$counter_file\")\ncase \"$last_build\" in\n    ''|*[!0-9]*)\n        echo \"error: Invalid build number in $counter_file: $last_build\"\n        exit 1\n        ;;\nesac\nnext_build=$((last_build + 1))\nprintf '%s\\n' \"$next_build\" > \"$counter_file\"\nif [ ! -f \"$product_info\" ]; then\n    echo \"error: Built Info.plist was not found at $product_info\"\n    exit 1\nfi\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $next_build\" \"$product_info\"\necho \"Build number: $next_build\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		10000000000000000000000E /* Sources */ = {
@@ -205,6 +372,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				100000000000000000000001 /* BetterBCoolApp.swift in Sources */,
+				100000000000000000000020 /* WatchSessionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,6 +384,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		400000000000000000000011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				400000000000000000000001 /* FeverFridaExplorerApp.swift in Sources */,
+				400000000000000000000002 /* ExplorerView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		500000000000000000000012 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				500000000000000000000001 /* BetterBCoolWatchApp.swift in Sources */,
+				500000000000000000000003 /* WatchSessionClient.swift in Sources */,
+				500000000000000000000018 /* WatchModels.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -223,6 +410,12 @@
 			isa = PBXTargetDependency;
 			target = 10000000000000000000000C /* BetterBCool */;
 			targetProxy = 20000000000000000000000D /* PBXContainerItemProxy */;
+		};
+		500000000000000000000011 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = 500000000000000000000014 /* BetterBCoolWatch */;
+			targetProxy = 500000000000000000000010 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -259,13 +452,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = App/BetterBCool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QQ9PTQU945;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = betterBCool;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "betterBCool connects to your TI SensorTag to display room and motion sensor readings.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "betterBCool reads your nightly Apple Watch wrist temperature to show personal trends and optionally activate cooling when it is elevated.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -284,12 +479,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = App/BetterBCool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = QQ9PTQU945;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = betterBCool;
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "betterBCool connects to your TI SensorTag to display room and motion sensor readings.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "betterBCool reads your nightly Apple Watch wrist temperature to show personal trends and optionally activate cooling when it is elevated.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -335,6 +532,100 @@
 			};
 			name = Release;
 		};
+		400000000000000000000014 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QQ9PTQU945;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "FeverFrida Explorer";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Discover and connect to your FeverFrida temperature sensor for protocol capture.";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_UIFileSharingEnabled = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.betterbcool.feverfridaexplorer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		400000000000000000000015 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QQ9PTQU945;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "FeverFrida Explorer";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Discover and connect to your FeverFrida temperature sensor for protocol capture.";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_UIFileSharingEnabled = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.betterbcool.feverfridaexplorer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		500000000000000000000016 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QQ9PTQU945;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = betterBCool;
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = dev.betterbcool.app;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.betterbcool.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		500000000000000000000017 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QQ9PTQU945;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = betterBCool;
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = dev.betterbcool.app;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.betterbcool.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -365,6 +656,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		400000000000000000000010 /* Build configuration list for PBXNativeTarget "FeverFridaExplorer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				400000000000000000000014 /* Debug */,
+				400000000000000000000015 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		500000000000000000000015 /* Build configuration list for PBXNativeTarget "BetterBCoolWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				500000000000000000000016 /* Debug */,
+				500000000000000000000017 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -384,6 +693,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 100000000000000000000012 /* XCLocalSwiftPackageReference "." */;
 			productName = BetterBCoolUI;
+		};
+		400000000000000000000013 /* FeverFridaKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 100000000000000000000012 /* XCLocalSwiftPackageReference "." */;
+			productName = FeverFridaKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

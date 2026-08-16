@@ -7,6 +7,8 @@ export interface ClimatePatch {
   operatingMode?: OperatingMode;
   fanSpeed?: FanSpeed;
   temperatureSetpoint?: number;
+  ecoEnabled?: boolean;
+  sleepEnabled?: boolean;
   horizontalSwingEnabled?: boolean;
   verticalSwingEnabled?: boolean;
 }

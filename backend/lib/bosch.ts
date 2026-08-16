@@ -98,6 +98,8 @@ export async function applyClimatePatch(installationID: string, patch: ClimatePa
     if (patch.operatingMode !== undefined) desired.opMode = patch.operatingMode;
     if (patch.fanSpeed !== undefined) desired.fanSpeed = patch.fanSpeed;
     if (patch.temperatureSetpoint !== undefined) desired.tempSetpoint = patch.temperatureSetpoint;
+    if (patch.ecoEnabled !== undefined) desired.ecoEnabled = patch.ecoEnabled;
+    if (patch.sleepEnabled !== undefined) desired.sleepEnabled = patch.sleepEnabled;
     if (patch.horizontalSwingEnabled !== undefined) desired.hSwingEnabled = patch.horizontalSwingEnabled;
     if (patch.verticalSwingEnabled !== undefined) desired.vSwingEnabled = patch.verticalSwingEnabled;
     return stateFromBacon(await baconShadow(row, token, desired));
@@ -108,6 +110,8 @@ export async function applyClimatePatch(installationID: string, patch: ClimatePa
   if (patch.operatingMode !== undefined) writes.push(["operationMode", patch.operatingMode === "fan" ? "fanOnly" : patch.operatingMode]);
   if (patch.fanSpeed !== undefined) writes.push(["fanSpeed", patch.fanSpeed]);
   if (patch.temperatureSetpoint !== undefined) writes.push(["temperatureSetpoint", patch.temperatureSetpoint]);
+  if (patch.ecoEnabled !== undefined) writes.push(["ecoMode", patch.ecoEnabled ? "on" : "off"]);
+  if (patch.sleepEnabled !== undefined) writes.push(["sleepMode", patch.sleepEnabled ? "on" : "off"]);
   if (patch.verticalSwingEnabled !== undefined) writes.push(["airFlowVertical", patch.verticalSwingEnabled ? "on" : "off"]);
   if (patch.horizontalSwingEnabled !== undefined) writes.push(["airFlowHorizontal", patch.horizontalSwingEnabled ? "on" : "off"]);
   for (const [resource, value] of writes) await pointTWrite(row, token, resource, value);
