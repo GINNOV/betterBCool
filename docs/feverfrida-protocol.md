@@ -39,17 +39,17 @@ Sources:
 
 ## GATT map
 
-The physical unit exposed eight primary services. It did **not** expose standard Health Thermometer (`1809`) or Battery (`180F`) services. The machine-readable redacted map is in `Captures/2026-08-03-WT701/gatt.json`.
+The physical unit exposed eight primary services. It did **not** expose standard Health Thermometer (`1809`) or Battery (`180F`) services. The raw machine-readable capture is intentionally not included in the public repository; the summary below records the sanitized observations used by the decoder.
 
 | Service | Characteristic | Properties | Descriptors | Meaning | Confidence |
 | --- | --- | --- | --- | --- | --- |
 | `180A` | `2A23`, `2A24`, `2A25`, `2A26`, `2A27`, `2A28`, `2A29`, `2A2A`, `2A50` | read | — | Device Information | verified |
-| `70436BE4…6132` | `71D0523C…F8AC`, `7BF6AF4E…E5D0`, `03F1BEC7…39F8`, `071D5DB8…49BC` | see capture | CCCD on first two | unknown/session | verified map; meaning unknown |
+| `70436BE4…6132` | `71D0523C…F8AC`, `7BF6AF4E…E5D0`, `03F1BEC7…39F8`, `071D5DB8…49BC` | observed | CCCD on first two | unknown/session | verified map; meaning unknown |
 | `A72435C3…A64C` | `5869CF77…30A1` | read, indicate | CCCD | direct realtime temperature + battery frame | corroborated |
-| `A8740486…A950` | `DB765158…EAE9`, `E9A2825D…36E6`, `874A9717…D12D` | see capture | CCCD on first two | unknown | verified map; meaning unknown |
-| `4393AFA6…6AAC` | `46B17614…6AAC`, `48CC12F4…E45D`, `DEFDC94E…E45D` | see capture | — | unknown | verified map; meaning unknown |
+| `A8740486…A950` | `DB765158…EAE9`, `E9A2825D…36E6`, `874A9717…D12D` | observed | CCCD on first two | unknown | verified map; meaning unknown |
+| `4393AFA6…6AAC` | `46B17614…6AAC`, `48CC12F4…E45D`, `DEFDC94E…E45D` | observed | — | unknown | verified map; meaning unknown |
 | `9869C505…1A3A` | `A44D0105…1A3A`, `953FDB2B…FF5F`, `D717EA19…1A3A`, `E7D6818F…1A3A` | read, write | — | unknown | verified map; meaning unknown |
-| `42F65AE6…7BEF` | `B857035D…1757`, `5E119BB0…9A66`, `BF7A1506…D423` | see capture | CCCD on first | unknown | verified map; meaning unknown |
+| `42F65AE6…7BEF` | `B857035D…1757`, `5E119BB0…9A66`, `BF7A1506…D423` | observed | CCCD on first | unknown | verified map; meaning unknown |
 | `30D2A3E8…F84B` | `5B8604BE…B62D`, `028C3D3A…E385`, `F09AA8BE…0EEA`, `29A59C78…E45D` | see capture | CCCD on first and last | control/unknown; last is battery | battery corroborated; other meanings unknown |
 
 ### Static evidence used for interpretation
@@ -77,7 +77,7 @@ Characteristic: `5869CF77-A8EA-47D8-A239-CD2100FA30A1` (read + indicate). Byte o
 
 Captured frame `A1 03 00 00 64 46 75 C9 7A 00 00 BF 6A` decodes to counter `929`, battery `100%`, primary `30.022 °C`, secondary `31.433 °C`, reserved `0`, checksum `0x6ABF`.
 
-The original software applies a proprietary compensation algorithm to the two channels. Therefore the Swift package exposes both raw channels and uses the primary channel for its generic temperature stream; it does **not** label either as processed body temperature. A controlled ten-frame sequence is preserved in `Captures/2026-08-03-WT701/packets-warming.jsonl`.
+The original software applies a proprietary compensation algorithm to the two channels. Therefore the Swift package exposes both raw channels and uses the primary channel for its generic temperature stream; it does **not** label either as processed body temperature. A controlled ten-frame sequence was used during private validation; representative frames are retained only in decoder tests.
 
 ## Battery
 

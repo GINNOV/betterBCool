@@ -203,7 +203,6 @@ Sources/BetterBCoolUI/       SwiftUI dashboard, view model, routines, and activi
 Sources/FeverFridaKit/       BLE telemetry and protocol decoding utilities
 Examples/                    Small protocol exploration app
 backend/                     Optional Vercel Workflow + Neon cloud scheduler
-Captures/                    Sanitized local protocol fixtures and telemetry exports
 docs/                        Protocol notes, capture guidance, and safety boundaries
 Tests/                       Swift unit tests and transport fixtures
 UITests/                     iOS UI tests
