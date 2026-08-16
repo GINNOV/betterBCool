@@ -1,5 +1,9 @@
 # FeverFrida / iThermonitor WT701 BLE Research
 
+<p align="center">
+  <img src="docs/assets/frida-front.jpg" alt="FeverFrida WT701 BLE Sensor" width="280" style="border-radius: 16px; margin: 16px 0;" />
+</p>
+
 `Experimentals/FeverFrida` is an exploratory research component within **betterBCool**. It contains the protocol decoder library, test fixtures, and CoreBluetooth tools developed to communicate with the **Raiing Medical WT701** (sold commercially as *FeverFrida / iThermonitor*) continuous BLE body-temperature sensor.
 
 This work is maintained as an isolated research module for protocol discovery and experimental thermal telemetry inputs.
@@ -20,6 +24,9 @@ Experimentals/FeverFrida/
 ├── Tests/
 │   └── FeverFridaKitTests/     # Unit tests and deterministic byte-stream fixtures
 └── docs/
+    ├── assets/
+    │   ├── frida-front.jpg     # Hardware photo (front)
+    │   └── frida-back.jpg      # Hardware photo (back)
     ├── feverfrida-protocol.md  # GATT map, packet structure, and checksum analysis
     ├── feverfrida-capture.md   # Packet capture guidance and sanitization rules
     └── next-capture.md         # Capture session checklist and next steps
