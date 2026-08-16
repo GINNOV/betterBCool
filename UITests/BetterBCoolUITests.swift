@@ -71,6 +71,28 @@ final class BetterBCoolUITests: XCTestCase {
         XCTAssertFalse(doneButton.exists)
     }
 
+    func testMultiStepScheduleCanEnterReorderMode() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launch()
+
+        let schedulesButton = app.buttons["dashboard.schedulesButton"]
+        XCTAssertTrue(schedulesButton.waitForExistence(timeout: 5))
+        schedulesButton.tap()
+
+        let templateButton = app.buttons["Start with Night comfort"]
+        XCTAssertTrue(templateButton.waitForExistence(timeout: 5))
+        templateButton.tap()
+
+        let reorderButton = app.buttons["schedule.reorderStepsButton"]
+        XCTAssertTrue(reorderButton.waitForExistence(timeout: 5))
+        XCTAssertEqual(reorderButton.label, "Reorder")
+
+        reorderButton.tap()
+
+        XCTAssertEqual(reorderButton.label, "Done")
+    }
+
     func testAppleWatchWristTemperatureAppearsOnDashboard() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-ui-testing-wrist-temperature-preview"]
