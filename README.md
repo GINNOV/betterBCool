@@ -179,7 +179,7 @@ The Swift tests cover:
 - OAuth and Keychain-related helpers;
 - schedules and timeline calculations;
 - Watch request/snapshot models;
-- sanitized telemetry and FeverFrida protocol decoders.
+- sanitized telemetry and experimental FeverFrida protocol decoders.
 
 The backend has its own checks:
 
@@ -200,8 +200,7 @@ App/                         iPhone composition root, settings, sign-in, WatchCo
 Watch/                       Apple Watch app and its mirrored Codable transport models
 Sources/BetterBCoolCore/     Climate models, validation, auth, schedules, and service adapters
 Sources/BetterBCoolUI/       SwiftUI dashboard, view model, routines, and activity log
-Sources/FeverFridaKit/       BLE telemetry and protocol decoding utilities
-Examples/                    Small protocol exploration app
+Experimentals/FeverFrida/    Protocol-discovery BLE library, explorer, tests, and research notes
 backend/                     Optional Vercel Workflow + Neon cloud scheduler
 docs/                        Protocol notes, capture guidance, and safety boundaries
 Tests/                       Swift unit tests and transport fixtures
@@ -221,12 +220,18 @@ ClimateDashboard
                     └── CloudClimateService → betterBCool Cloud
 ```
 
+## Experimental protocol work
+
+[`Experimentals/FeverFrida`](Experimentals/FeverFrida/) contains the exploratory BLE project used to learn how a FeverFrida/iThermonitor WT701 communicates. It includes the `FeverFridaKit` decoder and CoreBluetooth explorer, the `FeverFridaExplorer` example app, focused tests, and protocol notes.
+
+This work is separate from the production climate-control app. It is useful for protocol research and reproducible decoder tests, but it is not required to build or run betterBCool. Device captures are deliberately kept out of the repository; capture output belongs in the app's private Documents directory and must be redacted before any future sharing.
+
 ## Evidence and documentation
 
 - [Protocol findings](docs/protocol-findings.md)
-- [FeverFrida protocol notes](docs/feverfrida-protocol.md)
-- [Capture guidance](docs/feverfrida-capture.md)
-- [Next capture checklist](docs/next-capture.md)
+- [FeverFrida protocol notes](Experimentals/FeverFrida/docs/feverfrida-protocol.md)
+- [Capture guidance](Experimentals/FeverFrida/docs/feverfrida-capture.md)
+- [Next capture checklist](Experimentals/FeverFrida/docs/next-capture.md)
 - [Safety, privacy, and legal boundaries](docs/safety-and-legal.md)
 - [Changelog](CHANGELOG.md)
 

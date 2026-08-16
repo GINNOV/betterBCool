@@ -13,8 +13,15 @@ let package = Package(
     targets: [
         .target(name: "BetterBCoolCore"),
         .target(name: "BetterBCoolUI", dependencies: ["BetterBCoolCore"]),
-        .target(name: "FeverFridaKit"),
+        .target(
+            name: "FeverFridaKit",
+            path: "Experimentals/FeverFrida/Sources/FeverFridaKit"
+        ),
         .testTarget(name: "BetterBCoolCoreTests", dependencies: ["BetterBCoolCore"]),
-        .testTarget(name: "FeverFridaKitTests", dependencies: ["FeverFridaKit"])
+        .testTarget(
+            name: "FeverFridaKitTests",
+            dependencies: ["FeverFridaKit"],
+            path: "Experimentals/FeverFrida/Tests/FeverFridaKitTests"
+        )
     ]
 )

@@ -141,7 +141,7 @@
 				400000000000000000000004 /* FeverFridaExplorerApp.swift */,
 				400000000000000000000005 /* ExplorerView.swift */,
 			);
-			path = Examples/FeverFridaExplorer;
+			path = Experimentals/FeverFrida/Examples/FeverFridaExplorer;
 			sourceTree = "<group>";
 		};
 		500000000000000000000008 /* BetterBCoolWatch */ = {
