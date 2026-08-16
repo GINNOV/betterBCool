@@ -9,23 +9,29 @@ struct WatchRequest: Codable, Equatable {
     enum Action: String, Codable, Equatable {
         case refresh
         case togglePower
+        case setPower
         case setTemperature
         case setSchedulesEnabled
     }
 
     let action: Action
+    let powerEnabled: Bool?
     let temperature: Double?
     let schedulesEnabled: Bool?
 
-    static let refresh = WatchRequest(action: .refresh, temperature: nil, schedulesEnabled: nil)
-    static let togglePower = WatchRequest(action: .togglePower, temperature: nil, schedulesEnabled: nil)
+    static let refresh = WatchRequest(action: .refresh, powerEnabled: nil, temperature: nil, schedulesEnabled: nil)
+    static let togglePower = WatchRequest(action: .togglePower, powerEnabled: nil, temperature: nil, schedulesEnabled: nil)
+
+    static func setPower(_ enabled: Bool) -> WatchRequest {
+        .init(action: .setPower, powerEnabled: enabled, temperature: nil, schedulesEnabled: nil)
+    }
 
     static func setTemperature(_ temperature: Double) -> WatchRequest {
-        .init(action: .setTemperature, temperature: temperature, schedulesEnabled: nil)
+        .init(action: .setTemperature, powerEnabled: nil, temperature: temperature, schedulesEnabled: nil)
     }
 
     static func setSchedulesEnabled(_ enabled: Bool) -> WatchRequest {
-        .init(action: .setSchedulesEnabled, temperature: nil, schedulesEnabled: enabled)
+        .init(action: .setSchedulesEnabled, powerEnabled: nil, temperature: nil, schedulesEnabled: enabled)
     }
 }
 
@@ -75,4 +81,18 @@ struct WatchSnapshot: Codable, Equatable {
 
     var enabledScheduleCount: Int { schedules.filter(\.isEnabled).count }
     var allSchedulesEnabled: Bool { !schedules.isEmpty && schedules.allSatisfy(\.isEnabled) }
+
+    func replacingState(_ state: ClimateState) -> WatchSnapshot {
+        WatchSnapshot(
+            deviceName: deviceName,
+            state: state,
+            canWrite: canWrite,
+            minimumSetpoint: minimumSetpoint,
+            maximumSetpoint: maximumSetpoint,
+            setpointStep: setpointStep,
+            schedules: schedules,
+            nextScheduleDate: nextScheduleDate,
+            errorMessage: errorMessage
+        )
+    }
 }

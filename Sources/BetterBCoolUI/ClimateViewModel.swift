@@ -41,9 +41,26 @@ public final class ClimateViewModel: ObservableObject {
     private var loadGeneration = 0
     private var applyGeneration = 0
     private var pendingApplyCount = 0
+    private var climateStateObserver: NSObjectProtocol?
 
     public init(service: any ClimateService) {
         self.service = service
+        climateStateObserver = NotificationCenter.default.addObserver(
+            forName: .betterBCoolClimateStateDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let state = notification.object as? ClimateState else { return }
+            Task { @MainActor [weak self] in
+                self?.state = state
+            }
+        }
+    }
+
+    deinit {
+        if let climateStateObserver {
+            NotificationCenter.default.removeObserver(climateStateObserver)
+        }
     }
 
     public var controlsEnabled: Bool { capabilities?.canWrite == true && state != nil }
@@ -115,10 +132,12 @@ public final class ClimateViewModel: ObservableObject {
         guard generation == loadGeneration else { return }
         capabilities = loadedCapabilities
         state = loadedState
+        publish(loadedState)
     }
 
     public func apply(_ patch: ClimatePatch) async {
         guard let device = selectedDevice, let capabilities, let previousState = state else { return }
+        guard previousState.powerEnabled || patch.isPowerOnOnly else { return }
         do {
             try capabilities.validate(patch)
         } catch ClimateServiceError.readOnly {
@@ -137,6 +156,7 @@ public final class ClimateViewModel: ObservableObject {
 
         // Reflect the tap immediately. The service response reconciles the remaining fields.
         state = previousState.applying(patch)
+        if let state { publish(state) }
         defer {
             pendingApplyCount -= 1
             isApplying = pendingApplyCount > 0
@@ -149,15 +169,22 @@ public final class ClimateViewModel: ObservableObject {
             // Some device shadows acknowledge a desired value before reporting it back.
             // Keep the acknowledged patch visible instead of flashing back to stale state.
             state = confirmedState.applying(patch)
+            if let state { publish(state) }
         } catch ClimateServiceError.readOnly {
             guard generation == applyGeneration else { return }
             state = previousState
+            publish(previousState)
             errorMessage = String(localized: "Controls are read-only until the Bosch API is verified.")
         } catch {
             guard generation == applyGeneration else { return }
             state = previousState
+            publish(previousState)
             errorMessage = String(localized: "The device did not accept that setting.")
         }
+    }
+
+    private func publish(_ state: ClimateState) {
+        NotificationCenter.default.post(name: .betterBCoolClimateStateDidChange, object: state)
     }
 
     private func recordActivities(for patch: ClimatePatch) {
@@ -245,6 +272,19 @@ public final class ClimateViewModel: ObservableObject {
         if activities.count > 50 {
             activities.removeLast(activities.count - 50)
         }
+    }
+}
+
+private extension ClimatePatch {
+    var isPowerOnOnly: Bool {
+        powerEnabled == true
+            && operatingMode == nil
+            && fanSpeed == nil
+            && temperatureSetpoint == nil
+            && ecoEnabled == nil
+            && sleepEnabled == nil
+            && horizontalSwingEnabled == nil
+            && verticalSwingEnabled == nil
     }
 }
 

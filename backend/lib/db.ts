@@ -56,6 +56,39 @@ async function createSchema(): Promise<void> {
       PRIMARY KEY (installation_id, schedule_id, occurrence_id, step_id)
     )
   `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS tv_pairing_sessions (
+      id TEXT PRIMARY KEY,
+      code_hash TEXT NOT NULL UNIQUE,
+      polling_secret_hash TEXT NOT NULL,
+      installation_id TEXT REFERENCES installations(id) ON DELETE CASCADE,
+      tv_name TEXT,
+      expires_at TIMESTAMPTZ NOT NULL,
+      approved_at TIMESTAMPTZ,
+      exchanged_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS tv_pairing_sessions_expiry_idx
+    ON tv_pairing_sessions (expires_at)
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS tv_devices (
+      id TEXT PRIMARY KEY,
+      installation_id TEXT NOT NULL REFERENCES installations(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      token_hash TEXT NOT NULL UNIQUE,
+      scopes TEXT[] NOT NULL DEFAULT ARRAY['climate:read', 'climate:write'],
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      last_used_at TIMESTAMPTZ,
+      revoked_at TIMESTAMPTZ
+    )
+  `;
+  await sql`
+    CREATE INDEX IF NOT EXISTS tv_devices_installation_idx
+    ON tv_devices (installation_id)
+  `;
 }
 
 export interface InstallationRow {

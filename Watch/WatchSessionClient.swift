@@ -10,7 +10,7 @@ final class WatchSessionClient: NSObject, ObservableObject, WCSessionDelegate {
 
     private let session = WCSession.default
     private var didStart = false
-    private static let payloadKey = "betterBCool.watchPayload"
+    nonisolated private static let payloadKey = "betterBCool.watchPayload"
 
     override init() {
         if let data = WCSession.default.applicationContext[Self.payloadKey] as? Data {
@@ -30,8 +30,13 @@ final class WatchSessionClient: NSObject, ObservableObject, WCSessionDelegate {
         send(.refresh)
     }
 
-    func togglePower() {
-        send(.togglePower)
+    func setPower(_ enabled: Bool) {
+        let previousSnapshot = snapshot
+        if var state = snapshot?.state, let snapshot {
+            state.powerEnabled = enabled
+            self.snapshot = snapshot.replacingState(state)
+        }
+        send(.setPower(enabled), rollbackSnapshot: previousSnapshot)
     }
 
     func setTemperature(_ temperature: Double) {
@@ -42,7 +47,7 @@ final class WatchSessionClient: NSObject, ObservableObject, WCSessionDelegate {
         send(.setSchedulesEnabled(enabled))
     }
 
-    private func send(_ request: WatchRequest) {
+    private func send(_ request: WatchRequest, rollbackSnapshot: WatchSnapshot? = nil) {
         start()
         guard WCSession.isSupported() else {
             errorMessage = "Watch connectivity is unavailable."
@@ -73,6 +78,9 @@ final class WatchSessionClient: NSObject, ObservableObject, WCSessionDelegate {
             },
             errorHandler: { [weak self] error in
                 Task { @MainActor [weak self] in
+                    if let rollbackSnapshot {
+                        self?.snapshot = rollbackSnapshot
+                    }
                     self?.errorMessage = error.localizedDescription
                 }
             }
@@ -100,6 +108,13 @@ final class WatchSessionClient: NSObject, ObservableObject, WCSessionDelegate {
             } else if activationState == .activated, snapshot == nil {
                 refresh()
             }
+        }
+    }
+
+    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
+        guard session.isReachable else { return }
+        Task { @MainActor [weak self] in
+            self?.refresh()
         }
     }
 

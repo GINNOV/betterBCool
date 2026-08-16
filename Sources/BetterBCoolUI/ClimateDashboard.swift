@@ -7,6 +7,7 @@ import SwiftUI
 public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
+    @Environment(\.scenePhase) private var scenePhase
     @ObservedObject private var bodyTemperature: BodyTemperatureManager
     private let settingsContent: () -> AnyView
     private let onSettingsTapped: (() -> Void)?
@@ -104,6 +105,10 @@ public struct ClimateDashboard: View {
             .task {
                 scheduleController.activate()
                 await model.load()
+            }
+            .onChange(of: scenePhase) { _, phase in
+                guard phase == .active else { return }
+                Task { await model.load() }
             }
             .onDisappear { scheduleController.deactivate() }
 #if os(iOS)
@@ -308,7 +313,9 @@ public struct ClimateDashboard: View {
             RoundedRectangle(cornerRadius: 30, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [Color.accentBlue.opacity(0.82), Color.deepBlue.opacity(0.9)],
+                        colors: state.powerEnabled
+                            ? [Color.accentBlue.opacity(0.82), Color.deepBlue.opacity(0.9)]
+                            : [Color.accentRed.opacity(0.9), Color.deepRed.opacity(0.95)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -322,7 +329,12 @@ public struct ClimateDashboard: View {
                 }
         }
         .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-        .shadow(color: Color.accentBlue.opacity(0.24), radius: 28, y: 16)
+        .shadow(
+            color: (state.powerEnabled ? Color.accentBlue : Color.accentRed).opacity(0.24),
+            radius: 28,
+            y: 16
+        )
+        .accessibilityIdentifier("dashboard.temperatureCard")
     }
 
     private func modeSummary(_ mode: OperatingMode) -> some View {
@@ -349,7 +361,7 @@ public struct ClimateDashboard: View {
                     ) {
                         Task { await model.apply(.init(operatingMode: mode)) }
                     }
-                    .disabled(!model.controlsEnabled || model.capabilities?.operatingModes.contains(mode) != true)
+                    .disabled(!canChangeClimateSettings(state) || model.capabilities?.operatingModes.contains(mode) != true)
                 }
             }
         }
@@ -419,7 +431,7 @@ public struct ClimateDashboard: View {
                         Task { await model.apply(.init(fanSpeed: speed)) }
                     }
                     .disabled(
-                        !model.controlsEnabled
+                        !canChangeClimateSettings(state)
                             || state.operatingMode == .dry
                             || model.capabilities?.fanSpeeds.contains(speed) != true
                     )
@@ -442,7 +454,7 @@ public struct ClimateDashboard: View {
                         Task { await model.apply(.init(ecoEnabled: !state.ecoEnabled)) }
                     }
                 )
-                .disabled(!model.controlsEnabled || state.operatingMode == .dry)
+                .disabled(!canChangeClimateSettings(state) || state.operatingMode == .dry)
                 .accessibilityIdentifier("dashboard.ecoButton")
 
                 FeatureTile(
@@ -453,7 +465,7 @@ public struct ClimateDashboard: View {
                         Task { await model.apply(.init(sleepEnabled: !state.sleepEnabled)) }
                     }
                 )
-                .disabled(!model.controlsEnabled || state.operatingMode == .dry)
+                .disabled(!canChangeClimateSettings(state) || state.operatingMode == .dry)
                 .accessibilityIdentifier("dashboard.sleepButton")
                 FeatureTile(
                     title: String(localized: "Vertical swing"),
@@ -465,7 +477,7 @@ public struct ClimateDashboard: View {
                         }
                     }
                 )
-                .disabled(!model.controlsEnabled)
+                .disabled(!canChangeClimateSettings(state))
                 .accessibilityIdentifier("dashboard.verticalSwingButton")
 
                 FeatureTile(
@@ -478,7 +490,7 @@ public struct ClimateDashboard: View {
                         }
                     }
                 )
-                .disabled(!model.controlsEnabled)
+                .disabled(!canChangeClimateSettings(state))
                 .accessibilityIdentifier("dashboard.horizontalSwingButton")
             }
         }
@@ -593,10 +605,14 @@ public struct ClimateDashboard: View {
     }
 
     private func canAdjust(_ state: ClimateState, by delta: Double) -> Bool {
-        guard model.controlsEnabled,
+        guard canChangeClimateSettings(state),
               let value = state.temperatureSetpoint,
               let capabilities = model.capabilities else { return false }
         return value + delta >= capabilities.minimumSetpoint && value + delta <= capabilities.maximumSetpoint
+    }
+
+    private func canChangeClimateSettings(_ state: ClimateState) -> Bool {
+        model.controlsEnabled && state.powerEnabled
     }
 
     private var temperatureStep: Double {
@@ -920,4 +936,6 @@ private extension Color {
     static let appBottom = Color(red: 0.025, green: 0.035, blue: 0.07)
     static let accentBlue = Color(red: 0.20, green: 0.46, blue: 0.98)
     static let deepBlue = Color(red: 0.12, green: 0.23, blue: 0.62)
+    static let accentRed = Color(red: 0.92, green: 0.20, blue: 0.22)
+    static let deepRed = Color(red: 0.56, green: 0.07, blue: 0.12)
 }

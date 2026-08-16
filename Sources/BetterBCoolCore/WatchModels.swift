@@ -4,6 +4,7 @@ import Foundation
 
 public extension Notification.Name {
     static let betterBCoolSchedulesDidChange = Notification.Name("betterBCool.schedulesDidChange")
+    static let betterBCoolClimateStateDidChange = Notification.Name("betterBCool.climateStateDidChange")
 }
 
 /// Commands exchanged between the Apple Watch companion and the iPhone app.
@@ -13,26 +14,34 @@ public struct WatchRequest: Codable, Equatable, Sendable {
     public enum Action: String, Codable, Equatable, Sendable {
         case refresh
         case togglePower
+        case setPower
         case setTemperature
         case setSchedulesEnabled
     }
 
     public let action: Action
+    public let powerEnabled: Bool?
     public let temperature: Double?
     public let schedulesEnabled: Bool?
 
     public init(
         action: Action,
+        powerEnabled: Bool? = nil,
         temperature: Double? = nil,
         schedulesEnabled: Bool? = nil
     ) {
         self.action = action
+        self.powerEnabled = powerEnabled
         self.temperature = temperature
         self.schedulesEnabled = schedulesEnabled
     }
 
     public static let refresh = WatchRequest(action: .refresh)
     public static let togglePower = WatchRequest(action: .togglePower)
+
+    public static func setPower(_ enabled: Bool) -> WatchRequest {
+        .init(action: .setPower, powerEnabled: enabled)
+    }
 
     public static func setTemperature(_ temperature: Double) -> WatchRequest {
         .init(action: .setTemperature, temperature: temperature)

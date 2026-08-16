@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "betterBCool",
-    platforms: [.iOS(.v17), .macOS(.v14)],
+    platforms: [.iOS(.v17), .macOS(.v14), .tvOS(.v17)],
     products: [
         .library(name: "BetterBCoolCore", targets: ["BetterBCoolCore"]),
         .library(name: "BetterBCoolUI", targets: ["BetterBCoolUI"]),

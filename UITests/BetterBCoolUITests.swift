@@ -131,6 +131,32 @@ final class BetterBCoolUITests: XCTestCase {
         waitForExpectations(timeout: 5)
     }
 
+    func testPowerOffDisablesClimateSettingsButKeepsSchedulesAvailable() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-power-off"]
+        app.launch()
+
+        let powerButton = app.buttons["dashboard.powerButton"]
+        XCTAssertTrue(powerButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(powerButton.isEnabled, "The power control must remain available to turn the unit back on")
+        XCTAssertEqual(powerButton.label, "Turn air conditioner on")
+
+        let increaseTemperature = app.buttons["Increase temperature"]
+        XCTAssertTrue(increaseTemperature.waitForExistence(timeout: 5))
+        XCTAssertFalse(increaseTemperature.isEnabled)
+
+        let coolMode = app.buttons["Cool"]
+        XCTAssertTrue(coolMode.waitForExistence(timeout: 5))
+        XCTAssertFalse(coolMode.isEnabled)
+
+        let verticalSwing = app.buttons["dashboard.verticalSwingButton"]
+        XCTAssertTrue(verticalSwing.waitForExistence(timeout: 5))
+        XCTAssertFalse(verticalSwing.isEnabled)
+
+        let schedulesButton = app.buttons["dashboard.schedulesButton"]
+        XCTAssertTrue(schedulesButton.isEnabled, "Schedules must remain available while the unit is off")
+    }
+
     func testHalfDegreeTemperatureChangeHolds() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]

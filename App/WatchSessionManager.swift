@@ -8,6 +8,7 @@ import WatchConnectivity
 final class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     private let configuration: AppConfiguration
     private var scheduleChangeObserver: NSObjectProtocol?
+    private var climateStateObserver: NSObjectProtocol?
 
     init(configuration: AppConfiguration) {
         self.configuration = configuration
@@ -22,12 +23,25 @@ final class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
                 self?.pushSnapshot()
             }
         }
+        climateStateObserver = NotificationCenter.default.addObserver(
+            forName: .betterBCoolClimateStateDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let state = notification.object as? ClimateState else { return }
+            Task { @MainActor [weak self] in
+                self?.pushSnapshot(overriding: state)
+            }
+        }
         activate()
     }
 
     deinit {
         if let scheduleChangeObserver {
             NotificationCenter.default.removeObserver(scheduleChangeObserver)
+        }
+        if let climateStateObserver {
+            NotificationCenter.default.removeObserver(climateStateObserver)
         }
     }
 
@@ -38,10 +52,17 @@ final class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         session.activate()
     }
 
-    private func pushSnapshot() {
+    private func pushSnapshot(overriding state: ClimateState? = nil) {
         guard WCSession.isSupported(), WCSession.default.activationState == .activated else { return }
+        if let state,
+           let data = WCSession.default.applicationContext[Self.payloadKey] as? Data,
+           let existing = try? JSONDecoder().decode(WatchSnapshot.self, from: data),
+           let updated = try? JSONEncoder().encode(existing.replacingState(state)) {
+            try? WCSession.default.updateApplicationContext([Self.payloadKey: updated])
+            return
+        }
         Task {
-            let snapshot = await configuration.watchSnapshot()
+            let snapshot = await configuration.watchSnapshot(overriding: state)
             guard let data = try? JSONEncoder().encode(snapshot) else { return }
             try? WCSession.default.updateApplicationContext([Self.payloadKey: data])
         }
@@ -59,6 +80,9 @@ final class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
 
         Task {
             let snapshot = await configuration.handleWatchRequest(request)
+            if snapshot.errorMessage == nil {
+                configuration.reloadDashboard()
+            }
             guard let response = try? JSONEncoder().encode(snapshot) else {
                 replyHandler([Self.payloadKey: Self.errorData("The iPhone could not prepare a response.")])
                 return
@@ -67,7 +91,7 @@ final class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
 
-    private static let payloadKey = "betterBCool.watchPayload"
+    nonisolated private static let payloadKey = "betterBCool.watchPayload"
 
     private static func errorData(_ message: String) -> Data {
         let snapshot = WatchSnapshot(errorMessage: message)
@@ -110,8 +134,27 @@ final class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
               let request = try? JSONDecoder().decode(WatchRequest.self, from: data) else { return }
         Task { @MainActor [weak self] in
             guard let self else { return }
-            _ = await self.configuration.handleWatchRequest(request)
+            let snapshot = await self.configuration.handleWatchRequest(request)
+            if snapshot.errorMessage == nil {
+                self.configuration.reloadDashboard()
+            }
             self.pushSnapshot()
         }
+    }
+}
+
+private extension WatchSnapshot {
+    func replacingState(_ state: ClimateState) -> WatchSnapshot {
+        WatchSnapshot(
+            deviceName: deviceName,
+            state: state,
+            canWrite: canWrite,
+            minimumSetpoint: minimumSetpoint,
+            maximumSetpoint: maximumSetpoint,
+            setpointStep: setpointStep,
+            schedules: schedules,
+            nextScheduleDate: nextScheduleDate,
+            errorMessage: errorMessage
+        )
     }
 }

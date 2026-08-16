@@ -43,9 +43,11 @@ iPhone app ── local mode ──► DemoClimateService
     └─ cloud mode ──────────► betterBCool Cloud → Bosch PointT or Bacon
                                │
                                └─ durable scheduled routines
+
+Apple TV ── TV-scoped session ──► betterBCool Cloud → Bosch PointT or Bacon
 ```
 
-The iPhone is the normal composition root. It selects one climate service after sign-in and exposes that service to the dashboard, routines, Watch requests, and optional cloud scheduler.
+The iPhone is the normal composition root for sign-in and device discovery. It selects one climate service after sign-in and exposes that service to the dashboard, routines, Watch requests, and optional cloud scheduler. Apple TV is paired once through the iPhone, then uses its own scoped session and does not require the phone to remain open for control.
 
 ### First launch and sign-in
 
@@ -82,6 +84,24 @@ The Watch keeps the latest `WatchSnapshot` in its application context so it can 
 - If the selected device is unavailable or does not support a requested value, the Watch keeps the error local and does not bypass the iPhone's validation.
 
 The Watch can toggle the saved routines as a group, but routine creation and step editing remain on the iPhone.
+
+### Apple TV
+
+The `BetterBCoolTV` target provides a living-room dashboard designed for the Siri Remote. It includes:
+
+- a large current-temperature and power hero;
+- three focused control rows for power/mode, fan speed, and comfort/airflow;
+- a TV-scoped Keychain session so the TV never stores Bosch credentials;
+- immediate local UI feedback while a cloud command is confirmed in the background;
+- automatic focus protection so controls other than **Turn On** are unavailable while the unit is off.
+
+Pairing is a one-time approval flow:
+
+1. Start pairing on the Apple TV to display a six-digit code.
+2. On the signed-in iPhone, open **Settings → TVs** and approve the code.
+3. The TV exchanges its one-time polling secret for a scoped session token and stores it in the tvOS Keychain.
+
+After pairing, the phone is not part of the control loop. Live reads and writes still require the configured betterBCool Cloud deployment, which securely forwards the command to Bosch.
 
 ## Live Bosch transports
 
@@ -138,6 +158,8 @@ Current limitations include:
 
 - one discovered air conditioner is selected per signed-in installation;
 - the Watch offers quick controls, not the full iPhone dashboard;
+- the Apple TV requires a one-time iPhone approval and an available betterBCool Cloud deployment after pairing;
+- Apple TV control latency still depends on the cloud-to-Bosch transport, while the TV UI updates optimistically;
 - Bacon shadows may not provide ambient room temperature;
 - local routines require the app to remain active;
 - cloud scheduling requires deploying and configuring the companion backend;
@@ -148,6 +170,7 @@ Current limitations include:
 - macOS with Xcode 26 or newer;
 - iOS 17 or newer;
 - watchOS 10 or newer for the Watch target;
+- tvOS 26 or newer for the Apple TV target;
 - Swift 5.9 or newer;
 - an Apple Watch paired with the test iPhone for Watch and wrist-temperature features;
 - a Bosch HomeCom Easy account and an owned or authorized compatible unit for live access.
@@ -158,6 +181,7 @@ Current limitations include:
 2. Select the `BetterBCool` scheme.
 3. Choose an iOS Simulator or a configured iPhone and run.
 4. For Watch development, select the embedded `BetterBCoolWatch` target on a paired Apple Watch.
+5. For Apple TV development, select the `BetterBCoolTV` scheme, choose a paired Apple TV, and run.
 
 No Bosch credentials are required for the bundled demo. To test live access, configure your own signing team and entitlements, install the app on an iPhone, complete Bosch sign-in, and keep the official app available for comparison and recovery.
 
@@ -198,6 +222,7 @@ Network-facing tests use interceptors or fixtures; they do not send test command
 ```text
 App/                         iPhone composition root, settings, sign-in, WatchConnectivity bridge
 Watch/                       Apple Watch app and its mirrored Codable transport models
+TVApp/                       Apple TV dashboard, pairing flow, scoped session, and cloud climate service
 Sources/BetterBCoolCore/     Climate models, validation, auth, schedules, and service adapters
 Sources/BetterBCoolUI/       SwiftUI dashboard, view model, routines, and activity log
 Experimentals/FeverFrida/    Protocol-discovery BLE library, explorer, tests, and research notes
@@ -218,6 +243,10 @@ ClimateDashboard
                     ├── PointTClimateService → PointTAPI
                     ├── BaconClimateService → BaconAPI + BaconMQTTClient
                     └── CloudClimateService → betterBCool Cloud
+
+BetterBCoolTV
+    └── TVClimateViewModel
+            └── TVCloudClimateService → betterBCool Cloud → Bosch
 ```
 
 ## Experimental protocol work
@@ -232,6 +261,7 @@ This work is separate from the production climate-control app. It is useful for 
 - [FeverFrida protocol notes](Experimentals/FeverFrida/docs/feverfrida-protocol.md)
 - [Capture guidance](Experimentals/FeverFrida/docs/feverfrida-capture.md)
 - [Next capture checklist](Experimentals/FeverFrida/docs/next-capture.md)
+- [Apple TV product and implementation plan](docs/tvos-app-plan.md)
 - [Safety, privacy, and legal boundaries](docs/safety-and-legal.md)
 - [Changelog](CHANGELOG.md)
 

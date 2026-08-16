@@ -15,6 +15,16 @@ final class WatchModelsTests: XCTestCase {
         XCTAssertEqual(decoded.temperature, 24.5)
     }
 
+    func testPowerRequestCarriesExplicitDesiredState() throws {
+        let request = WatchRequest.setPower(false)
+        let data = try JSONEncoder().encode(request)
+        let decoded = try JSONDecoder().decode(WatchRequest.self, from: data)
+
+        XCTAssertEqual(decoded, request)
+        XCTAssertEqual(decoded.action, .setPower)
+        XCTAssertEqual(decoded.powerEnabled, false)
+    }
+
     func testSnapshotReportsScheduleGroupState() {
         let enabled = WatchScheduleSummary(
             id: UUID(),

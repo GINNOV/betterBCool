@@ -34,6 +34,19 @@ npm run build
 
 The database schema is created idempotently on the first authenticated request.
 
+## Apple TV pairing
+
+The tvOS app uses a separate, scoped session instead of the iPhone API key. A TV starts a five-minute pairing session, the signed-in iPhone approves the six-digit code, and the TV exchanges its one-time polling secret for a random token stored only in the tvOS Keychain. TV climate reads and writes use `TVBearer` authentication and can be revoked from the iPhone.
+
+Pairing endpoints:
+
+- `POST /api/tv/pair/start`
+- `POST /api/tv/pair/approve` (iPhone auth)
+- `POST /api/tv/pair/exchange`
+- `GET /api/tv/session` (TV auth)
+- `POST /api/tv/revoke` (iPhone auth)
+- `GET /api/tv/climate/state` and `PUT /api/tv/climate/apply` (TV auth)
+
 ## Security model
 
 When cloud scheduling is enabled, Vercel becomes the single authority for Bosch token refreshes. The iOS app routes manual and scheduled commands through the backend, preventing the phone and server from racing to rotate the same refresh token. Routine updates increment a revision and cancel the previous workflow; every delayed step checks that revision again before changing the device.

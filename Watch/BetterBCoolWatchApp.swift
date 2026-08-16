@@ -14,50 +14,49 @@ struct BetterBCoolWatchApp: App {
 }
 
 private struct WatchControlView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var session: WatchSessionClient
     @State private var crownTemperature = 24.0
     @State private var isUpdatingCrown = false
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 12) {
-                    if let snapshot = session.snapshot, let state = snapshot.state {
-                        deviceHeader(snapshot)
-                        powerButton(snapshot: snapshot, state: state)
+        ScrollView {
+            VStack(spacing: 8) {
+                if let snapshot = session.snapshot, let state = snapshot.state {
+                    if state.powerEnabled {
+                        HStack(spacing: 8) {
+                            deviceHeader(snapshot, state: state)
+                            Spacer(minLength: 4)
+                            powerButton(snapshot: snapshot, state: state)
+                        }
                         temperatureControl(snapshot: snapshot, state: state)
                         if !snapshot.schedules.isEmpty {
                             schedulesControl(snapshot)
                         }
                     } else {
-                        unavailableView
+                        poweredOffView(snapshot: snapshot, state: state)
                     }
+                } else {
+                    unavailableView
+                }
 
-                    if let message = session.errorMessage ?? session.snapshot?.errorMessage {
-                        Text(message)
-                            .font(.footnote)
-                            .foregroundStyle(.orange)
-                            .multilineTextAlignment(.center)
-                    }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 10)
-            }
-            .navigationTitle("betterBCool")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        session.refresh()
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                    .accessibilityLabel("Refresh climate")
+                if let message = session.errorMessage ?? session.snapshot?.errorMessage {
+                    Text(message)
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                        .multilineTextAlignment(.center)
                 }
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
         }
+        .toolbar(.hidden, for: .navigationBar)
         .task {
             session.start()
-            if session.snapshot == nil { session.refresh() }
+            session.refresh()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { session.refresh() }
         }
         .onChange(of: session.snapshot?.state?.temperatureSetpoint) { _, value in
             guard let value else { return }
@@ -69,56 +68,64 @@ private struct WatchControlView: View {
             }
         }
         .onChange(of: crownTemperature) { _, value in
-            guard !isUpdatingCrown else { return }
+            guard !isUpdatingCrown,
+                  session.snapshot?.canWrite == true,
+                  session.snapshot?.state?.powerEnabled == true else { return }
             session.setTemperature(value)
         }
     }
 
-    private func deviceHeader(_ snapshot: WatchSnapshot) -> some View {
-        VStack(spacing: 2) {
+    private func deviceHeader(_ snapshot: WatchSnapshot, state: ClimateState) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
             Text(snapshot.deviceName ?? "Climate")
-                .font(.headline)
+                .font(.caption.weight(.semibold))
                 .lineLimit(1)
-            Text(snapshot.canWrite ? "Connected" : "Read only")
-                .font(.caption2)
-                .foregroundStyle(snapshot.canWrite ? .green : .orange)
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(snapshot.canWrite ? (state.powerEnabled ? .green : .secondary) : .orange)
+                    .frame(width: 5, height: 5)
+                Text(snapshot.canWrite ? (state.powerEnabled ? "On" : "Off") : "Read only")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
         }
-        .frame(maxWidth: .infinity)
     }
 
     private func powerButton(snapshot: WatchSnapshot, state: ClimateState) -> some View {
         Button {
-            session.togglePower()
+            session.setPower(!state.powerEnabled)
         } label: {
-            Label(
-                state.powerEnabled ? "Turn Off" : "Turn On",
-                systemImage: state.powerEnabled ? "power" : "power"
-            )
-            .frame(maxWidth: .infinity)
+            Image(systemName: "power")
+                .font(.system(size: 16, weight: .bold))
+                .frame(width: 38, height: 38)
+                .background(state.powerEnabled ? Color.green : Color.secondary.opacity(0.25), in: Circle())
         }
-        .buttonStyle(.borderedProminent)
-        .tint(state.powerEnabled ? .orange : .green)
+        .buttonStyle(.plain)
         .disabled(!snapshot.canWrite)
+        .opacity(snapshot.canWrite ? 1 : 0.45)
+        .accessibilityLabel(state.powerEnabled ? "Turn off" : "Turn on")
         .accessibilityIdentifier("watch.powerButton")
     }
 
+    private func poweredOffView(snapshot: WatchSnapshot, state: ClimateState) -> some View {
+        powerButton(snapshot: snapshot, state: state)
+            .scaleEffect(1.35)
+            .frame(maxWidth: .infinity, minHeight: 130)
+    }
+
     private func temperatureControl(snapshot: WatchSnapshot, state: ClimateState) -> some View {
-        VStack(spacing: 3) {
-            Text("SETPOINT")
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(.secondary)
-            Text(crownTemperature.formatted(.number.precision(.fractionLength(1))) + "°")
-                .font(.system(size: 34, weight: .semibold, design: .rounded))
-                .contentTransition(.numericText())
-            Text("Turn crown to adjust")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
+        let canAdjust = snapshot.canWrite && state.powerEnabled
+        return Text(crownTemperature.formatted(.number.precision(.fractionLength(1))) + "°")
+            .font(.system(size: 42, weight: .medium, design: .rounded))
+            .minimumScaleFactor(0.75)
+            .contentTransition(.numericText(value: crownTemperature))
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
 #if os(watchOS)
-        .focusable(snapshot.canWrite)
+        .focusable(canAdjust)
         .digitalCrownRotation(
-            $crownTemperature,
+            crownBinding(enabled: canAdjust),
             from: snapshot.minimumSetpoint ?? state.temperatureSetpoint ?? 15,
             through: snapshot.maximumSetpoint ?? state.temperatureSetpoint ?? 32.5,
             by: snapshot.setpointStep ?? 0.5,
@@ -130,66 +137,57 @@ private struct WatchControlView: View {
         .onAppear {
             if let value = state.temperatureSetpoint { crownTemperature = value }
         }
-        .opacity(snapshot.canWrite ? 1 : 0.5)
+        .opacity(canAdjust ? 1 : 0.38)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Set temperature")
-        .accessibilityValue(crownTemperature.formatted(.number.precision(.fractionLength(1))) + " degrees")
+        .accessibilityValue(
+            canAdjust
+                ? crownTemperature.formatted(.number.precision(.fractionLength(1))) + " degrees"
+                : "Unavailable while off"
+        )
         .accessibilityIdentifier("watch.temperatureControl")
+    }
+
+    private func crownBinding(enabled: Bool) -> Binding<Double> {
+        Binding(
+            get: { crownTemperature },
+            set: { value in
+                guard enabled else { return }
+                crownTemperature = value
+            }
+        )
     }
 
     private func schedulesControl(_ snapshot: WatchSnapshot) -> some View {
         Button {
             session.setSchedulesEnabled(!snapshot.allSchedulesEnabled)
         } label: {
-            HStack(spacing: 8) {
-                Image(systemName: snapshot.allSchedulesEnabled ? "calendar.badge.checkmark" : "calendar.badge.minus")
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Schedules")
-                        .font(.headline)
-                    Text(
-                        snapshot.allSchedulesEnabled
-                            ? String(
-                                format: String(localized: "All %lld on"),
-                                locale: .current,
-                                Int64(snapshot.schedules.count)
-                            )
-                            : String(
-                                format: String(localized: "%1$lld of %2$lld on"),
-                                locale: .current,
-                                Int64(snapshot.enabledScheduleCount),
-                                Int64(snapshot.schedules.count)
-                            )
-                    )
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                }
-                Spacer()
-                Image(systemName: snapshot.allSchedulesEnabled ? "power" : "power.slash")
-                    .foregroundStyle(snapshot.allSchedulesEnabled ? .green : .secondary)
-            }
-            .padding(.vertical, 2)
+            Image(systemName: snapshot.allSchedulesEnabled ? "calendar.badge.checkmark" : "calendar")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(snapshot.allSchedulesEnabled ? .green : .primary)
+                .frame(width: 38, height: 38)
+                .background(.quaternary, in: Circle())
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
+        .disabled(!snapshot.canWrite)
+        .opacity(snapshot.canWrite ? 1 : 0.45)
         .accessibilityLabel(snapshot.allSchedulesEnabled ? "Turn schedules off" : "Turn schedules on")
         .accessibilityIdentifier("watch.schedulesButton")
     }
 
     private var unavailableView: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             Image(systemName: "iphone.and.arrow.forward")
-                .font(.title2)
+                .font(.title)
                 .foregroundStyle(.secondary)
-            Text("Open betterBCool on iPhone")
-                .font(.headline)
-                .multilineTextAlignment(.center)
-            Text("Connect Bosch, then return here to control your climate.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-            Button("Try Again") { session.refresh() }
-                .buttonStyle(.bordered)
+            Text("Open iPhone app")
+                .font(.caption.weight(.semibold))
+            Button { session.refresh() } label: {
+                Image(systemName: "arrow.clockwise")
+            }
+            .buttonStyle(.bordered)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 28)
+        .padding(.vertical, 24)
     }
 }

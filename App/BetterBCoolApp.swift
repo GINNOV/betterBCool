@@ -252,6 +252,7 @@ final class AppConfiguration: ObservableObject {
 
         let climateService = service
         do {
+            var changedState: ClimateState?
             switch request.action {
             case .refresh:
                 break
@@ -260,10 +261,23 @@ final class AppConfiguration: ObservableObject {
                     throw ClimateServiceError.deviceNotFound
                 }
                 let state = try await climateService.state(for: device.id)
-                _ = try await climateService.apply(
+                var appliedState = try await climateService.apply(
                     ClimatePatch(powerEnabled: !state.powerEnabled),
                     to: device.id
                 )
+                appliedState.powerEnabled = !state.powerEnabled
+                changedState = appliedState
+            case .setPower:
+                guard let enabled = request.powerEnabled,
+                      let device = try await climateService.devices().first else {
+                    throw ClimateServiceError.unsupportedValue
+                }
+                var appliedState = try await climateService.apply(
+                    ClimatePatch(powerEnabled: enabled),
+                    to: device.id
+                )
+                appliedState.powerEnabled = enabled
+                changedState = appliedState
             case .setTemperature:
                 guard let temperature = request.temperature, temperature.isFinite,
                       let device = try await climateService.devices().first else {
@@ -271,17 +285,25 @@ final class AppConfiguration: ObservableObject {
                 }
                 let capabilities = try await climateService.capabilities(for: device.id)
                 try capabilities.validate(ClimatePatch(temperatureSetpoint: temperature))
-                _ = try await climateService.apply(
+                var appliedState = try await climateService.apply(
                     ClimatePatch(temperatureSetpoint: temperature),
                     to: device.id
                 )
+                appliedState.temperatureSetpoint = temperature
+                changedState = appliedState
             case .setSchedulesEnabled:
                 guard let enabled = request.schedulesEnabled else {
                     throw ClimateServiceError.unsupportedValue
                 }
                 try await setAllSchedulesEnabled(enabled)
             }
-            return await watchSnapshot(using: climateService)
+            if let changedState {
+                NotificationCenter.default.post(
+                    name: .betterBCoolClimateStateDidChange,
+                    object: changedState
+                )
+            }
+            return await watchSnapshot(using: climateService, overriding: changedState)
         } catch let error as CloudClimateError where error.requiresBoschReauthentication {
             return watchSnapshot(errorMessage: String(localized: "Reconnect Bosch on your iPhone to continue."))
         } catch ClimateServiceError.unsupportedValue {
@@ -292,10 +314,14 @@ final class AppConfiguration: ObservableObject {
     }
 
     func watchSnapshot() async -> WatchSnapshot {
+        await watchSnapshot(overriding: nil)
+    }
+
+    func watchSnapshot(overriding state: ClimateState?) async -> WatchSnapshot {
         guard isSignedIn else {
             return watchSnapshot(errorMessage: String(localized: "Open betterBCool on your iPhone to connect Bosch."))
         }
-        return await watchSnapshot(using: service)
+        return await watchSnapshot(using: service, overriding: state)
     }
 
     private func watchSnapshot(errorMessage: String) -> WatchSnapshot {
@@ -307,7 +333,10 @@ final class AppConfiguration: ObservableObject {
         )
     }
 
-    private func watchSnapshot(using climateService: any ClimateService) async -> WatchSnapshot {
+    private func watchSnapshot(
+        using climateService: any ClimateService,
+        overriding stateOverride: ClimateState? = nil
+    ) async -> WatchSnapshot {
         let schedules = storedSchedules()
         do {
             guard let device = try await climateService.devices().first else {
@@ -318,9 +347,13 @@ final class AppConfiguration: ObservableObject {
                 )
             }
             async let fetchedCapabilities = climateService.capabilities(for: device.id)
-            async let fetchedState = climateService.state(for: device.id)
             let capabilities = try await fetchedCapabilities
-            let state = try await fetchedState
+            let state: ClimateState
+            if let stateOverride {
+                state = stateOverride
+            } else {
+                state = try await climateService.state(for: device.id)
+            }
             return WatchSnapshot(
                 deviceName: device.name,
                 state: state,
@@ -625,6 +658,27 @@ final class AppConfiguration: ObservableObject {
         UserDefaults.standard.set(cloudURL, forKey: Key.cloudURL)
         if shouldReloadDashboard { reloadDashboard() }
     }
+
+    func approveTVPairing(code: String, name: String) async throws {
+        guard let configuration = cloudConfiguration else {
+            throw CloudSettingsError.invalidConfiguration
+        }
+        let payload = PhoneTVPairingApproval(code: code, tvName: name)
+        var request = URLRequest(url: configuration.baseURL.appending(path: "api/tv/pair/approve"))
+        request.httpMethod = "POST"
+        request.timeoutInterval = 30
+        request.setValue("Bearer \(configuration.apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(configuration.installationID, forHTTPHeaderField: "X-Installation-ID")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.httpBody = try JSONEncoder().encode(payload)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else { throw CloudSettingsError.invalidConfiguration }
+        guard (200..<300).contains(http.statusCode) else {
+            let error = try? JSONDecoder().decode(PhoneTVPairingErrorPayload.self, from: data)
+            throw PhoneTVPairingError.server(error?.error ?? "TV pairing could not be approved")
+        }
+    }
 }
 
 private struct SettingsView: View {
@@ -638,6 +692,10 @@ private struct SettingsView: View {
     @State private var cloudAPIKey: String
     @State private var cloudErrorMessage: String?
     @State private var isSaving = false
+    @State private var tvName = "Living Room TV"
+    @State private var tvPairingCode = ""
+    @State private var tvPairingMessage: String?
+    @State private var isPairingTV = false
 
     init(
         configuration: AppConfiguration,
@@ -734,6 +792,40 @@ private struct SettingsView: View {
                 }
 
                 Section {
+                    if !configuration.isSignedIn {
+                        Label("Sign in with Bosch to approve a TV.", systemImage: "person.crop.circle.badge.exclamationmark")
+                            .foregroundStyle(.secondary)
+                    } else if configuration.cloudAPIKey.isEmpty {
+                        Label("Enable Cloud scheduling above, then enter the TV code here.", systemImage: "cloud.fill")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        TextField("TV name", text: $tvName)
+                            .textInputAutocapitalization(.words)
+                        TextField("6-digit code", text: $tvPairingCode)
+                            .keyboardType(.numberPad)
+                            .textContentType(.oneTimeCode)
+                        Button {
+                            approveTV()
+                        } label: {
+                            HStack {
+                                Label("Approve this TV", systemImage: "appletv")
+                                Spacer()
+                                if isPairingTV { ProgressView() }
+                            }
+                        }
+                        .disabled(isPairingTV || tvPairingCode.filter(\.isNumber).count != 6)
+                    }
+                    if let tvPairingMessage {
+                        Text(tvPairingMessage)
+                            .foregroundStyle(.secondary)
+                    }
+                } header: {
+                    Text("TV devices")
+                } footer: {
+                    Text("Enter the code shown on your Apple TV. The TV receives a separate scoped token and Bosch credentials stay on the cloud service.")
+                }
+
+                Section {
                     NavigationLink("Understand your AC") {
                         UnderstandYourACView()
                     }
@@ -801,6 +893,25 @@ private struct SettingsView: View {
                 cloudErrorMessage = String(localized: "Cloud setup could not be verified. Check the URL and API key.")
                 isSaving = false
             }
+        }
+    }
+
+    private func approveTV() {
+        guard !isPairingTV else { return }
+        isPairingTV = true
+        tvPairingMessage = nil
+        let code = tvPairingCode.filter(\.isNumber)
+        Task { @MainActor in
+            do {
+                try await configuration.approveTVPairing(code: code, name: tvName)
+                tvPairingMessage = "TV approved. It will connect automatically."
+                tvPairingCode = ""
+            } catch let error as PhoneTVPairingError {
+                tvPairingMessage = error.localizedDescription
+            } catch {
+                tvPairingMessage = "TV pairing could not be approved."
+            }
+            isPairingTV = false
         }
     }
 
@@ -1151,4 +1262,22 @@ private enum KeychainError: Error {
     case status(OSStatus)
     case selfTestMismatch
 }
+private struct PhoneTVPairingApproval: Encodable {
+    let code: String
+    let tvName: String
+}
+
+private struct PhoneTVPairingErrorPayload: Decodable {
+    let error: String
+}
+
+private enum PhoneTVPairingError: Error, LocalizedError {
+    case server(String)
+
+    var errorDescription: String? {
+        if case .server(let message) = self { return message }
+        return "TV pairing could not be approved."
+    }
+}
+
 private enum CloudSettingsError: Error { case invalidConfiguration }
