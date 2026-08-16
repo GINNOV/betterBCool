@@ -259,7 +259,11 @@ private final class TVClimateViewModel: ObservableObject {
             state = currentState.applying(patch)
             isApplying = true
             defer { isApplying = false }
-            state = try await service.apply(patch, to: device.id)
+            let confirmedState = try await service.apply(patch, to: device.id)
+            // Some HVAC transports acknowledge a power command before their
+            // readback catches up. Keep the requested value authoritative for
+            // this render so controls do not flash back after turning off.
+            state = confirmedState.applying(patch)
             message = "Change confirmed"
         } catch {
             state = currentState
@@ -604,21 +608,23 @@ private struct TVControlCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .stroke(isFocused ? tint.opacity(0.95) : .white.opacity(0.1), lineWidth: isFocused ? 3 : 1)
+                    .stroke(isFocused ? tint.opacity(0.95) : .white.opacity(0.1), lineWidth: isFocused ? 2 : 1)
+                    .padding(isFocused ? 2 : 0)
             }
             .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         }
         .frame(width: TVLayout.cardWidth, height: TVLayout.cardHeight)
         .fixedSize()
         .buttonStyle(.plain)
-        .focusEffectDisabled()
-        .shadow(color: isFocused ? tint.opacity(0.24) : .clear, radius: 12)
+        .focusEffectDisabled(true)
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         .accessibilityLabel("\(detail), \(title)")
     }
 }
 
 private struct TVBackground: View {
     let isOn: Bool
+    @State private var ambientPhase = false
 
     var body: some View {
         ZStack {
@@ -635,6 +641,73 @@ private struct TVBackground: View {
                 startRadius: 0,
                 endRadius: 720
             )
+
+            if isOn {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [TVColors.accent.opacity(0.28), TVColors.accent.opacity(0)],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 330
+                        )
+                    )
+                    .frame(width: 660, height: 660)
+                    .blur(radius: 34)
+                    .scaleEffect(ambientPhase ? 1.1 : 0.88)
+                    .offset(
+                        x: ambientPhase ? 470 : 210,
+                        y: ambientPhase ? -245 : -70
+                    )
+                    .animation(
+                        .easeInOut(duration: 11).repeatForever(autoreverses: true),
+                        value: ambientPhase
+                    )
+
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [TVColors.mint.opacity(0.13), TVColors.mint.opacity(0)],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 260
+                        )
+                    )
+                    .frame(width: 520, height: 520)
+                    .blur(radius: 48)
+                    .scaleEffect(ambientPhase ? 0.86 : 1.08)
+                    .offset(
+                        x: ambientPhase ? -500 : -250,
+                        y: ambientPhase ? 290 : 420
+                    )
+                    .animation(
+                        .easeInOut(duration: 14).repeatForever(autoreverses: true),
+                        value: ambientPhase
+                    )
+
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, TVColors.accent.opacity(0.13), TVColors.mint.opacity(0.07), .clear],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: 1_050, height: 170)
+                    .blur(radius: 42)
+                    .rotationEffect(.degrees(ambientPhase ? 12 : -9))
+                    .offset(
+                        x: ambientPhase ? -260 : 280,
+                        y: ambientPhase ? 270 : 150
+                    )
+                    .animation(
+                        .easeInOut(duration: 16).repeatForever(autoreverses: true),
+                        value: ambientPhase
+                    )
+                    .allowsHitTesting(false)
+                    .onAppear { ambientPhase = true }
+                    .onDisappear { ambientPhase = false }
+            }
         }
         .ignoresSafeArea()
     }
