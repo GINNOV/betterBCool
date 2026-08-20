@@ -79,6 +79,55 @@ final class CloudClimateServiceTests: XCTestCase {
         ])
     }
 
+    func testRemoteScheduleIDsDecodeCloudList() async throws {
+        let kept = UUID(uuidString: "64F42EB2-2ECD-4E13-AA32-D58150198D87")!
+        let orphan = UUID(uuidString: "1989DD0A-8AAC-480B-AC52-60DD83DAF5B9")!
+        CloudURLProtocolStub.handler = { request in
+            XCTAssertEqual(request.httpMethod, "GET")
+            XCTAssertEqual(request.url?.path, "/api/schedules")
+            return Self.response(
+                for: request,
+                status: 200,
+                body: """
+                {"schedules":[{"id":"\(kept.uuidString)"},{"id":"\(orphan.uuidString)"}]}
+                """
+            )
+        }
+
+        let ids = try await CloudClimateService(configuration: configuration, session: stubbedSession()).remoteScheduleIDs()
+        XCTAssertEqual(ids, [kept, orphan])
+    }
+
+    func testDeleteAllSchedulesRemovesEveryRemoteRoutine() async throws {
+        let first = UUID(uuidString: "64F42EB2-2ECD-4E13-AA32-D58150198D87")!
+        let leftover = UUID(uuidString: "1989DD0A-8AAC-480B-AC52-60DD83DAF5B9")!
+        let lock = NSLock()
+        var pathsAndMethods: [String] = []
+        CloudURLProtocolStub.handler = { request in
+            lock.lock()
+            pathsAndMethods.append("\(request.httpMethod ?? "GET") \(request.url!.path)")
+            lock.unlock()
+            if request.httpMethod == "GET" {
+                return Self.response(
+                    for: request,
+                    status: 200,
+                    body: """
+                    {"schedules":[{"id":"\(first.uuidString)"},{"id":"\(leftover.uuidString)"}]}
+                    """
+                )
+            }
+            XCTAssertEqual(request.httpMethod, "DELETE")
+            return Self.response(for: request, status: 200, body: #"{"ok":true}"#)
+        }
+
+        try await CloudClimateService(configuration: configuration, session: stubbedSession()).deleteAllSchedules()
+        XCTAssertEqual(pathsAndMethods, [
+            "GET /api/schedules",
+            "DELETE /api/schedules/\(first.uuidString)",
+            "DELETE /api/schedules/\(leftover.uuidString)"
+        ])
+    }
+
     func testRejectedBoschRefreshRequiresReauthentication() {
         XCTAssertTrue(
             CloudClimateError

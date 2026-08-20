@@ -390,9 +390,10 @@ final class AppConfiguration: ObservableObject {
         NotificationCenter.default.post(name: .betterBCoolSchedulesDidChange, object: nil)
 
         if let remoteScheduler {
-            for schedule in schedules {
-                try await remoteScheduler.sync(schedule: schedule, timezone: TimeZone.current.identifier)
-            }
+            try await remoteScheduler.reconcile(
+                schedules: schedules,
+                timezone: TimeZone.current.identifier
+            )
         }
     }
 
@@ -573,6 +574,9 @@ final class AppConfiguration: ObservableObject {
             try await CloudClimateService(configuration: configuration).syncCredentials(tokens: tokens)
             try cloudSecretStore.save(trimmedKey)
         } else {
+            if let cloudConfiguration {
+                try await CloudClimateService(configuration: cloudConfiguration).deleteAllSchedules()
+            }
             try? cloudSecretStore.delete()
         }
         self.cloudEnabled = cloudEnabled
@@ -582,7 +586,11 @@ final class AppConfiguration: ObservableObject {
 
     func signOut(reloadDashboard: Bool = false) {
         if let cloudConfiguration {
-            Task { try? await CloudClimateService(configuration: cloudConfiguration).removeCredentials() }
+            Task {
+                let service = CloudClimateService(configuration: cloudConfiguration)
+                try? await service.deleteAllSchedules()
+                try? await service.removeCredentials()
+            }
         }
         try? tokenStore.deleteTokens()
         try? cloudSecretStore.delete()

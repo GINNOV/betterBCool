@@ -42,4 +42,28 @@ final class ClimateScheduleTests: XCTestCase {
         let next = try XCTUnwrap(ClimateScheduleTimeline.nextEvent(in: [schedule], after: monday, calendar: calendar))
         XCTAssertEqual(next.date, calendar.date(from: DateComponents(year: 2026, month: 7, day: 21, hour: 22)))
     }
+
+    func testCloudSyncDeletesRemoteRoutinesThePhoneNoLongerHas() {
+        let kept = UUID(uuidString: "64F42EB2-2ECD-4E13-AA32-D58150198D87")!
+        let orphan = UUID(uuidString: "1989DD0A-8AAC-480B-AC52-60DD83DAF5B9")!
+        let local = [
+            ClimateSchedule(
+                id: kept,
+                name: "Night comfort",
+                isEnabled: false,
+                startMinutes: 1320,
+                weekdays: Set(ScheduleWeekday.allCases),
+                steps: [
+                    .init(name: "Cool down", patch: .init(powerEnabled: true))
+                ]
+            )
+        ]
+
+        let orphans = ClimateScheduleCloudSync.orphanedRemoteIDs(
+            local: local,
+            remoteIDs: [kept, orphan]
+        )
+
+        XCTAssertEqual(orphans, [orphan])
+    }
 }

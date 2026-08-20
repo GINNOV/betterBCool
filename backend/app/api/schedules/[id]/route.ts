@@ -22,12 +22,19 @@ export async function PUT(request: Request, context: Context) {
   const scheduleUnchanged = previous
     && previous.timezone === parsed.data.timezone
     && canonicalJSON(previous.body) === canonicalJSON(parsed.data.schedule);
-  if (scheduleUnchanged && (!parsed.data.schedule.isEnabled || previous.workflow_run_id)) {
+  if (scheduleUnchanged && parsed.data.schedule.isEnabled && previous.workflow_run_id) {
     return Response.json({
       ok: true,
       revision: Number(previous.revision),
-      status: parsed.data.schedule.isEnabled ? "scheduled" : "disabled",
-      runID: previous.workflow_run_id ?? undefined,
+      status: "scheduled",
+      runID: previous.workflow_run_id,
+    });
+  }
+  if (scheduleUnchanged && !parsed.data.schedule.isEnabled && !previous.workflow_run_id) {
+    return Response.json({
+      ok: true,
+      revision: Number(previous.revision),
+      status: "disabled",
     });
   }
 

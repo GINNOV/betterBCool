@@ -31,8 +31,22 @@ public struct CloudClimateConfiguration: Sendable {
 }
 
 public protocol ClimateScheduleRemoteService: Sendable {
+    func remoteScheduleIDs() async throws -> [UUID]
     func sync(schedule: ClimateSchedule, timezone: String) async throws
     func delete(scheduleID: UUID) async throws
+    func deleteAllSchedules() async throws
+}
+
+public extension ClimateScheduleRemoteService {
+    func reconcile(schedules: [ClimateSchedule], timezone: String) async throws {
+        let remoteIDs = try await remoteScheduleIDs()
+        for id in ClimateScheduleCloudSync.orphanedRemoteIDs(local: schedules, remoteIDs: remoteIDs) {
+            try await delete(scheduleID: id)
+        }
+        for schedule in schedules {
+            try await sync(schedule: schedule, timezone: timezone)
+        }
+    }
 }
 
 public actor CloudClimateService: ClimateService, ClimateScheduleRemoteService {
@@ -108,6 +122,11 @@ public actor CloudClimateService: ClimateService, ClimateScheduleRemoteService {
         _ = try await request(path: "api/credentials", method: "DELETE", response: OKResponse.self)
     }
 
+    public func remoteScheduleIDs() async throws -> [UUID] {
+        let payload = try await request(path: "api/schedules", method: "GET", response: ScheduleListResponse.self)
+        return payload.schedules.map(\.id)
+    }
+
     public func sync(schedule: ClimateSchedule, timezone: String) async throws {
         let payload = SchedulePayload(schedule: schedule, timezone: timezone)
         _ = try await request(
@@ -124,6 +143,12 @@ public actor CloudClimateService: ClimateService, ClimateScheduleRemoteService {
             method: "DELETE",
             response: OKResponse.self
         )
+    }
+
+    public func deleteAllSchedules() async throws {
+        for id in try await remoteScheduleIDs() {
+            try await delete(scheduleID: id)
+        }
     }
 
     private func verify(_ deviceID: String) throws {
@@ -215,6 +240,12 @@ private struct SchedulePayload: Encodable {
 
 private struct OKResponse: Decodable { let ok: Bool }
 private struct ScheduleResponse: Decodable { let ok: Bool }
+private struct ScheduleListResponse: Decodable {
+    let schedules: [ScheduleListItem]
+}
+private struct ScheduleListItem: Decodable {
+    let id: UUID
+}
 private struct ErrorResponse: Decodable { let error: String }
 
 public enum CloudClimateError: Error, Equatable {

@@ -165,9 +165,10 @@ final class ScheduleController: ObservableObject {
         Task {
             do {
                 guard let remoteService else { return }
-                for schedule in schedules {
-                    try await remoteService.sync(schedule: schedule, timezone: TimeZone.current.identifier)
-                }
+                try await remoteService.reconcile(
+                    schedules: schedules,
+                    timezone: TimeZone.current.identifier
+                )
                 errorMessage = nil
             } catch {
                 errorMessage = String(localized: "Cloud schedules could not be synchronized. The app will retry when reopened.")
