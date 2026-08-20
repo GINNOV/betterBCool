@@ -79,6 +79,14 @@ public struct ClimateScheduleEvent: Identifiable, Equatable, Sendable {
     }
 }
 
+public enum ClimateScheduleCloudSync {
+    /// Cloud routines the phone no longer has. These keep running on Vercel until deleted.
+    public static func orphanedRemoteIDs(local: [ClimateSchedule], remoteIDs: [UUID]) -> [UUID] {
+        let localIDs = Set(local.map(\.id))
+        return remoteIDs.filter { !localIDs.contains($0) }
+    }
+}
+
 public enum ClimateScheduleTimeline {
     /// The last transition that should have taken effect by `date`.
     public static func currentEvent(
