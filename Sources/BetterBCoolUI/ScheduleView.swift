@@ -238,16 +238,21 @@ struct ScheduleListView: View {
             }
 
             Section {
-                Label(
+                Label {
+                    Text("Cloud scheduling")
+                } icon: {
+                    Image(systemName: "cloud.fill")
+                        .foregroundStyle(controller.usesCloud ? Color.blue : Color.red)
+                }
+                .accessibilityValue(
                     controller.usesCloud
-                        ? String(localized: "Vercel cloud scheduling")
-                        : String(localized: "On-device scheduling"),
-                    systemImage: controller.usesCloud ? "cloud.fill" : "iphone"
+                        ? String(localized: "On")
+                        : String(localized: "Off")
                 )
             } footer: {
                 Text(controller.usesCloud
                      ? String(localized: "Routines run in the cloud with durable waits and automatic retries, even while this iPhone is offline.")
-                     : String(localized: "Routines are private to this device and run while betterBCool is active. Missed changes are not replayed when the app opens."))
+                     : String(localized: "Cloud scheduling is off. Enable Cloud schedule in Settings so routines keep running even while this iPhone is offline."))
             }
         }
         .navigationTitle("Schedules")
