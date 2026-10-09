@@ -539,7 +539,7 @@ final class BetterBCoolUITests: XCTestCase {
             XCTAssertEqual(expansion.value as? String, language == "it" ? "Espanso" : "Expanded")
             XCTAssertEqual(rows.count, 7)
             captureComfortDashboard(app, name: "Activity expanded \(language)")
-            expansion.tap()
+            rows.element(boundBy: 0).tap()
             XCTAssertEqual(rows.count, 5)
             expansion.tap()
             app.buttons["dashboard.clearActivityButton"].tap()
