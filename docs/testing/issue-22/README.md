@@ -17,3 +17,11 @@ The summary stays between the temperature buttons when its natural width fits. O
 ## Regression coverage
 
 The UI regression exercises all five modes in English and Italian at default and largest accessibility text size. It checks the full summary, selection, visibility, containment within the temperature card, and separation from the temperature buttons. Screenshots are retained for visual inspection, because accessibility labels alone cannot prove that rendered text is complete.
+
+## Verified result
+
+On the combined enhancement branch, all 20 mode/language/text-size cases passed on an iPhone 17e simulator. The existing mode-selector and status-badge regressions passed, as did all 37 package tests. The signed iPhone build succeeded using the existing manual profiles.
+
+![Full Italian cooling summary](italian-after.png)
+
+![Full Italian cooling summary at the largest accessibility text size](italian-largest-after.png)
