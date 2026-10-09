@@ -79,6 +79,29 @@ public struct ClimateScheduleEvent: Identifiable, Equatable, Sendable {
     }
 }
 
+public enum ScheduleStepDurations {
+    /// Records every finite step duration so a step can leave the final position without losing its length.
+    public static func remember(_ steps: [ClimateScheduleStep], into memory: inout [UUID: Int]) {
+        for step in steps {
+            if let duration = step.durationMinutes {
+                memory[step.id] = duration
+            }
+        }
+    }
+
+    /// Intermediate steps keep a duration. Only the final step stays indefinite.
+    public static func normalize(_ steps: inout [ClimateScheduleStep], remembered memory: inout [UUID: Int]) {
+        guard let last = steps.indices.last else { return }
+        for index in steps.indices where index != last && steps[index].durationMinutes == nil {
+            steps[index].durationMinutes = memory[steps[index].id] ?? 60
+        }
+        if let duration = steps[last].durationMinutes {
+            memory[steps[last].id] = duration
+        }
+        steps[last].durationMinutes = nil
+    }
+}
+
 public enum ClimateScheduleCloudSync {
     /// Cloud routines the phone no longer has. These keep running on Vercel until deleted.
     public static func orphanedRemoteIDs(local: [ClimateSchedule], remoteIDs: [UUID]) -> [UUID] {

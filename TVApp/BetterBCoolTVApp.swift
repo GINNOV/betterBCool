@@ -259,7 +259,11 @@ private final class TVClimateViewModel: ObservableObject {
             state = currentState.applying(patch)
             isApplying = true
             defer { isApplying = false }
-            state = try await service.apply(patch, to: device.id)
+            let confirmedState = try await service.apply(patch, to: device.id)
+            // Some HVAC transports acknowledge a power command before their
+            // readback catches up. Keep the requested value authoritative for
+            // this render so controls do not flash back after turning off.
+            state = confirmedState.applying(patch)
             message = "Change confirmed"
         } catch {
             state = currentState

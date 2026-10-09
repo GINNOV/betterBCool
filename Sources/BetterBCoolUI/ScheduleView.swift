@@ -331,6 +331,8 @@ private struct ScheduleEditor: View {
     let onSave: (ClimateSchedule) -> Void
     let onCancel: () -> Void
     @State private var editingStep: ClimateScheduleStep?
+    @State private var isReordering = false
+    @State private var rememberedDurations: [UUID: Int] = [:]
 
     var body: some View {
         Form {
@@ -352,10 +354,14 @@ private struct ScheduleEditor: View {
                     .buttonStyle(.plain)
                 }
                 .onDelete {
+                    ScheduleStepDurations.remember(schedule.steps, into: &rememberedDurations)
                     schedule.steps.remove(atOffsets: $0)
-                    if let last = schedule.steps.indices.last {
-                        schedule.steps[last].durationMinutes = nil
-                    }
+                    ScheduleStepDurations.normalize(&schedule.steps, remembered: &rememberedDurations)
+                }
+                .onMove { source, destination in
+                    ScheduleStepDurations.remember(schedule.steps, into: &rememberedDurations)
+                    schedule.steps.move(fromOffsets: source, toOffset: destination)
+                    ScheduleStepDurations.normalize(&schedule.steps, remembered: &rememberedDurations)
                 }
 
                 Button {
@@ -367,20 +373,38 @@ private struct ScheduleEditor: View {
                     Label("Add a step", systemImage: "plus.circle.fill")
                 }
             } header: {
-                Text("Timeline")
+                HStack {
+                    Text("Timeline")
+                    Spacer()
+#if os(iOS)
+                    if schedule.steps.count > 1 {
+                        Button(isReordering ? "Done" : "Reorder") {
+                            withAnimation {
+                                isReordering.toggle()
+                            }
+                        }
+                        .textCase(nil)
+                        .accessibilityIdentifier("schedule.reorderStepsButton")
+                    }
+#endif
+                }
             } footer: {
+#if os(iOS)
+                Text("Each step starts when the previous one finishes. Use Reorder to drag steps into a new order. The final step stays in effect until you make a manual change or another routine changes it.")
+#else
                 Text("Each step starts when the previous one finishes. The final step stays in effect until you make a manual change or another routine changes it.")
+#endif
             }
         }
+        .modifier(ScheduleReorderingModifier(isReordering: isReordering))
         .navigationTitle(schedule.name)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { onCancel() } }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
                     var savedSchedule = schedule
-                    if let last = savedSchedule.steps.indices.last {
-                        savedSchedule.steps[last].durationMinutes = nil
-                    }
+                    ScheduleStepDurations.remember(savedSchedule.steps, into: &rememberedDurations)
+                    ScheduleStepDurations.normalize(&savedSchedule.steps, remembered: &rememberedDurations)
                     onSave(savedSchedule)
                     onCancel()
                 }
@@ -397,10 +421,9 @@ private struct ScheduleEditor: View {
                         if let index = schedule.steps.firstIndex(where: { $0.id == updated.id }) {
                             schedule.steps[index] = updated
                         } else {
-                            if let last = schedule.steps.indices.last, schedule.steps[last].durationMinutes == nil {
-                                schedule.steps[last].durationMinutes = 60
-                            }
+                            ScheduleStepDurations.remember(schedule.steps, into: &rememberedDurations)
                             schedule.steps.append(updated)
+                            ScheduleStepDurations.normalize(&schedule.steps, remembered: &rememberedDurations)
                         }
                     },
                     onCancel: { editingStep = nil }
@@ -442,6 +465,18 @@ private struct ScheduleEditor: View {
     private func time(for index: Int) -> String {
         let priorMinutes = schedule.steps.prefix(index).compactMap(\.durationMinutes).reduce(0, +)
         return (schedule.startMinutes + priorMinutes).clockText
+    }
+}
+
+private struct ScheduleReorderingModifier: ViewModifier {
+    let isReordering: Bool
+
+    func body(content: Content) -> some View {
+#if os(iOS)
+        content.environment(\.editMode, .constant(isReordering ? .active : .inactive))
+#else
+        content
+#endif
     }
 }
 
