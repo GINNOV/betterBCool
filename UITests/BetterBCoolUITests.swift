@@ -171,7 +171,7 @@ final class BetterBCoolUITests: XCTestCase {
         XCTAssertTrue(coolMode.waitForExistence(timeout: 5))
         XCTAssertFalse(coolMode.isEnabled)
 
-        let verticalSwing = app.buttons["dashboard.verticalSwingButton"]
+        let verticalSwing = revealComfortControl("dashboard.verticalSwingButton", in: app)
         XCTAssertTrue(verticalSwing.waitForExistence(timeout: 5))
         XCTAssertFalse(verticalSwing.isEnabled)
 
@@ -194,8 +194,7 @@ final class BetterBCoolUITests: XCTestCase {
         app.launch()
         let identifiers = ["dashboard.ecoButton", "dashboard.sleepButton", "dashboard.verticalSwingButton", "dashboard.horizontalSwingButton"]
         for identifier in identifiers {
-            let control = app.buttons[identifier]
-            for _ in 0..<10 where !control.isHittable { app.swipeUp() }
+            let control = revealComfortControl(identifier, in: app)
             XCTAssertTrue(control.isHittable)
             XCTAssertFalse(control.label.contains("..."))
             XCTAssertFalse(control.label.contains("…"))
@@ -209,6 +208,16 @@ final class BetterBCoolUITests: XCTestCase {
             captureComfortDashboard(app, name: "Comfort \(language), largest=\(largestText), \(identifier)")
         }
         app.terminate()
+    }
+
+    private func revealComfortControl(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
+        let control = app.buttons[identifier]
+        let scrollView = app.scrollViews.firstMatch
+        for _ in 0..<12 {
+            if control.exists && (control.isHittable || !control.isEnabled) { return control }
+            scrollView.swipeUp(velocity: .slow)
+        }
+        return control
     }
 
     private func captureComfortDashboard(_ app: XCUIApplication, name: String) {
@@ -239,10 +248,10 @@ final class BetterBCoolUITests: XCTestCase {
         app.launchArguments = ["-ui-testing"]
         app.launch()
 
-        let verticalSwing = app.buttons["dashboard.verticalSwingButton"]
+        let verticalSwing = revealComfortControl("dashboard.verticalSwingButton", in: app)
         XCTAssertTrue(verticalSwing.waitForExistence(timeout: 5))
         for _ in 0..<6 where !verticalSwing.isHittable {
-            app.swipeUp()
+            app.scrollViews.firstMatch.swipeUp(velocity: .slow)
         }
 
         XCTAssertTrue(verticalSwing.isHittable)
@@ -260,10 +269,10 @@ final class BetterBCoolUITests: XCTestCase {
         app.launch()
 
         for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
-            let button = app.buttons[identifier]
+            let button = revealComfortControl(identifier, in: app)
             XCTAssertTrue(button.waitForExistence(timeout: 5))
             for _ in 0..<6 where !button.isHittable {
-                app.swipeUp()
+                app.scrollViews.firstMatch.swipeUp(velocity: .slow)
             }
 
             XCTAssertTrue(button.isHittable)
@@ -285,13 +294,6 @@ final class BetterBCoolUITests: XCTestCase {
         XCTAssertTrue(dryMode.waitForExistence(timeout: 5))
         dryMode.tap()
 
-        for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
-            let button = app.buttons[identifier]
-            XCTAssertTrue(button.waitForExistence(timeout: 5))
-            XCTAssertFalse(button.isEnabled)
-            XCTAssertEqual(button.value as? String, "Unavailable")
-        }
-
         XCTAssertTrue(app.staticTexts["Managed automatically in Dry mode"].exists)
         for fanSpeed in ["Auto", "Quiet", "Low", "Medium", "High", "Turbo"] {
             let matchingButtons = app.buttons.matching(NSPredicate(format: "label == %@", fanSpeed))
@@ -299,6 +301,14 @@ final class BetterBCoolUITests: XCTestCase {
             XCTAssertTrue(fanButton.exists, "Missing \(fanSpeed) fan-speed button")
             XCTAssertFalse(fanButton.isEnabled, "\(fanSpeed) should be disabled in Dry mode")
         }
+
+        for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
+            let button = revealComfortControl(identifier, in: app)
+            XCTAssertTrue(button.waitForExistence(timeout: 5))
+            XCTAssertFalse(button.isEnabled)
+            XCTAssertEqual(button.value as? String, "Unavailable")
+        }
+
     }
 
     func testLaunchDoesNotReplayAnAlreadyStartedPowerOnSchedule() {
