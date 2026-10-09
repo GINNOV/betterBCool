@@ -4,28 +4,16 @@
     "%@ · 1 step" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ · 1 Schritt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ · 1 paso"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ · 1 étape"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ · 1 passaggio"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · 1 step"
           }
         }
       }
@@ -33,28 +21,16 @@
     "%@ degrees Celsius" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ Grad Celsius"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ grados Celsius"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ degrés Celsius"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ gradi Celsius"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ degrees Celsius"
           }
         }
       }
@@ -62,28 +38,16 @@
     "%@ fan" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lüfter %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ventilador %@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ventilateur %@"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ventola %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ fan"
           }
         }
       }
@@ -91,28 +55,16 @@
     "%1$@ · %2$lld steps" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ · %2$lld Schritte"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ · %2$lld pasos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ · %2$lld étapes"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ · %2$lld passaggi"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$lld steps"
           }
         }
       }
@@ -120,28 +72,16 @@
     "%1$lld hr %2$lld min" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld Std. %2$lld Min."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld h %2$lld min"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld h %2$lld min"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$lld h %2$lld min"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld hr %2$lld min"
           }
         }
       }
@@ -149,28 +89,16 @@
     "%lld active" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld aktiv"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld activas"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld actives"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld attive"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld active"
           }
         }
       }
@@ -178,28 +106,16 @@
     "%lld hr" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld Std."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld h"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld h"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld h"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld hr"
           }
         }
       }
@@ -207,25 +123,13 @@
     "%lld min" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld Min."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld min"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld min"
-          }
-        },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld min"
@@ -235,33 +139,35 @@
     },
     "6-digit code" : {
       "comment" : "A label for the TV",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codice a 6 cifre"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6-digit code"
+          }
+        }
+      }
     },
     "A scheduled change could not be applied. Retrying shortly." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eine geplante Änderung konnte nicht angewendet werden. Neuer Versuch in Kürze."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo aplicar un cambio programado. Se volverá a intentar en breve."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Une modification programmée n’a pas pu être appliquée. Nouvelle tentative sous peu."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non è stato possibile applicare una modifica programmata. Nuovo tentativo a breve."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A scheduled change could not be applied. Retrying shortly."
           }
         }
       }
@@ -269,28 +175,16 @@
     "Access" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zugriff"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acceso"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accès"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accesso"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access"
           }
         }
       }
@@ -298,28 +192,16 @@
     "Active features" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktive Funktionen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Funciones activas"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fonctions actives"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Funzioni attive"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active features"
           }
         }
       }
@@ -327,28 +209,16 @@
     "Activity" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktivität"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actividad"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activité"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Attività"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity"
           }
         }
       }
@@ -356,28 +226,16 @@
     "Add a step" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schritt hinzufügen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir un paso"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajouter une étape"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aggiungi un passaggio"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a step"
           }
         }
       }
@@ -385,61 +243,51 @@
     "Add routine" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Routine hinzufügen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añadir rutina"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajouter une routine"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aggiungi routine"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add routine"
           }
         }
       }
     },
     "Adjusts airflow automatically according to the current mode and room conditions." : {
       "comment" : "Text displayed in a section of the Understand Your AC guide for the \"Auto\" fan speed.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regola automaticamente il flusso d’aria in base alla modalità attuale e alle condizioni della stanza."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjusts airflow automatically according to the current mode and room conditions."
+          }
+        }
+      }
     },
     "After this step" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nach diesem Schritt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Después de este paso"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Après cette étape"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dopo questo passaggio"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After this step"
           }
         }
       }
@@ -447,68 +295,99 @@
     "Airflow intensity" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Luftstromstärke"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intensidad del flujo de aire"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Intensité du débit d’air"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Intensità del flusso d’aria"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Airflow intensity"
           }
         }
       }
     },
     "Apple Watch cooling" : {
       "comment" : "A heading displayed in the settings screen.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raffreddamento con Apple Watch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch cooling"
+          }
+        }
+      }
     },
     "Apple Watch provides one wrist-temperature aggregate after sleep—not a live body-temperature stream. Automation uses only samples under 18 hours old and requires at least three prior nights for a personal baseline. This is not a medical feature." : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch fornisce un valore aggregato della temperatura del polso dopo il sonno, non una misurazione continua della temperatura corporea. L’automazione usa solo campioni delle ultime 18 ore e richiede almeno tre notti precedenti per stabilire un valore di riferimento personale. Questa funzione non ha finalità mediche."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch provides one wrist-temperature aggregate after sleep—not a live body-temperature stream. Automation uses only samples under 18 hours old and requires at least three prior nights for a personal baseline. This is not a medical feature."
+          }
+        }
+      }
     },
     "Approve this TV" : {
       "comment" : "A button that approves a",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorizza questa TV"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approve this TV"
+          }
+        }
+      }
     },
     "At least three prior nights are needed for a personal baseline." : {
       "comment" : "Error message displayed when the wrist temperature is below the cooling trigger.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servono almeno tre notti precedenti per stabilire un valore di riferimento personale."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At least three prior nights are needed for a personal baseline."
+          }
+        }
+      }
     },
     "Auto" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auto"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auto"
-          }
-        },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Auto"
@@ -518,208 +397,166 @@
     },
     "Automatic cooling could not reach the air conditioner." : {
       "comment" : "Error message displayed when automatic cooling could not reach the air conditioner.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il raffreddamento automatico non è riuscito a raggiungere il climatizzatore."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic cooling could not reach the air conditioner."
+          }
+        }
+      }
     },
     "Available modes and features depend on your AC model. betterBCool disables options that your unit does not report as supported. Eco, Sleep and swing can be controlled from the dashboard when the unit accepts them." : {
       "comment" : "A footer for the \"Understand your AC\" page.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le modalità e le funzioni disponibili dipendono dal modello del climatizzatore. betterBCool disabilita le opzioni che l’unità non dichiara di supportare. Eco, Sonno e oscillazione si possono controllare dalla schermata principale quando l’unità le supporta."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available modes and features depend on your AC model. betterBCool disables options that your unit does not report as supported. Eco, Sleep and swing can be controlled from the dashboard when the unit accepts them."
+          }
+        }
+      }
     },
     "Bosch account" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch-Konto"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuenta de Bosch"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compte Bosch"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Account Bosch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch account"
           }
         }
       }
     },
     "Bosch returned %lld gateway entries, but none exposed the classic air-conditioning resource." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch hat %lld Gateway-Einträge zurückgegeben, aber keiner stellte die klassische Klimaanlagen-Ressource bereit."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch devolvió %lld entradas de pasarela, pero ninguna expuso el recurso clásico de aire acondicionado."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch a renvoyé %lld entrées de passerelle, mais aucune n’exposait la ressource de climatisation classique."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bosch ha restituito %lld voci gateway, ma nessuna esponeva la risorsa classica del climatizzatore."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch returned %lld gateway entries, but none exposed the classic air-conditioning resource."
           }
         }
       }
     },
     "Bosch returned %lld gateway entries, but their format was not recognized." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch hat %lld Gateway-Einträge zurückgegeben, deren Format nicht erkannt wurde."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch devolvió %lld entradas de pasarela, pero no se reconoció su formato."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch a renvoyé %lld entrées de passerelle, mais leur format n’a pas été reconnu."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bosch ha restituito %lld voci gateway, ma il formato non è stato riconosciuto."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch returned %lld gateway entries, but their format was not recognized."
           }
         }
       }
     },
     "Bosch returned %lld gateway entry, but it did not expose the classic air-conditioning resource." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch hat %lld Gateway-Eintrag zurückgegeben, der die klassische Klimaanlagen-Ressource nicht bereitstellte."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch devolvió %lld entrada de pasarela, pero no expuso el recurso clásico de aire acondicionado."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch a renvoyé %lld entrée de passerelle, mais elle n’exposait pas la ressource de climatisation classique."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bosch ha restituito %lld voce gateway, ma non esponeva la risorsa classica del climatizzatore."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch returned %lld gateway entry, but it did not expose the classic air-conditioning resource."
           }
         }
       }
     },
     "Bosch returned %lld gateway entry, but its format was not recognized." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch hat %lld Gateway-Eintrag zurückgegeben, dessen Format nicht erkannt wurde."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch devolvió %lld entrada de pasarela, pero no se reconoció su formato."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch a renvoyé %lld entrée de passerelle, mais son format n’a pas été reconnu."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bosch ha restituito %lld voce gateway, ma il formato non è stato riconosciuto."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch returned %lld gateway entry, but its format was not recognized."
           }
         }
       }
     },
     "Bosch sign-in could not be completed. Please try again." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Bosch-Anmeldung konnte nicht abgeschlossen werden. Bitte erneut versuchen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo completar el inicio de sesión de Bosch. Inténtalo de nuevo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La connexion Bosch n’a pas pu être effectuée. Veuillez réessayer."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non è stato possibile completare l’accesso Bosch. Riprova."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch sign-in could not be completed. Please try again."
           }
         }
       }
     },
     "Bosch sign-in failed" : {
       "comment" : "The title of an alert that is shown when Bosch sign-in fails.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesso a Bosch non riuscito"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch sign-in failed"
+          }
+        }
+      }
     },
     "Bosch sign-in worked, but neither the classic nor newer HomeCom service returned an AC for this account." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Bosch-Anmeldung war erfolgreich, aber weder der klassische noch der neue HomeCom-Dienst hat eine Klimaanlage für dieses Konto gefunden."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El inicio de sesión de Bosch funcionó, pero ni el servicio clásico ni el nuevo HomeCom encontraron un aire acondicionado para esta cuenta."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La connexion Bosch a réussi, mais ni le service classique ni le nouveau service HomeCom n’a trouvé de climatiseur pour ce compte."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "L’accesso Bosch è riuscito, ma né il servizio classico né il nuovo HomeCom hanno trovato un climatizzatore per questo account."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bosch sign-in worked, but neither the classic nor newer HomeCom service returned an AC for this account."
           }
         }
       }
@@ -727,56 +564,32 @@
     "Build a timeline once and your climate will follow it automatically." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erstelle einmal einen Zeitplan und dein Raumklima folgt ihm automatisch."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crea una línea de tiempo y el clima la seguirá automáticamente."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Créez une chronologie et votre climat la suivra automatiquement."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crea una sequenza e il clima la seguirà automaticamente."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Build a timeline once and your climate will follow it automatically."
           }
         }
       }
     },
     "Cancel" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abbrechen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancelar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Annuler"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Annulla"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
           }
         }
       }
@@ -784,28 +597,16 @@
     "Check your connection settings." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Überprüfe die Verbindungseinstellungen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comprueba los ajustes de conexión."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vérifiez les réglages de connexion."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Controlla le impostazioni di connessione."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection settings."
           }
         }
       }
@@ -813,117 +614,83 @@
     "Choose how the room feels" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wähle das gewünschte Raumklima"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elige cómo quieres sentir la habitación"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choisissez l’ambiance de la pièce"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Scegli il comfort della stanza"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose how the room feels"
           }
         }
       }
     },
     "Circulates room air without actively heating or cooling it." : {
       "comment" : "Text displayed in a guide item for the \"Fan\" AC mode.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fa circolare l’aria della stanza senza riscaldarla o raffreddarla."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circulates room air without actively heating or cooling it."
+          }
+        }
+      }
     },
     "Clear" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Löschen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Borrar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Effacer"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancella"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
           }
         }
       }
     },
     "Cloud API key" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cloud-API-Schlüssel"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clave API de la nube"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clé API du cloud"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chiave API cloud"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cloud API key"
           }
         }
       }
     },
     "Cloud schedule" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cloud-Zeitplan"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programación en la nube"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programmation cloud"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Programmazione cloud"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cloud schedule"
           }
         }
       }
@@ -931,84 +698,48 @@
     "Cloud schedules could not be synchronized. The app will retry when reopened." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cloud-Zeitpläne konnten nicht synchronisiert werden. Die App versucht es beim nächsten Öffnen erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudieron sincronizar las programaciones en la nube. La app lo intentará de nuevo al abrirse."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les programmations cloud n’ont pas pu être synchronisées. L’app réessaiera à sa réouverture."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non è stato possibile sincronizzare le programmazioni cloud. L’app riproverà alla riapertura."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cloud schedules could not be synchronized. The app will retry when reopened."
           }
         }
       }
     },
     "Cloud scheduling" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cloud-Zeitpläne"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programación en la nube"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programmation cloud"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Programmazione cloud"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cloud scheduling"
           }
         }
       }
     },
     "Cloud setup could not be verified. Check the URL and API key." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Cloud-Einrichtung konnte nicht überprüft werden. URL und API-Schlüssel prüfen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo verificar la configuración de la nube. Comprueba la URL y la clave API."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La configuration cloud n’a pas pu être vérifiée. Vérifiez l’URL et la clé API."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non è stato possibile verificare la configurazione cloud. Controlla URL e chiave API."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cloud setup could not be verified. Check the URL and API key."
           }
         }
       }
@@ -1016,25 +747,13 @@
     "Comfort" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Komfort"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confort"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confort"
-          }
-        },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comfort"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Comfort"
@@ -1044,61 +763,51 @@
     },
     "Comfort features" : {
       "comment" : "A section of the AC guide that describes features like \"Vertical swing\" and \"Horizontal swing\".",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funzioni Comfort"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comfort features"
+          }
+        }
+      }
     },
     "Connected" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbunden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conectado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connecté"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connesso"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
           }
         }
       }
     },
     "Connected to the newer HomeCom AC and read its live state (%lld fields). Control mapping is the next step." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mit der neueren HomeCom-Klimaanlage verbunden und Live-Status gelesen (%lld Felder). Als Nächstes folgt die Zuordnung der Steuerung."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conectado al nuevo aire acondicionado HomeCom y leído su estado en directo (%lld campos). El siguiente paso es asignar los controles."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connexion au nouveau climatiseur HomeCom réussie et état en direct lu (%lld champs). La prochaine étape est l’association des commandes."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connessione al nuovo climatizzatore HomeCom riuscita e stato in tempo reale letto (%lld campi). Il passaggio successivo è la mappatura dei controlli."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected to the newer HomeCom AC and read its live state (%lld fields). Control mapping is the next step."
           }
         }
       }
@@ -1106,28 +815,16 @@
     "Controls" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Steuerung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Controles"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Commandes"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Controlli"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controls"
           }
         }
       }
@@ -1135,89 +832,67 @@
     "Controls are read-only until the Bosch API is verified." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Steuerung bleibt schreibgeschützt, bis die Bosch-API verifiziert ist."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los controles son de solo lectura hasta que se verifique la API de Bosch."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les commandes sont en lecture seule jusqu’à la vérification de l’API Bosch."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "I controlli sono in sola lettura finché l’API Bosch non viene verificata."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controls are read-only until the Bosch API is verified."
           }
         }
       }
     },
     "Cool" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kühlen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Frío"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Froid"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Raffredda"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cool"
           }
         }
       }
     },
     "Cool based on Apple Watch" : {
       "comment" : "A toggle that enables or disables the automatic cooling of the air conditioner based on the user's body temperature.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raffredda in base ad Apple Watch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cool based on Apple Watch"
+          }
+        }
+      }
     },
     "Cool down" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abkühlen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enfriar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rafraîchir"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Raffreddamento"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cool down"
           }
         }
       }
@@ -1225,28 +900,16 @@
     "Cool with the fan for 2 hours, stay quiet until 4:00 AM, pause for 30 minutes, then resume silently. Every detail can be changed before saving." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2 Stunden mit Lüfter kühlen, bis 4:00 Uhr leise bleiben, 30 Minuten pausieren und dann leise fortsetzen. Alle Details können vor dem Speichern geändert werden."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enfría con el ventilador durante 2 horas, mantén el modo silencioso hasta las 4:00, pausa 30 minutos y reanuda en silencio. Puedes cambiar todos los detalles antes de guardar."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rafraîchissez avec le ventilateur pendant 2 heures, restez silencieux jusqu’à 4 h, faites une pause de 30 minutes, puis reprenez silencieusement. Chaque détail peut être modifié avant l’enregistrement."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Raffredda con la ventola per 2 ore, resta silenzioso fino alle 4:00, sospendi per 30 minuti, poi riprendi in modalità silenziosa. Puoi modificare ogni dettaglio prima di salvare."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cool with the fan for 2 hours, stay quiet until 4:00 AM, pause for 30 minutes, then resume silently. Every detail can be changed before saving."
           }
         }
       }
@@ -1254,65 +917,69 @@
     "COOLING" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "KÜHLEN"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ENFRIANDO"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "REFROIDISSEMENT"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "RAFFREDDAMENTO"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "COOLING"
           }
         }
       }
     },
     "Cooling activated from elevated Apple Watch wrist temperature." : {
       "comment" : "Message displayed when automatic cooling is activated from an elevated wrist temperature.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raffreddamento attivato dalla temperatura del polso elevata rilevata da Apple Watch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cooling activated from elevated Apple Watch wrist temperature."
+          }
+        }
+      }
     },
     "Cooling was already active when the elevated temperature arrived." : {
       "comment" : "Text displayed in a notification when the air conditioner was already on when the elevated wrist temperature was detected.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il raffreddamento era già attivo quando è stata rilevata la temperatura elevata."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cooling was already active when the elevated temperature arrived."
+          }
+        }
+      }
     },
     "Create a routine for your day" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erstelle eine Routine für deinen Tag"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crea una rutina para tu día"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Créez une routine pour votre journée"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crea una routine per la tua giornata"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a routine for your day"
           }
         }
       }
@@ -1320,28 +987,16 @@
     "CURRENT SPEED" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AKTUELLE STUFE"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VELOCIDAD ACTUAL"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VITESSE ACTUELLE"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "VELOCITÀ ATTUALE"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CURRENT SPEED"
           }
         }
       }
@@ -1349,28 +1004,16 @@
     "Dashboard data" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dashboard-Daten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datos del panel"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Données du tableau de bord"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dati dashboard"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dashboard data"
           }
         }
       }
@@ -1378,28 +1021,16 @@
     "Decrease temperature" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Temperatur senken"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bajar la temperatura"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Baisser la température"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riduci temperatura"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decrease temperature"
           }
         }
       }
@@ -1407,25 +1038,13 @@
     "Demo" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Démo"
-          }
-        },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Demo"
@@ -1436,84 +1055,48 @@
     "Disabled" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deaktiviert"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivados"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Désactivées"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Disabilitati"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disabled"
           }
         }
       }
     },
     "Done" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fertig"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Listo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terminé"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fine"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
           }
         }
       }
     },
     "Dry" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entfeuchten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seco"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Déshumidifier"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deumidifica"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dry"
           }
         }
       }
@@ -1521,28 +1104,16 @@
     "Duration" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dauer"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Duración"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Durée"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Durata"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duration"
           }
         }
       }
@@ -1550,53 +1121,29 @@
     "Each step starts when the previous one finishes. The final step stays in effect until you make a manual change or another routine changes it." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeder Schritt beginnt, wenn der vorherige endet. Der letzte Schritt bleibt aktiv, bis du ihn manuell oder durch eine andere Routine änderst."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cada paso comienza cuando termina el anterior. El paso final permanece activo hasta que lo cambies manualmente u otra rutina lo cambie."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chaque étape commence à la fin de la précédente. La dernière étape reste active jusqu’à une modification manuelle ou par une autre routine."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ogni passaggio inizia al termine del precedente. Il passaggio finale resta attivo finché non lo modifichi manualmente o interviene un’altra routine."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each step starts when the previous one finishes. The final step stays in effect until you make a manual change or another routine changes it."
           }
         }
       }
     },
     "Eco" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eco"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eco"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Éco"
-          }
-        },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eco"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eco"
@@ -1605,93 +1152,83 @@
       }
     },
     "Enable Cloud scheduling above, then enter the TV code here." : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attiva la programmazione cloud qui sopra, poi inserisci qui il codice della TV."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Cloud scheduling above, then enter the TV code here."
+          }
+        }
+      }
     },
     "Enabled" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiviert"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activé"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Attivato"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enabled"
+          }
         }
       }
     },
     "Enter the code shown on your Apple TV. The TV receives a separate scoped token and Bosch credentials stay on the cloud service." : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci il codice mostrato su Apple TV. La TV riceve un token separato con accesso limitato e le credenziali Bosch restano sul servizio cloud."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the code shown on your Apple TV. The TV receives a separate scoped token and Bosch credentials stay on the cloud service."
+          }
+        }
+      }
     },
     "Every day" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeden Tag"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Todos los días"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tous les jours"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ogni giorno"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every day"
           }
         }
       }
     },
     "Fan" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lüfter"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ventilador"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ventilateur"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ventola"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fan"
           }
         }
       }
@@ -1699,117 +1236,83 @@
     "Fan speed" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lüfterstufe"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Velocidad del ventilador"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vitesse du ventilateur"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Velocità ventola"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fan speed"
           }
         }
       }
     },
     "Fan speeds" : {
       "comment" : "A section of the AC guide that describes the fan speeds.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velocità della ventola"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fan speeds"
+          }
+        }
+      }
     },
     "For %@" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Für %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Durante %@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pendant %@"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Per %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For %@"
           }
         }
       }
     },
     "Found %lld newer HomeCom air conditioner. MQTT device-shadow control is the next integration step." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld neuere HomeCom-Klimaanlage gefunden. Die MQTT-Geräteschattensteuerung ist der nächste Integrationsschritt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se encontró %lld aire acondicionado HomeCom nuevo. El control MQTT del estado del dispositivo es el siguiente paso de integración."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld climatiseur HomeCom récent trouvé. Le contrôle MQTT de l’état de l’appareil est la prochaine étape d’intégration."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trovato %lld nuovo climatizzatore HomeCom. Il controllo MQTT dello stato del dispositivo è il prossimo passaggio di integrazione."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Found %lld newer HomeCom air conditioner. MQTT device-shadow control is the next integration step."
           }
         }
       }
     },
     "Found %lld newer HomeCom air conditioners. MQTT device-shadow control is the next integration step." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld neuere HomeCom-Klimaanlagen gefunden. Die MQTT-Geräteschattensteuerung ist der nächste Integrationsschritt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se encontraron %lld aires acondicionados HomeCom nuevos. El control MQTT del estado del dispositivo es el siguiente paso de integración."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld climatiseurs HomeCom récents trouvés. Le contrôle MQTT de l’état de l’appareil est la prochaine étape d’intégration."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trovati %lld nuovi climatizzatori HomeCom. Il controllo MQTT dello stato del dispositivo è il prossimo passaggio di integrazione."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Found %lld newer HomeCom air conditioners. MQTT device-shadow control is the next integration step."
           }
         }
       }
@@ -1817,53 +1320,29 @@
     "Fri" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fr"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vie"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ven"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ven"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fri"
           }
         }
       }
     },
     "Gateway" : {
       "localizations" : {
-        "de" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gateway"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pasarela"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passerelle"
-          }
-        },
-        "it" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gateway"
@@ -1873,28 +1352,16 @@
     },
     "Heat" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heizen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calor"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chauffage"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riscalda"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heat"
           }
         }
       }
@@ -1902,28 +1369,16 @@
     "High" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hoch"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alta"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Élevée"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Alta"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High"
           }
         }
       }
@@ -1931,89 +1386,67 @@
     "Horizontal" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Horizontal"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Horizontal"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Horizontal"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Orizzontale"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Horizontal"
           }
         }
       }
     },
     "Horizontal swing" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Horizontale Schwenkung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oscilación horizontal"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oscillation horizontale"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oscillazione orizzontale"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Horizontal swing"
           }
         }
       }
     },
     "https://your-project.vercel.app" : {
       "comment" : "A placeholder URL for the cloud URL.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://your-project.vercel.app"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://your-project.vercel.app"
+          }
+        }
+      }
     },
     "Increase temperature" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Temperatur erhöhen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Subir la temperatura"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Augmenter la température"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aumenta temperatura"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Increase temperature"
           }
         }
       }
@@ -2021,28 +1454,16 @@
     "Keep running" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weiterlaufen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantener en marcha"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maintenir en marche"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mantieni attivo"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep running"
           }
         }
       }
@@ -2050,98 +1471,104 @@
     "Keep this setting until changed" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Einstellung bis zur Änderung beibehalten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantener este ajuste hasta que cambie"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conserver ce réglage jusqu’à modification"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mantieni questa impostazione fino alla modifica"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep this setting until changed"
           }
         }
       }
     },
     "Latest wrist temperature is too old for automation." : {
       "comment" : "Error message displayed when the wrist temperature is too old for automatic cooling.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’ultima temperatura del polso è troppo vecchia per l’automazione."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest wrist temperature is too old for automation."
+          }
+        }
+      }
     },
     "Lets the AC choose how to reach and maintain the selected temperature." : {
       "comment" : "Description of an AC mode that lets the AC choose its own operation.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lascia al climatizzatore la scelta di come raggiungere e mantenere la temperatura selezionata."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lets the AC choose how to reach and maintain the selected temperature."
+          }
+        }
+      }
     },
     "Live" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Live"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En directo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En direct"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "In tempo reale"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live"
           }
         }
       }
     },
     "Live Bosch access is required for automatic cooling." : {
       "comment" : "Error message displayed when automatic cooling is triggered but Live Bosch access is not available.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il raffreddamento automatico richiede l’accesso attivo a Bosch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live Bosch access is required for automatic cooling."
+          }
+        }
+      }
     },
     "Live read/write access" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Live-Lese-/Schreibzugriff"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Acceso de lectura y escritura en directo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accès direct en lecture/écriture"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accesso lettura/scrittura in tempo reale"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live read/write access"
           }
         }
       }
@@ -2149,28 +1576,16 @@
     "Loading climate data" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klimadaten werden geladen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cargando datos climáticos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chargement des données climatiques"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Caricamento dati climatici"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading climate data"
           }
         }
       }
@@ -2178,65 +1593,69 @@
     "Low" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Niedrig"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Baja"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Faible"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bassa"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low"
           }
         }
       }
     },
     "Low, medium and high" : {
       "comment" : "Text describing the fan speed options available on supported AC models.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bassa, media e alta"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low, medium and high"
+          }
+        }
+      }
     },
     "Lowers the room temperature toward your selected setpoint." : {
       "comment" : "Tooltip for the \"Cool\" AC mode.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbassa la temperatura della stanza fino al valore impostato."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lowers the room temperature toward your selected setpoint."
+          }
+        }
+      }
     },
     "Medium" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mittel"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Media"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moyenne"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Media"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medium"
           }
         }
       }
@@ -2244,98 +1663,104 @@
     "Mode" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modus"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modalità"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode"
           }
         }
       }
     },
     "Modes" : {
       "comment" : "A section of the AC guide that describes the modes available on the AC.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modalità"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modes"
+          }
+        }
+      }
     },
     "Mon" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lun"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lun"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lun"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mon"
           }
         }
       }
     },
     "Moves the louvers left and right to spread airflow across the room." : {
       "comment" : "Tooltip for the horizontal swing feature of an AC.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muove le alette a destra e a sinistra per distribuire l’aria nella stanza."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moves the louvers left and right to spread airflow across the room."
+          }
+        }
+      }
     },
     "Moves the louvers up and down to distribute air through the room." : {
       "comment" : "Text displayed in a section of a view that describes the horizontal swing feature of an AC.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muove le alette in alto e in basso per distribuire l’aria nella stanza."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moves the louvers up and down to distribute air through the room."
+          }
+        }
+      }
     },
     "My routine" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Meine Routine"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mi rutina"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ma routine"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "La mia routine"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My routine"
           }
         }
       }
@@ -2343,28 +1768,16 @@
     "Name" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Name"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nombre"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nom"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nome"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
           }
         }
       }
@@ -2372,28 +1785,16 @@
     "Next change %@" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nächste Änderung %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Próximo cambio %@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prochaine modification %@"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prossima modifica %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next change %@"
           }
         }
       }
@@ -2401,28 +1802,16 @@
     "Next step" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nächster Schritt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Siguiente paso"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Étape suivante"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Passaggio successivo"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next step"
           }
         }
       }
@@ -2430,65 +1819,69 @@
     "Night comfort" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nachtkomfort"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confort nocturno"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confort nocturne"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Comfort notturno"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Night comfort"
           }
         }
       }
     },
     "No air conditioner is available for temperature automation." : {
       "comment" : "Error message displayed when automatic cooling cannot reach the air conditioner.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun climatizzatore disponibile per l’automazione della temperatura."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No air conditioner is available for temperature automation."
+          }
+        }
+      }
     },
     "No air conditioner is available." : {
       "comment" : "Error message displayed when no air conditioner is available.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun climatizzatore disponibile."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No air conditioner is available."
+          }
+        }
+      }
     },
     "No climate data" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Klimadaten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin datos climáticos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune donnée climatique"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nessun dato climatico"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No climate data"
           }
         }
       }
@@ -2496,28 +1889,16 @@
     "No routines yet" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Noch keine Routinen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aún no hay rutinas"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune routine"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nessuna routine"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No routines yet"
           }
         }
       }
@@ -2525,28 +1906,16 @@
     "Not reported by device" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vom Gerät nicht gemeldet"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No indicado por el dispositivo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non indiqué par l’appareil"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non comunicata dal dispositivo"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not reported by device"
           }
         }
       }
@@ -2554,28 +1923,16 @@
     "Off" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aus"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apagado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arrêt"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spento"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
           }
         }
       }
@@ -2583,61 +1940,51 @@
     "OFF" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AUS"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "APAGADO"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ARRÊT"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "SPENTO"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OFF"
           }
         }
       }
     },
     "OK" : {
       "comment" : "A button that dismisses an alert.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
     },
     "On" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Encendido"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Marche"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acceso"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On"
           }
         }
       }
@@ -2645,61 +1992,51 @@
     "On-device scheduling" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitpläne auf dem Gerät"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programación en el dispositivo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programmation sur l’appareil"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Programmazione sul dispositivo"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On-device scheduling"
           }
         }
       }
     },
     "Open betterBCool on your iPhone to connect Bosch." : {
       "comment" : "Error message when the iPhone is not connected to Bosch.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri betterBCool su iPhone per connettere Bosch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open betterBCool on your iPhone to connect Bosch."
+          }
+        }
+      }
     },
     "Pause" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pause"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pausa"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pause"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pausa"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
           }
         }
       }
@@ -2707,121 +2044,101 @@
     "Power" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein/Aus"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Encendido"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alimentation"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accensione"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Power"
           }
         }
       }
     },
     "Prioritizes quieter overnight operation and may adjust the temperature gradually." : {
       "comment" : "Tooltip for the \"Sleep\" AC mode.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dà priorità a un funzionamento notturno più silenzioso e può regolare gradualmente la temperatura."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prioritizes quieter overnight operation and may adjust the temperature gradually."
+          }
+        }
+      }
     },
     "Privacy & safety" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datenschutz & Sicherheit"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Privacidad y seguridad"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confidentialité et sécurité"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Privacy e sicurezza"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy & safety"
           }
         }
       }
     },
     "Provide progressively stronger airflow. Higher speeds change the room faster but create more noise." : {
       "comment" : "Text describing the airflow of an AC with a high speed.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forniscono un flusso d’aria progressivamente più forte. Le velocità più alte modificano la temperatura della stanza più rapidamente, ma producono più rumore."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Provide progressively stronger airflow. Higher speeds change the room faster but create more noise."
+          }
+        }
+      }
     },
     "Quick start" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schnellstart"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicio rápido"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Démarrage rapide"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Avvio rapido"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick start"
           }
         }
       }
     },
     "Quiet" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leise"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Silenciosa"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Silencieux"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Silenziosa"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quiet"
           }
         }
       }
@@ -2829,28 +2146,16 @@
     "Read & write" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lesen & Schreiben"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lectura y escritura"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lecture et écriture"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lettura e scrittura"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read & write"
           }
         }
       }
@@ -2858,28 +2163,16 @@
     "Read-only connection" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schreibgeschützte Verbindung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conexión de solo lectura"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connexion en lecture seule"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connessione in sola lettura"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read-only connection"
           }
         }
       }
@@ -2887,28 +2180,16 @@
     "Recent unit changes" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzte Geräteänderungen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambios recientes de la unidad"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modifications récentes de l’unité"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modifiche recenti dell’unità"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent unit changes"
           }
         }
       }
@@ -2916,69 +2197,87 @@
     "Reconnect Bosch" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bosch erneut verbinden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Volver a conectar Bosch"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reconnecter Bosch"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riconnetti Bosch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnect Bosch"
           }
         }
       }
     },
     "Reconnect Bosch on your iPhone to continue." : {
       "comment" : "Error message when Bosch requires re-authentication.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riconnetti Bosch su iPhone per continuare."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnect Bosch on your iPhone to continue."
+          }
+        }
+      }
     },
     "Reduces energy use by limiting output and, on some Bosch models, selecting at least 24 °C with Auto fan. Bosch does not publish one guaranteed saving versus Cool across all Climate models, and betterBCool does not receive power-use data from this AC, so it cannot show a trustworthy percentage." : {
       "comment" : "Text describing the Eco mode of the AC.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riduce il consumo energetico limitando la potenza e, su alcuni modelli Bosch, impostando almeno 24 °C con ventola automatica. Bosch non pubblica un risparmio garantito rispetto al raffreddamento per tutti i modelli Climate e betterBCool non riceve dati sui consumi di questo climatizzatore, quindi non può mostrare una percentuale attendibile."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reduces energy use by limiting output and, on some Bosch models, selecting at least 24 °C with Auto fan. Bosch does not publish one guaranteed saving versus Cool across all Climate models, and betterBCool does not receive power-use data from this AC, so it cannot show a trustworthy percentage."
+          }
+        }
+      }
     },
     "Reduces humidity with gentle, intermittent cooling. Fan speed is automatic, so Quiet, Low, Medium, High and Turbo should not work. Climate 3000i, 5000i and 6000i units normally still allow a temperature setpoint in Dry; some Climate Class models lock it. Eco, Sleep and swing availability depends on the AC model." : {
       "comment" : "Text displayed in a section of a view that explains the Dry mode of an AC.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riduce l’umidità con un raffreddamento leggero e intermittente. La velocità della ventola è automatica, quindi Silenziosa, Bassa, Media, Alta e Turbo non sono disponibili. I modelli Climate 3000i, 5000i e 6000i normalmente consentono di impostare la temperatura in deumidificazione; alcuni modelli Climate Class la bloccano. La disponibilità di Eco, Sonno e oscillazione dipende dal modello."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reduces humidity with gentle, intermittent cooling. Fan speed is automatic, so Quiet, Low, Medium, High and Turbo should not work. Climate 3000i, 5000i and 6000i units normally still allow a temperature setpoint in Dry; some Climate Class models lock it. Eco, Sleep and swing availability depends on the AC model."
+          }
+        }
+      }
     },
     "Repeats" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wiederholt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Repetición"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Répétition"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ripetizione"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeats"
           }
         }
       }
@@ -2986,28 +2285,16 @@
     "Resume silent" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leise fortsetzen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reanudar en silencio"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reprendre silencieusement"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Riprendi silenzioso"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume silent"
           }
         }
       }
@@ -3015,28 +2302,16 @@
     "Room —°" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Raum —°"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habitación —°"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pièce —°"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stanza —°"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Room —°"
           }
         }
       }
@@ -3044,28 +2319,16 @@
     "Room %@°" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Raum %@°"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habitación %@°"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pièce %@°"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stanza %@°"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Room %@°"
           }
         }
       }
@@ -3073,25 +2336,13 @@
     "Routine" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Routine"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rutina"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Routine"
-          }
-        },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routine"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Routine"
@@ -3102,28 +2353,16 @@
     "Routines are private to this device. iOS can delay network changes while the app is suspended; the correct step is restored when betterBCool becomes active again." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Routinen bleiben auf diesem Gerät. iOS kann Netzwerkänderungen verzögern, während die App angehalten ist; beim nächsten Aktivieren von betterBCool wird der richtige Schritt wiederhergestellt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las rutinas son privadas de este dispositivo. iOS puede retrasar los cambios de red mientras la app está suspendida; el paso correcto se restaura cuando betterBCool vuelve a estar activa."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les routines restent privées sur cet appareil. iOS peut retarder les changements réseau lorsque l’app est suspendue ; la bonne étape est restaurée lorsque betterBCool redevient active."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le routine restano private sul dispositivo. iOS può ritardare le modifiche di rete mentre l’app è sospesa; il passaggio corretto viene ripristinato quando betterBCool torna attiva."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routines are private to this device. iOS can delay network changes while the app is suspended; the correct step is restored when betterBCool becomes active again."
           }
         }
       }
@@ -3131,28 +2370,16 @@
     "Routines run in the cloud with durable waits and automatic retries, even while this iPhone is offline." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Routinen laufen mit dauerhaften Wartezeiten und automatischen Wiederholungen in der Cloud, auch wenn dieses iPhone offline ist."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las rutinas se ejecutan en la nube con esperas duraderas y reintentos automáticos, incluso cuando este iPhone está sin conexión."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les routines s’exécutent dans le cloud avec des attentes durables et des tentatives automatiques, même lorsque cet iPhone est hors ligne."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le routine vengono eseguite nel cloud con attese persistenti e tentativi automatici, anche quando l’iPhone è offline."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Routines run in the cloud with durable waits and automatic retries, even while this iPhone is offline."
           }
         }
       }
@@ -3160,28 +2387,16 @@
     "Sat" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sa"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sáb"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sam"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sab"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sat"
           }
         }
       }
@@ -3189,28 +2404,16 @@
     "Save" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sichern"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guardar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enregistrer"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Salva"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
           }
         }
       }
@@ -3218,28 +2421,16 @@
     "Schedules" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitpläne"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programaciones"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programmations"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Programmazioni"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schedules"
           }
         }
       }
@@ -3247,28 +2438,16 @@
     "Set temperature" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solltemperatur"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Temperatura establecida"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Température réglée"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Temperatura impostata"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set temperature"
           }
         }
       }
@@ -3276,28 +2455,16 @@
     "SET TO" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "EINGESTELLT AUF"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AJUSTADO A"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RÉGLÉ SUR"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "IMPOSTATO A"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SET TO"
           }
         }
       }
@@ -3305,200 +2472,130 @@
     "Set to %@" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auf %@ gesetzt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajustado a %@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réglé sur %@"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Impostato su %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set to %@"
           }
         }
       }
     },
     "Settings" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einstellungen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ajustes"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Réglages"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Impostazioni"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
           }
         }
       }
     },
     "Sign in with Bosch" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mit Bosch anmelden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar sesión con Bosch"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se connecter avec Bosch"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accedi con Bosch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with Bosch"
           }
         }
       }
     },
     "Sign in with Bosch to approve a TV." : {
       "comment" : "A",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accedi a Bosch per autorizzare una TV."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with Bosch to approve a TV."
+          }
+        }
+      }
     },
     "Sign out" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abmelden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cerrar sesión"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se déconnecter"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esci"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out"
           }
         }
       }
     },
     "Sign out of Bosch?" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Von Bosch abmelden?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Cerrar sesión de Bosch?"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se déconnecter de Bosch ?"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Uscire da Bosch?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out of Bosch?"
           }
         }
       }
     },
     "Sign-in opens Bosch SingleKey ID. betterBCool never sees or stores your password." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Anmeldung öffnet Bosch SingleKey ID. betterBCool sieht oder speichert dein Passwort niemals."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El inicio de sesión abre Bosch SingleKey ID. betterBCool nunca ve ni guarda tu contraseña."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La connexion ouvre Bosch SingleKey ID. betterBCool ne voit ni ne stocke jamais votre mot de passe."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "L’accesso apre Bosch SingleKey ID. betterBCool non vede né memorizza mai la tua password."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-in opens Bosch SingleKey ID. betterBCool never sees or stores your password."
           }
         }
       }
     },
     "Signed in with Bosch" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bei Bosch angemeldet"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sesión iniciada con Bosch"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connecté avec Bosch"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accesso effettuato con Bosch"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signed in with Bosch"
           }
         }
       }
@@ -3506,56 +2603,32 @@
     "Silent sleep" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leiser Schlaf"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sueño silencioso"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sommeil silencieux"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sonno silenzioso"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silent sleep"
           }
         }
       }
     },
     "Sleep" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schlaf"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sueño"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sommeil"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sonno"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sleep"
           }
         }
       }
@@ -3563,28 +2636,16 @@
     "Start cooling" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kühlung starten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iniciar refrigeración"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Démarrer le refroidissement"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Avvia raffreddamento"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start cooling"
           }
         }
       }
@@ -3592,28 +2653,16 @@
     "Start with Night comfort" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mit Nachtkomfort starten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empezar con Confort nocturno"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Commencer avec Confort nocturne"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inizia con Comfort notturno"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with Night comfort"
           }
         }
       }
@@ -3621,28 +2670,16 @@
     "Starts" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inicio"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Début"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inizio"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starts"
           }
         }
       }
@@ -3650,28 +2687,16 @@
     "Stay off until changed" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bis zur Änderung ausgeschaltet lassen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantener apagado hasta que cambie"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rester éteint jusqu’à modification"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resta spento fino alla modifica"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stay off until changed"
           }
         }
       }
@@ -3679,56 +2704,32 @@
     "Step" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schritt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paso"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Étape"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Passaggio"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step"
           }
         }
       }
     },
     "Stored Bosch tokens and the discovered gateway will be removed from this device." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gespeicherte Bosch-Token und das gefundene Gateway werden von diesem Gerät entfernt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los tokens de Bosch guardados y la pasarela detectada se eliminarán de este dispositivo."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les jetons Bosch enregistrés et la passerelle détectée seront supprimés de cet appareil."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "I token Bosch memorizzati e il gateway rilevato verranno rimossi dal dispositivo."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stored Bosch tokens and the discovered gateway will be removed from this device."
           }
         }
       }
@@ -3736,28 +2737,16 @@
     "Sun" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "So"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dom"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dim"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dom"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun"
           }
         }
       }
@@ -3765,98 +2754,104 @@
     "Temperature" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Temperatur"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Temperatura"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Température"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Temperatura"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temperature"
           }
         }
       }
     },
     "That setting is not supported by this air conditioner." : {
       "comment" : "Error message displayed when a requested setting is not supported by the air conditioner.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questa impostazione non è supportata dal climatizzatore."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That setting is not supported by this air conditioner."
+          }
+        }
+      }
     },
     "The air conditioner is read-only." : {
       "comment" : "Error message displayed when the air conditioner is read-only.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il climatizzatore è in sola lettura."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The air conditioner is read-only."
+          }
+        }
+      }
     },
     "The device did not accept that setting." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Gerät hat diese Einstellung nicht akzeptiert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El dispositivo no aceptó ese ajuste."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’appareil n’a pas accepté ce réglage."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Il dispositivo non ha accettato l’impostazione."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The device did not accept that setting."
           }
         }
       }
     },
     "The iPhone could not reach the air conditioner." : {
       "comment" : "Error message when the iPhone could not reach the air conditioner.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone non è riuscito a raggiungere il climatizzatore."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The iPhone could not reach the air conditioner."
+          }
+        }
+      }
     },
     "The next step begins automatically when this duration ends." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der nächste Schritt beginnt automatisch nach Ablauf dieser Dauer."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El siguiente paso comienza automáticamente cuando termina esta duración."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’étape suivante commence automatiquement à la fin de cette durée."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Il passaggio successivo inizia automaticamente al termine della durata."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The next step begins automatically when this duration ends."
           }
         }
       }
@@ -3864,28 +2859,16 @@
     "The requested setting is not supported." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die gewünschte Einstellung wird nicht unterstützt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El ajuste solicitado no es compatible."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le réglage demandé n’est pas pris en charge."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "L’impostazione richiesta non è supportata."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The requested setting is not supported."
           }
         }
       }
@@ -3893,28 +2876,16 @@
     "The routine was removed locally, but cloud deletion will need to be retried." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Routine wurde lokal entfernt, aber das Löschen in der Cloud muss wiederholt werden."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La rutina se eliminó localmente, pero habrá que reintentar la eliminación en la nube."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La routine a été supprimée localement, mais la suppression dans le cloud devra être réessayée."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "La routine è stata rimossa localmente, ma sarà necessario riprovare l’eliminazione dal cloud."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The routine was removed locally, but cloud deletion will need to be retried."
           }
         }
       }
@@ -3922,28 +2893,16 @@
     "The unit stays off for this duration, then the next step begins. To keep it off, make this the final step." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Gerät bleibt für diese Dauer ausgeschaltet, danach beginnt der nächste Schritt. Damit es ausgeschaltet bleibt, muss dies der letzte Schritt sein."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La unidad permanece apagada durante este tiempo y después comienza el siguiente paso. Para mantenerla apagada, haz que este sea el paso final."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’appareil reste éteint pendant cette durée, puis l’étape suivante commence. Pour qu’il reste éteint, faites-en la dernière étape."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "L’unità resta spenta per questa durata, poi inizia il passaggio successivo. Per mantenerla spenta, rendi questo il passaggio finale."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The unit stays off for this duration, then the next step begins. To keep it off, make this the final step."
           }
         }
       }
@@ -3951,56 +2910,32 @@
     "The unit stays off until you turn it on manually or another routine changes it." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Gerät bleibt ausgeschaltet, bis du es manuell einschaltest oder eine andere Routine es ändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La unidad permanece apagada hasta que la enciendas manualmente u otra rutina la cambie."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’appareil reste éteint jusqu’à ce que vous le rallumiez manuellement ou qu’une autre routine le modifie."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "L’unità resta spenta finché non la accendi manualmente o interviene un’altra routine."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The unit stays off until you turn it on manually or another routine changes it."
           }
         }
       }
     },
     "This is an independent integration and is not endorsed by Bosch." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dies ist eine unabhängige Integration und wird nicht von Bosch unterstützt."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esta es una integración independiente y no está respaldada por Bosch."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il s’agit d’une intégration indépendante qui n’est pas approuvée par Bosch."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Questa è un’integrazione indipendente e non è approvata da Bosch."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is an independent integration and is not endorsed by Bosch."
           }
         }
       }
@@ -4008,28 +2943,16 @@
     "This routine is saved locally but has not reached the cloud yet." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Routine ist lokal gespeichert, wurde aber noch nicht in die Cloud übertragen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esta rutina está guardada localmente, pero aún no ha llegado a la nube."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cette routine est enregistrée localement, mais n’a pas encore atteint le cloud."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "La routine è salvata localmente, ma non è ancora stata sincronizzata con il cloud."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This routine is saved locally but has not reached the cloud yet."
           }
         }
       }
@@ -4037,28 +2960,16 @@
     "This setting stays active until you change it manually or another routine changes it." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Einstellung bleibt aktiv, bis du sie manuell oder durch eine andere Routine änderst."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este ajuste permanece activo hasta que lo cambies manualmente u otra rutina lo cambie."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ce réglage reste actif jusqu’à une modification manuelle ou par une autre routine."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Questa impostazione resta attiva finché non la modifichi manualmente o interviene un’altra routine."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This setting stays active until you change it manually or another routine changes it."
           }
         }
       }
@@ -4066,28 +2977,16 @@
     "Thu" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Do"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jue"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeu"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gio"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thu"
           }
         }
       }
@@ -4095,141 +2994,94 @@
     "Timeline" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ablauf"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Línea de tiempo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chronologie"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sequenza"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timeline"
           }
         }
       }
     },
     "Tokens are stored in the iOS Keychain and refreshed automatically." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token werden im iOS-Schlüsselbund gespeichert und automatisch aktualisiert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los tokens se guardan en el llavero de iOS y se actualizan automáticamente."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les jetons sont stockés dans le trousseau iOS et actualisés automatiquement."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "I token vengono memorizzati nel portachiavi iOS e aggiornati automaticamente."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tokens are stored in the iOS Keychain and refreshed automatically."
           }
         }
       }
     },
     "Transport" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transport"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transporte"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transport"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trasporto"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transport"
+          }
         }
       }
     },
     "Trigger above baseline" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soglia sopra il valore di riferimento"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trigger above baseline"
+          }
+        }
+      }
     },
     "Tue" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Di"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mar"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mar"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tue"
           }
         }
       }
     },
     "Turbo" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turbo"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turbo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Turbo"
-          }
-        },
         "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turbo"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Turbo"
@@ -4240,28 +3092,16 @@
     "Turn air conditioner off" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klimaanlage ausschalten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apagar el aire acondicionado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Éteindre le climatiseur"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spegni il climatizzatore"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn air conditioner off"
           }
         }
       }
@@ -4269,28 +3109,16 @@
     "Turn air conditioner on" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klimaanlage einschalten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Encender el aire acondicionado"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allumer le climatiseur"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accendi il climatizzatore"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn air conditioner on"
           }
         }
       }
@@ -4298,64 +3126,67 @@
     "Turn off" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ausschalten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apagar"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Éteindre"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spegni"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn off"
+          }
         }
       }
     },
     "TV devices" : {
-
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dispositivi TV"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TV devices"
+          }
+        }
+      }
     },
     "TV name" : {
       "comment" : "A label for the TV name.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome della TV"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TV name"
+          }
+        }
+      }
     },
     "Unable to load climate data." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klimadaten konnten nicht geladen werden."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudieron cargar los datos climáticos."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Impossible de charger les données climatiques."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Impossibile caricare i dati climatici."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to load climate data."
           }
         }
       }
@@ -4363,61 +3194,51 @@
     "Unavailable" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht verfügbar"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No disponible"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Indisponible"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non disponibile"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unavailable"
           }
         }
       }
     },
     "Understand your AC" : {
       "comment" : "A link to a view that explains how to use the app.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conosci il tuo climatizzatore"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Understand your AC"
+          }
+        }
+      }
     },
     "Unit changes will appear here." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geräteänderungen erscheinen hier."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los cambios de la unidad aparecerán aquí."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les modifications de l’unité apparaîtront ici."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le modifiche dell’unità appariranno qui."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit changes will appear here."
           }
         }
       }
@@ -4425,28 +3246,16 @@
     "Unit turned off" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gerät ausgeschaltet"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unidad apagada"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unité éteinte"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unità spenta"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit turned off"
           }
         }
       }
@@ -4454,28 +3263,16 @@
     "Unit turned on" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gerät eingeschaltet"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unidad encendida"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unité allumée"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unità accesa"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unit turned on"
           }
         }
       }
@@ -4483,28 +3280,16 @@
     "Until changed" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bis zur Änderung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hasta que cambie"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jusqu’à modification"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fino alla modifica"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Until changed"
           }
         }
       }
@@ -4512,65 +3297,69 @@
     "Updated %@" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktualisiert %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizado %@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mis à jour %@"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aggiornato %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updated %@"
           }
         }
       }
     },
     "Uses maximum output for a rapid temperature change, with greater noise and energy use." : {
       "comment" : "Text describing the Turbo fan speed.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa la potenza massima per modificare rapidamente la temperatura, con più rumore e consumo energetico."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses maximum output for a rapid temperature change, with greater noise and energy use."
+          }
+        }
+      }
     },
     "Uses the gentlest airflow to reduce noise." : {
       "comment" : "Text displayed in a section of a view that describes a fan speed called 'Quiet'.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa il flusso d’aria più leggero per ridurre il rumore."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses the gentlest airflow to reduce noise."
+          }
+        }
+      }
     },
     "Vercel cloud scheduling" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vercel-Cloud-Zeitpläne"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programación en Vercel Cloud"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programmation Vercel Cloud"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Programmazione Vercel Cloud"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vercel cloud scheduling"
           }
         }
       }
@@ -4584,66 +3373,62 @@
             "state" : "new",
             "value" : "Version %1$@ • Build %2$@"
           }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versione %@ • Build %@"
+          }
         }
       }
     },
     "Vertical swing" : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vertikale Schwenkung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oscilación vertical"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oscillation verticale"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oscillazione verticale"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vertical swing"
           }
         }
       }
     },
     "Warms the room toward your selected setpoint on supported AC models." : {
       "comment" : "Text displayed in a section of a guide that describes the heat mode of an AC.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riscalda la stanza fino alla temperatura impostata sui modelli compatibili."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warms the room toward your selected setpoint on supported AC models."
+          }
+        }
+      }
     },
     "Wed" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mi"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mié"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mer"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wed"
           }
         }
       }
@@ -4651,28 +3436,16 @@
     "Weekdays" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wochentage"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Días laborables"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jours de semaine"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Giorni feriali"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekdays"
           }
         }
       }
@@ -4680,89 +3453,67 @@
     "Weekends" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wochenenden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fines de semana"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Week-ends"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fine settimana"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekends"
           }
         }
       }
     },
     "When enabled, Cloud service securely executes routines and manual commands even while this iPhone is offline." : {
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn aktiviert, führt der Cloud-Dienst Routinen und manuelle Befehle sicher aus, auch wenn dieses iPhone offline ist."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Al activarlo, el servicio en la nube ejecuta de forma segura rutinas y comandos manuales aunque este iPhone esté sin conexión."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Une fois activé, le service cloud exécute les routines et les commandes manuelles en toute sécurité, même lorsque cet iPhone est hors ligne."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quando è attivo, il servizio cloud esegue in sicurezza routine e comandi manuali anche quando l’iPhone è offline."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When enabled, Cloud service securely executes routines and manual commands even while this iPhone is offline."
           }
         }
       }
     },
     "Wrist temperature is below the cooling trigger." : {
       "comment" : "Text displayed in a warning banner at the top of the screen when the wrist temperature is below the cooling trigger.",
-      "isCommentAutoGenerated" : true
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La temperatura del polso è inferiore alla soglia di raffreddamento."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrist temperature is below the cooling trigger."
+          }
+        }
+      }
     },
     "Your Bosch session has expired. Reconnect to continue." : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deine Bosch-Sitzung ist abgelaufen. Stelle die Verbindung wieder her, um fortzufahren."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu sesión de Bosch ha caducado. Vuelve a conectarte para continuar."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Votre session Bosch a expiré. Reconnectez-vous pour continuer."
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "La sessione Bosch è scaduta. Riconnettiti per continuare."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Bosch session has expired. Reconnect to continue."
           }
         }
       }
@@ -4770,28 +3521,16 @@
     "YOUR CLIMATE" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "DEIN RAUMKLIMA"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "TU CLIMA"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VOTRE CLIMAT"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "IL TUO CLIMA"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YOUR CLIMATE"
           }
         }
       }
@@ -4799,28 +3538,16 @@
     "Your routines" : {
       "extractionState" : "stale",
       "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deine Routinen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tus rutinas"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vos routines"
-          }
-        },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le tue routine"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your routines"
           }
         }
       }

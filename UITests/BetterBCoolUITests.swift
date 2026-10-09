@@ -7,6 +7,29 @@ final class BetterBCoolUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testItalianSystemLanguageUsesItalianThroughoutInterface() {
+        assertInterfaceLanguage("it-CH", region: "it_CH", settingsTitle: "Impostazioni", powerLabel: "Spegni il climatizzatore")
+    }
+
+    func testUnsupportedLanguageFallsBackToEnglishWithItalianSecondary() {
+        assertInterfaceLanguage("fr-FR", region: "it_IT", settingsTitle: "Settings", powerLabel: "Turn air conditioner off")
+    }
+
+    func testEnglishSystemLanguageUsesEnglish() {
+        assertInterfaceLanguage("en-GB", region: "en_GB", settingsTitle: "Settings", powerLabel: "Turn air conditioner off")
+    }
+
+    private func assertInterfaceLanguage(_ language: String, region: String, settingsTitle: String, powerLabel: String) {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language),it)", "-AppleLocale", region]
+        app.launch()
+        let power = app.buttons["dashboard.powerButton"]
+        XCTAssertTrue(power.waitForExistence(timeout: 5))
+        XCTAssertEqual(power.label, powerLabel)
+        app.buttons["dashboard.settingsButton"].tap()
+        XCTAssertTrue(app.navigationBars[settingsTitle].waitForExistence(timeout: 5))
+    }
+
     func testSettingsButtonOpensSettings() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
