@@ -7,6 +7,33 @@ final class BetterBCoolUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testItalianSystemLanguageUsesItalianThroughoutInterface() {
+        assertInterfaceLanguage("it-CH", region: "it_CH", settingsTitle: "Impostazioni", powerLabel: "Spegni il climatizzatore")
+    }
+
+    func testUnsupportedLanguageFallsBackToEnglishWithItalianSecondary() {
+        assertInterfaceLanguage("fr-FR", region: "it_IT", settingsTitle: "Settings", powerLabel: "Turn air conditioner off")
+    }
+
+    func testEnglishSystemLanguageUsesEnglish() {
+        assertInterfaceLanguage("en-GB", region: "en_GB", settingsTitle: "Settings", powerLabel: "Turn air conditioner off")
+    }
+
+    private func assertInterfaceLanguage(_ language: String, region: String, settingsTitle: String, powerLabel: String) {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language),it)", "-AppleLocale", region]
+        app.launch()
+        let power = app.buttons["dashboard.powerButton"]
+        XCTAssertTrue(power.waitForExistence(timeout: 5))
+        XCTAssertEqual(power.label, powerLabel)
+        let subtitle = language.hasPrefix("it") ? "Stato e controlli di oscillazione" : "Status and swing controls"
+        let comfortSubtitle = app.staticTexts[subtitle]
+        for _ in 0..<6 where !comfortSubtitle.exists { app.swipeUp() }
+        XCTAssertTrue(comfortSubtitle.exists)
+        app.buttons["dashboard.settingsButton"].tap()
+        XCTAssertTrue(app.navigationBars[settingsTitle].waitForExistence(timeout: 5))
+    }
+
     func testSettingsButtonOpensSettings() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
@@ -23,6 +50,33 @@ final class BetterBCoolUITests: XCTestCase {
             app.buttons["settings.signInButton"].waitForExistence(timeout: 5),
             "The Bosch sign-in control did not appear"
         )
+    }
+
+    func testTemperatureCardHasNoCoolingOrOffStatusBadge() {
+        for language in ["en", "it"] {
+            for poweredOff in [false, true] {
+                let app = XCUIApplication()
+                app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+                if poweredOff { app.launchArguments.append("-ui-testing-power-off") }
+                app.launch()
+                let card = app.otherElements["dashboard.temperatureCard"]
+                XCTAssertTrue(card.waitForExistence(timeout: 5))
+                for label in ["COOLING", "OFF", "RAFFREDDAMENTO", "SPENTO"] {
+                    XCTAssertFalse(card.staticTexts[label].exists)
+                }
+                XCTAssertTrue(app.buttons["dashboard.powerButton"].isEnabled)
+                XCTAssertTrue(app.buttons["dashboard.schedulesButton"].exists)
+                captureStatusDashboard(app, name: "Temperature card \(language), off=\(poweredOff)")
+                app.terminate()
+            }
+        }
+    }
+
+    private func captureStatusDashboard(_ app: XCUIApplication, name: String) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = name
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
     func testSettingsDoneDismissesSettings() {
@@ -171,12 +225,60 @@ final class BetterBCoolUITests: XCTestCase {
         XCTAssertTrue(coolMode.waitForExistence(timeout: 5))
         XCTAssertFalse(coolMode.isEnabled)
 
-        let verticalSwing = app.buttons["dashboard.verticalSwingButton"]
+        let verticalSwing = revealComfortControl("dashboard.verticalSwingButton", in: app)
         XCTAssertTrue(verticalSwing.waitForExistence(timeout: 5))
         XCTAssertFalse(verticalSwing.isEnabled)
 
         let schedulesButton = app.buttons["dashboard.schedulesButton"]
         XCTAssertTrue(schedulesButton.isEnabled, "Schedules must remain available while the unit is off")
+    }
+
+    func testComfortLabelsAndStatesRemainAccessibleAtLargestTextSize() {
+        verifyComfortControls(language: "en", largestText: false)
+        verifyComfortControls(language: "it", largestText: false)
+        verifyComfortControls(language: "it", largestText: true)
+    }
+
+    private func verifyComfortControls(language: String, largestText: Bool) {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+        if largestText {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        }
+        app.launch()
+        let identifiers = ["dashboard.ecoButton", "dashboard.sleepButton", "dashboard.verticalSwingButton", "dashboard.horizontalSwingButton"]
+        for identifier in identifiers {
+            let control = revealComfortControl(identifier, in: app)
+            XCTAssertTrue(control.isHittable)
+            XCTAssertFalse(control.label.contains("..."))
+            XCTAssertFalse(control.label.contains("…"))
+            let originalState = control.value as? String
+            let states = language == "it" ? ["Acceso", "Spento"] : ["On", "Off"]
+            XCTAssertTrue(states.contains(originalState ?? ""))
+            control.tap()
+            let changed = NSPredicate(format: "value != %@", originalState ?? "")
+            expectation(for: changed, evaluatedWith: control)
+            waitForExpectations(timeout: 5)
+            captureComfortDashboard(app, name: "Comfort \(language), largest=\(largestText), \(identifier)")
+        }
+        app.terminate()
+    }
+
+    private func revealComfortControl(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
+        let control = app.buttons[identifier]
+        let scrollView = app.scrollViews.firstMatch
+        for _ in 0..<12 {
+            if control.exists && (control.isHittable || !control.isEnabled) { return control }
+            scrollView.swipeUp(velocity: .slow)
+        }
+        return control
+    }
+
+    private func captureComfortDashboard(_ app: XCUIApplication, name: String) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = name
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
     func testHalfDegreeTemperatureChangeHolds() {
@@ -200,10 +302,10 @@ final class BetterBCoolUITests: XCTestCase {
         app.launchArguments = ["-ui-testing"]
         app.launch()
 
-        let verticalSwing = app.buttons["dashboard.verticalSwingButton"]
+        let verticalSwing = revealComfortControl("dashboard.verticalSwingButton", in: app)
         XCTAssertTrue(verticalSwing.waitForExistence(timeout: 5))
         for _ in 0..<6 where !verticalSwing.isHittable {
-            app.swipeUp()
+            app.scrollViews.firstMatch.swipeUp(velocity: .slow)
         }
 
         XCTAssertTrue(verticalSwing.isHittable)
@@ -221,10 +323,10 @@ final class BetterBCoolUITests: XCTestCase {
         app.launch()
 
         for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
-            let button = app.buttons[identifier]
+            let button = revealComfortControl(identifier, in: app)
             XCTAssertTrue(button.waitForExistence(timeout: 5))
             for _ in 0..<6 where !button.isHittable {
-                app.swipeUp()
+                app.scrollViews.firstMatch.swipeUp(velocity: .slow)
             }
 
             XCTAssertTrue(button.isHittable)
@@ -246,13 +348,6 @@ final class BetterBCoolUITests: XCTestCase {
         XCTAssertTrue(dryMode.waitForExistence(timeout: 5))
         dryMode.tap()
 
-        for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
-            let button = app.buttons[identifier]
-            XCTAssertTrue(button.waitForExistence(timeout: 5))
-            XCTAssertFalse(button.isEnabled)
-            XCTAssertEqual(button.value as? String, "Unavailable")
-        }
-
         XCTAssertTrue(app.staticTexts["Managed automatically in Dry mode"].exists)
         for fanSpeed in ["Auto", "Quiet", "Low", "Medium", "High", "Turbo"] {
             let matchingButtons = app.buttons.matching(NSPredicate(format: "label == %@", fanSpeed))
@@ -260,6 +355,14 @@ final class BetterBCoolUITests: XCTestCase {
             XCTAssertTrue(fanButton.exists, "Missing \(fanSpeed) fan-speed button")
             XCTAssertFalse(fanButton.isEnabled, "\(fanSpeed) should be disabled in Dry mode")
         }
+
+        for identifier in ["dashboard.ecoButton", "dashboard.sleepButton"] {
+            let button = revealComfortControl(identifier, in: app)
+            XCTAssertTrue(button.waitForExistence(timeout: 5))
+            XCTAssertFalse(button.isEnabled)
+            XCTAssertEqual(button.value as? String, "Unavailable")
+        }
+
     }
 
     func testLaunchDoesNotReplayAnAlreadyStartedPowerOnSchedule() {

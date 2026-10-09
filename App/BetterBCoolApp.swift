@@ -13,7 +13,10 @@ struct BetterBCoolApp: App {
     @StateObject private var configuration = AppConfiguration()
 
     var body: some Scene {
-        WindowGroup { AppRootView(configuration: configuration) }
+        WindowGroup {
+            AppRootView(configuration: configuration)
+                .environment(\.locale, AppLanguage.locale)
+        }
     }
 }
 
@@ -247,7 +250,7 @@ final class AppConfiguration: ObservableObject {
 
     func handleWatchRequest(_ request: WatchRequest) async -> WatchSnapshot {
         guard isSignedIn else {
-            return watchSnapshot(errorMessage: String(localized: "Open betterBCool on your iPhone to connect Bosch."))
+            return watchSnapshot(errorMessage: String(localized: "Open betterBCool on your iPhone to connect Bosch.", bundle: AppLanguage.bundle))
         }
 
         let climateService = service
@@ -305,11 +308,11 @@ final class AppConfiguration: ObservableObject {
             }
             return await watchSnapshot(using: climateService, overriding: changedState)
         } catch let error as CloudClimateError where error.requiresBoschReauthentication {
-            return watchSnapshot(errorMessage: String(localized: "Reconnect Bosch on your iPhone to continue."))
+            return watchSnapshot(errorMessage: String(localized: "Reconnect Bosch on your iPhone to continue.", bundle: AppLanguage.bundle))
         } catch ClimateServiceError.unsupportedValue {
-            return watchSnapshot(errorMessage: String(localized: "That setting is not supported by this air conditioner."))
+            return watchSnapshot(errorMessage: String(localized: "That setting is not supported by this air conditioner.", bundle: AppLanguage.bundle))
         } catch {
-            return watchSnapshot(errorMessage: String(localized: "The iPhone could not reach the air conditioner."))
+            return watchSnapshot(errorMessage: String(localized: "The iPhone could not reach the air conditioner.", bundle: AppLanguage.bundle))
         }
     }
 
@@ -319,7 +322,7 @@ final class AppConfiguration: ObservableObject {
 
     func watchSnapshot(overriding state: ClimateState?) async -> WatchSnapshot {
         guard isSignedIn else {
-            return watchSnapshot(errorMessage: String(localized: "Open betterBCool on your iPhone to connect Bosch."))
+            return watchSnapshot(errorMessage: String(localized: "Open betterBCool on your iPhone to connect Bosch.", bundle: AppLanguage.bundle))
         }
         return await watchSnapshot(using: service, overriding: state)
     }
@@ -343,7 +346,7 @@ final class AppConfiguration: ObservableObject {
                 return WatchSnapshot(
                     schedules: schedules.map(WatchScheduleSummary.init),
                     nextScheduleDate: ClimateScheduleTimeline.nextEvent(in: schedules, after: Date())?.date,
-                    errorMessage: String(localized: "No air conditioner is available.")
+                    errorMessage: String(localized: "No air conditioner is available.", bundle: AppLanguage.bundle)
                 )
             }
             async let fetchedCapabilities = climateService.capabilities(for: device.id)
@@ -365,9 +368,9 @@ final class AppConfiguration: ObservableObject {
                 nextScheduleDate: ClimateScheduleTimeline.nextEvent(in: schedules, after: Date())?.date
             )
         } catch let error as CloudClimateError where error.requiresBoschReauthentication {
-            return watchSnapshot(errorMessage: String(localized: "Reconnect Bosch on your iPhone to continue."))
+            return watchSnapshot(errorMessage: String(localized: "Reconnect Bosch on your iPhone to continue.", bundle: AppLanguage.bundle))
         } catch {
-            return watchSnapshot(errorMessage: String(localized: "The iPhone could not reach the air conditioner."))
+            return watchSnapshot(errorMessage: String(localized: "The iPhone could not reach the air conditioner.", bundle: AppLanguage.bundle))
         }
     }
 
@@ -610,16 +613,16 @@ final class AppConfiguration: ObservableObject {
         }
         guard snapshot.shouldActivateCooling(threshold: bodyTemperatureDeltaThreshold) else {
             if !snapshot.isFresh() {
-                bodyTemperatureAutomationMessage = String(localized: "Latest wrist temperature is too old for automation.")
+                bodyTemperatureAutomationMessage = String(localized: "Latest wrist temperature is too old for automation.", bundle: AppLanguage.bundle)
             } else if snapshot.baselineSampleCount < 3 {
-                bodyTemperatureAutomationMessage = String(localized: "At least three prior nights are needed for a personal baseline.")
+                bodyTemperatureAutomationMessage = String(localized: "At least three prior nights are needed for a personal baseline.", bundle: AppLanguage.bundle)
             } else {
-                bodyTemperatureAutomationMessage = String(localized: "Wrist temperature is below the cooling trigger.")
+                bodyTemperatureAutomationMessage = String(localized: "Wrist temperature is below the cooling trigger.", bundle: AppLanguage.bundle)
             }
             return
         }
         guard isSignedIn else {
-            bodyTemperatureAutomationMessage = String(localized: "Live Bosch access is required for automatic cooling.")
+            bodyTemperatureAutomationMessage = String(localized: "Live Bosch access is required for automatic cooling.", bundle: AppLanguage.bundle)
             return
         }
         guard UserDefaults.standard.string(forKey: Key.bodyTemperatureLastSample) != snapshot.sampleID.uuidString else {
@@ -629,12 +632,12 @@ final class AppConfiguration: ObservableObject {
         do {
             let climateService = service
             guard let device = try await climateService.devices().first else {
-                bodyTemperatureAutomationMessage = String(localized: "No air conditioner is available for temperature automation.")
+                bodyTemperatureAutomationMessage = String(localized: "No air conditioner is available for temperature automation.", bundle: AppLanguage.bundle)
                 return
             }
             let capabilities = try await climateService.capabilities(for: device.id)
             guard capabilities.canWrite else {
-                bodyTemperatureAutomationMessage = String(localized: "The air conditioner is read-only.")
+                bodyTemperatureAutomationMessage = String(localized: "The air conditioner is read-only.", bundle: AppLanguage.bundle)
                 return
             }
             let state = try await climateService.state(for: device.id)
@@ -647,10 +650,10 @@ final class AppConfiguration: ObservableObject {
             }
             UserDefaults.standard.set(snapshot.sampleID.uuidString, forKey: Key.bodyTemperatureLastSample)
             bodyTemperatureAutomationMessage = state.powerEnabled
-                ? String(localized: "Cooling was already active when the elevated temperature arrived.")
-                : String(localized: "Cooling activated from elevated Apple Watch wrist temperature.")
+                ? String(localized: "Cooling was already active when the elevated temperature arrived.", bundle: AppLanguage.bundle)
+                : String(localized: "Cooling activated from elevated Apple Watch wrist temperature.", bundle: AppLanguage.bundle)
         } catch {
-            bodyTemperatureAutomationMessage = String(localized: "Automatic cooling could not reach the air conditioner.")
+            bodyTemperatureAutomationMessage = String(localized: "Automatic cooling could not reach the air conditioner.", bundle: AppLanguage.bundle)
         }
     }
 
@@ -898,7 +901,7 @@ private struct SettingsView: View {
             } catch is CancellationError {
                 isSaving = false
             } catch {
-                cloudErrorMessage = String(localized: "Cloud setup could not be verified. Check the URL and API key.")
+                cloudErrorMessage = String(localized: "Cloud setup could not be verified. Check the URL and API key.", bundle: AppLanguage.bundle)
                 isSaving = false
             }
         }
@@ -1094,30 +1097,30 @@ private final class SingleKeySignInCoordinator: NSObject, ObservableObject, ASWe
         } catch ASWebAuthenticationSessionError.canceledLogin {
             errorMessage = nil
         } catch SignInError.noGatewayEntries {
-            errorMessage = String(localized: "Bosch sign-in worked, but neither the classic nor newer HomeCom service returned an AC for this account.")
+            errorMessage = String(localized: "Bosch sign-in worked, but neither the classic nor newer HomeCom service returned an AC for this account.", bundle: AppLanguage.bundle)
         } catch SignInError.newHomeComDevices(let count) {
             let format = count == 1
-                ? String(localized: "Found %lld newer HomeCom air conditioner. MQTT device-shadow control is the next integration step.")
-                : String(localized: "Found %lld newer HomeCom air conditioners. MQTT device-shadow control is the next integration step.")
+                ? String(localized: "Found %lld newer HomeCom air conditioner. MQTT device-shadow control is the next integration step.", bundle: AppLanguage.bundle)
+                : String(localized: "Found %lld newer HomeCom air conditioners. MQTT device-shadow control is the next integration step.", bundle: AppLanguage.bundle)
             errorMessage = String(format: format, locale: .current, Int64(count))
         } catch SignInError.newHomeComShadowRead(let fieldCount) {
             errorMessage = String(
-                format: String(localized: "Connected to the newer HomeCom AC and read its live state (%lld fields). Control mapping is the next step."),
+                format: String(localized: "Connected to the newer HomeCom AC and read its live state (%lld fields). Control mapping is the next step.", bundle: AppLanguage.bundle),
                 locale: .current,
                 Int64(fieldCount)
             )
         } catch SignInError.unrecognizedGatewayEntries(let count) {
             let format = count == 1
-                ? String(localized: "Bosch returned %lld gateway entry, but its format was not recognized.")
-                : String(localized: "Bosch returned %lld gateway entries, but their format was not recognized.")
+                ? String(localized: "Bosch returned %lld gateway entry, but its format was not recognized.", bundle: AppLanguage.bundle)
+                : String(localized: "Bosch returned %lld gateway entries, but their format was not recognized.", bundle: AppLanguage.bundle)
             errorMessage = String(format: format, locale: .current, Int64(count))
         } catch SignInError.noCompatibleGateway(let count) {
             let format = count == 1
-                ? String(localized: "Bosch returned %lld gateway entry, but it did not expose the classic air-conditioning resource.")
-                : String(localized: "Bosch returned %lld gateway entries, but none exposed the classic air-conditioning resource.")
+                ? String(localized: "Bosch returned %lld gateway entry, but it did not expose the classic air-conditioning resource.", bundle: AppLanguage.bundle)
+                : String(localized: "Bosch returned %lld gateway entries, but none exposed the classic air-conditioning resource.", bundle: AppLanguage.bundle)
             errorMessage = String(format: format, locale: .current, Int64(count))
         } catch {
-            errorMessage = String(localized: "Bosch sign-in could not be completed. Please try again.")
+            errorMessage = String(localized: "Bosch sign-in could not be completed. Please try again.", bundle: AppLanguage.bundle)
         }
     }
 

@@ -8,6 +8,7 @@ public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
     @Environment(\.scenePhase) private var scenePhase
+    @ScaledMetric(relativeTo: .caption) private var comfortTileWidth = 150
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ObservedObject private var bodyTemperature: BodyTemperatureManager
     private let settingsContent: () -> AnyView
@@ -88,7 +89,7 @@ public struct ClimateDashboard: View {
                         ContentUnavailableView(
                             "No climate data",
                             systemImage: "air.conditioner.horizontal",
-                            description: Text(model.errorMessage ?? String(localized: "Check your connection settings."))
+                            description: Text(model.errorMessage ?? String(localized: "Check your connection settings.", bundle: AppLanguage.bundle))
                         )
                         if model.requiresReauthentication, let onReconnectTapped {
                             Button("Reconnect Bosch", systemImage: "person.crop.circle.badge.checkmark") {
@@ -185,8 +186,8 @@ public struct ClimateDashboard: View {
             .opacity(model.controlsEnabled ? 1 : 0.75)
             .accessibilityLabel(
                 state.powerEnabled
-                    ? String(localized: "Turn air conditioner off")
-                    : String(localized: "Turn air conditioner on")
+                    ? String(localized: "Turn air conditioner off", bundle: AppLanguage.bundle)
+                    : String(localized: "Turn air conditioner on", bundle: AppLanguage.bundle)
             )
             .accessibilityIdentifier("dashboard.powerButton")
         }
@@ -222,12 +223,14 @@ public struct ClimateDashboard: View {
     private func temperatureCard(_ state: ClimateState) -> some View {
         VStack(spacing: 22) {
             HStack {
+#if !os(iOS)
                 StatusPill(isOn: state.powerEnabled)
+#endif
                 Spacer()
                 if let snapshot = bodyTemperature.snapshot {
                     Label(
                         String(
-                            format: String(localized: "Wrist %@°"),
+                            format: String(localized: "Wrist %@°", bundle: AppLanguage.bundle),
                             locale: .current,
                             snapshot.wristTemperatureCelsius.formatted(.number.precision(.fractionLength(1)))
                         ),
@@ -238,7 +241,7 @@ public struct ClimateDashboard: View {
                         .accessibilityLabel("Apple Watch wrist temperature")
                         .accessibilityValue(
                             String(
-                                format: String(localized: "%@ degrees Celsius"),
+                                format: String(localized: "%@ degrees Celsius", bundle: AppLanguage.bundle),
                                 locale: .current,
                                 snapshot.wristTemperatureCelsius.formatted(.number.precision(.fractionLength(1)))
                             )
@@ -247,7 +250,7 @@ public struct ClimateDashboard: View {
                 } else if let roomTemperature = state.roomTemperature {
                     Label(
                         String(
-                            format: String(localized: "Room %@°"),
+                            format: String(localized: "Room %@°", bundle: AppLanguage.bundle),
                             locale: .current,
                             roomTemperature.formatted(.number.precision(.fractionLength(1)))
                         ),
@@ -287,11 +290,11 @@ public struct ClimateDashboard: View {
                 .accessibilityValue(
                     state.temperatureSetpoint.map {
                         String(
-                            format: String(localized: "%@ degrees Celsius"),
+                            format: String(localized: "%@ degrees Celsius", bundle: AppLanguage.bundle),
                             locale: .current,
                             $0.formatted(.number.precision(.fractionLength(1)))
                         )
-                    } ?? String(localized: "Unavailable")
+                    } ?? String(localized: "Unavailable", bundle: AppLanguage.bundle)
                 )
             }
 
@@ -384,8 +387,8 @@ public struct ClimateDashboard: View {
 
     private func modeCard(_ state: ClimateState) -> some View {
         DashboardCard(
-            title: String(localized: "Mode"),
-            subtitle: String(localized: "Choose how the room feels")
+            title: String(localized: "Mode", bundle: AppLanguage.bundle),
+            subtitle: String(localized: "Choose how the room feels", bundle: AppLanguage.bundle)
         ) {
             HStack(spacing: 8) {
                 ForEach(OperatingMode.allCases, id: \.self) { mode in
@@ -405,30 +408,30 @@ public struct ClimateDashboard: View {
 
     private var bodyTemperatureCard: some View {
         DashboardCard(
-            title: String(localized: "Wrist temperature"),
+            title: String(localized: "Wrist temperature", bundle: AppLanguage.bundle),
             subtitle: nil
         ) {
             if let snapshot = bodyTemperature.snapshot {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                LazyVGrid(columns: comfortColumns, spacing: 10) {
                     SensorMetric(
-                        title: String(localized: "Wrist"),
+                        title: String(localized: "Wrist", bundle: AppLanguage.bundle),
                         value: formatted(snapshot.wristTemperatureCelsius, unit: "°C", precision: 1),
                         symbol: "applewatch"
                     )
                     SensorMetric(
-                        title: String(localized: "Baseline"),
+                        title: String(localized: "Baseline", bundle: AppLanguage.bundle),
                         value: formatted(snapshot.baselineCelsius, unit: "°C", precision: 1),
                         symbol: "chart.line.flattrend.xyaxis"
                     )
                     SensorMetric(
-                        title: String(localized: "Change"),
+                        title: String(localized: "Change", bundle: AppLanguage.bundle),
                         value: formattedSigned(snapshot.deviationCelsius, unit: "°C"),
                         symbol: "arrow.up.and.down"
                     )
                 }
                 Text(
                     String(
-                        format: String(localized: "Last measured %@"),
+                        format: String(localized: "Last measured %@", bundle: AppLanguage.bundle),
                         locale: .current,
                         snapshot.measuredAt.formatted(date: .abbreviated, time: .shortened)
                     )
@@ -452,9 +455,9 @@ public struct ClimateDashboard: View {
 
     private func fanCard(_ state: ClimateState) -> some View {
         DashboardCard(
-            title: String(localized: "Fan"),
+            title: String(localized: "Fan", bundle: AppLanguage.bundle),
             subtitle: state.operatingMode == .dry
-                ? String(localized: "Managed automatically in Dry mode")
+                ? String(localized: "Managed automatically in Dry mode", bundle: AppLanguage.bundle)
                 : nil,
             symbol: "fan.fill"
         ) {
@@ -476,14 +479,22 @@ public struct ClimateDashboard: View {
         }
     }
 
+    private var comfortColumns: [GridItem] {
+#if os(iOS)
+        [GridItem(.adaptive(minimum: comfortTileWidth), spacing: 10)]
+#else
+        [GridItem(.flexible()), GridItem(.flexible())]
+#endif
+    }
+
     private func quickActions(_ state: ClimateState) -> some View {
         DashboardCard(
-            title: String(localized: "Comfort"),
-            subtitle: String(localized: "Status and swing controls")
+            title: String(localized: "Comfort", bundle: AppLanguage.bundle),
+            subtitle: String(localized: "Status and swing controls", bundle: AppLanguage.bundle)
         ) {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+            LazyVGrid(columns: comfortColumns, spacing: 10) {
                 FeatureTile(
-                    title: String(localized: "Eco"),
+                    title: String(localized: "Eco", bundle: AppLanguage.bundle),
                     symbol: "leaf.fill",
                     enabled: state.ecoEnabled,
                     action: {
@@ -494,7 +505,7 @@ public struct ClimateDashboard: View {
                 .accessibilityIdentifier("dashboard.ecoButton")
 
                 FeatureTile(
-                    title: String(localized: "Sleep"),
+                    title: String(localized: "Sleep", bundle: AppLanguage.bundle),
                     symbol: "moon.stars.fill",
                     enabled: state.sleepEnabled,
                     action: {
@@ -504,7 +515,7 @@ public struct ClimateDashboard: View {
                 .disabled(!canChangeClimateSettings(state) || state.operatingMode == .dry)
                 .accessibilityIdentifier("dashboard.sleepButton")
                 FeatureTile(
-                    title: String(localized: "Vertical swing"),
+                    title: String(localized: "Vertical swing", bundle: AppLanguage.bundle),
                     symbol: "arrow.up.and.down",
                     enabled: state.verticalSwingEnabled,
                     action: {
@@ -517,7 +528,7 @@ public struct ClimateDashboard: View {
                 .accessibilityIdentifier("dashboard.verticalSwingButton")
 
                 FeatureTile(
-                    title: String(localized: "Horizontal"),
+                    title: String(localized: "Horizontal", bundle: AppLanguage.bundle),
                     symbol: "arrow.left.and.right",
                     enabled: state.horizontalSwingEnabled,
                     action: {
@@ -601,7 +612,7 @@ public struct ClimateDashboard: View {
                     } else if let event = scheduleController.nextEvent {
                         Text(
                             String(
-                                format: String(localized: "Next change %@"),
+                                format: String(localized: "Next change %@", bundle: AppLanguage.bundle),
                                 locale: .current,
                                 event.date.formatted(date: .omitted, time: .shortened)
                             )
@@ -609,7 +620,7 @@ public struct ClimateDashboard: View {
                     } else {
                         Text(
                             String(
-                                format: String(localized: "%lld active"),
+                                format: String(localized: "%lld active", bundle: AppLanguage.bundle),
                                 locale: .current,
                                 Int64(scheduleController.enabledCount)
                             )
@@ -732,12 +743,13 @@ private struct SensorMetric: View {
     }
 }
 
+#if !os(iOS)
 private struct StatusPill: View {
     let isOn: Bool
     var body: some View {
         HStack(spacing: 7) {
             Circle().fill(isOn ? Color.mint : .white.opacity(0.45)).frame(width: 7, height: 7)
-            Text(isOn ? String(localized: "COOLING") : String(localized: "OFF"))
+            Text(isOn ? String(localized: "COOLING", bundle: AppLanguage.bundle) : String(localized: "OFF", bundle: AppLanguage.bundle))
                 .font(.caption2.weight(.bold))
                 .tracking(1.1)
         }
@@ -746,6 +758,8 @@ private struct StatusPill: View {
         .background(.black.opacity(0.16), in: Capsule())
     }
 }
+
+#endif
 
 private struct TemperatureButton: View {
     let systemName: String
@@ -764,8 +778,8 @@ private struct TemperatureButton: View {
         .opacity(isEnabled ? 1 : 0.45)
         .accessibilityLabel(
             systemName == "plus"
-                ? String(localized: "Increase temperature")
-                : String(localized: "Decrease temperature")
+                ? String(localized: "Increase temperature", bundle: AppLanguage.bundle)
+                : String(localized: "Decrease temperature", bundle: AppLanguage.bundle)
         )
     }
 }
@@ -806,7 +820,7 @@ private struct SelectableIcon: View {
         .accessibilityLabel(title)
         .accessibilityAddTraits(selected ? .isSelected : [])
         .buttonStyle(.plain)
-        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable"))
+        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable", bundle: AppLanguage.bundle))
     }
 
     private var foregroundColor: Color {
@@ -841,7 +855,7 @@ private struct SelectableText: View {
                 }
         }
         .buttonStyle(.plain)
-        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable"))
+        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable", bundle: AppLanguage.bundle))
     }
 
     private var foregroundColor: Color {
@@ -861,6 +875,7 @@ private struct FeatureTile: View {
     let enabled: Bool
     var action: (() -> Void)? = nil
     @Environment(\.isEnabled) private var isAvailable
+    @ScaledMetric(relativeTo: .caption) private var iconWidth = 24
 
     var body: some View {
         Group {
@@ -880,6 +895,23 @@ private struct FeatureTile: View {
 
     private var content: some View {
         HStack(spacing: 10) {
+#if os(iOS)
+            Image(systemName: symbol)
+                .font(.caption.weight(.semibold))
+                .frame(width: iconWidth)
+                .accessibilityHidden(true)
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(1)
+            if !enabled {
+                Circle()
+                    .fill(Color.red)
+                    .frame(width: 8, height: 8)
+                    .accessibilityHidden(true)
+            }
+#else
             Image(systemName: symbol)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.38))
@@ -892,9 +924,14 @@ private struct FeatureTile: View {
                 .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.34))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+#endif
         }
         .padding(10)
+#if os(iOS)
+        .foregroundStyle(enabled ? Color.green : .white.opacity(0.65))
+#else
         .foregroundStyle(isAvailable && enabled ? .white : .white.opacity(0.43))
+#endif
         .background(
             .white.opacity(isAvailable && enabled ? 0.075 : 0.035),
             in: RoundedRectangle(cornerRadius: 15)
@@ -904,8 +941,8 @@ private struct FeatureTile: View {
     }
 
     private var statusTitle: String {
-        guard isAvailable else { return String(localized: "Unavailable") }
-        return enabled ? String(localized: "On") : String(localized: "Off")
+        guard isAvailable else { return String(localized: "Unavailable", bundle: AppLanguage.bundle) }
+        return enabled ? String(localized: "On", bundle: AppLanguage.bundle) : String(localized: "Off", bundle: AppLanguage.bundle)
     }
 }
 
@@ -953,11 +990,11 @@ private extension OperatingMode {
 
     var title: String {
         switch self {
-        case .auto: String(localized: "Auto")
-        case .cool: String(localized: "Cool")
-        case .dry: String(localized: "Dry")
-        case .fan: String(localized: "Fan")
-        case .heat: String(localized: "Heat")
+        case .auto: String(localized: "Auto", bundle: AppLanguage.bundle)
+        case .cool: String(localized: "Cool", bundle: AppLanguage.bundle)
+        case .dry: String(localized: "Dry", bundle: AppLanguage.bundle)
+        case .fan: String(localized: "Fan", bundle: AppLanguage.bundle)
+        case .heat: String(localized: "Heat", bundle: AppLanguage.bundle)
         }
     }
     var symbol: String {
@@ -968,12 +1005,12 @@ private extension OperatingMode {
 private extension FanSpeed {
     var title: String {
         switch self {
-        case .auto: String(localized: "Auto")
-        case .quiet: String(localized: "Quiet")
-        case .low: String(localized: "Low")
-        case .medium: String(localized: "Medium")
-        case .high: String(localized: "High")
-        case .turbo: String(localized: "Turbo")
+        case .auto: String(localized: "Auto", bundle: AppLanguage.bundle)
+        case .quiet: String(localized: "Quiet", bundle: AppLanguage.bundle)
+        case .low: String(localized: "Low", bundle: AppLanguage.bundle)
+        case .medium: String(localized: "Medium", bundle: AppLanguage.bundle)
+        case .high: String(localized: "High", bundle: AppLanguage.bundle)
+        case .turbo: String(localized: "Turbo", bundle: AppLanguage.bundle)
         }
     }
 
