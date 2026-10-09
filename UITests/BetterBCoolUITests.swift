@@ -26,6 +26,10 @@ final class BetterBCoolUITests: XCTestCase {
         let power = app.buttons["dashboard.powerButton"]
         XCTAssertTrue(power.waitForExistence(timeout: 5))
         XCTAssertEqual(power.label, powerLabel)
+        let subtitle = language.hasPrefix("it") ? "Stato e controlli di oscillazione" : "Status and swing controls"
+        let comfortSubtitle = app.staticTexts[subtitle]
+        for _ in 0..<6 where !comfortSubtitle.exists { app.swipeUp() }
+        XCTAssertTrue(comfortSubtitle.exists)
         app.buttons["dashboard.settingsButton"].tap()
         XCTAssertTrue(app.navigationBars[settingsTitle].waitForExistence(timeout: 5))
     }
