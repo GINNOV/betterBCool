@@ -337,6 +337,74 @@ final class BetterBCoolUITests: XCTestCase {
         )
     }
 
+    func testIconOnlyModesKeepLabelsSelectionAndSwitching() {
+        for language in ["en", "it"] {
+            let app = XCUIApplication()
+            app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+            app.launch()
+            let cool = app.buttons["dashboard.mode.cool"]
+            XCTAssertTrue(cool.waitForExistence(timeout: 5))
+            XCTAssertEqual(cool.label, language == "it" ? "Raffredda" : "Cool")
+            XCTAssertTrue(cool.isSelected)
+            let heat = app.buttons["dashboard.mode.heat"]
+            let heatLabel = language == "it" ? "Riscalda" : "Heat"
+            XCTAssertEqual(heat.label, heatLabel)
+            heat.tap()
+            let selected = NSPredicate(format: "selected == true")
+            expectation(for: selected, evaluatedWith: heat)
+            waitForExpectations(timeout: 5)
+            XCTAssertFalse(cool.isSelected)
+            XCTAssertEqual(app.staticTexts["dashboard.modeSummary"].label, language == "it" ? "Riscaldamento" : "Heat")
+            XCTAssertFalse(heat.staticTexts[heatLabel].exists)
+            captureModeDashboard(app, name: "Text-only summary and icon-only selector \(language)")
+            app.terminate()
+        }
+    }
+
+    func testAllModeSummariesFitInBothLanguagesAtLargestTextSize() {
+        for language in ["en", "it"] {
+            for largestText in [false, true] {
+                let app = XCUIApplication()
+                app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+                if largestText {
+                    app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+                }
+                app.launch()
+                let modes = ["auto", "cool", "dry", "fan", "heat"]
+                let names = language == "it"
+                    ? ["Automatico", "Raffreddamento", "Deumidificazione", "Ventilazione", "Riscaldamento"]
+                    : ["Auto", "Cool", "Dry", "Fan", "Heat"]
+                for (mode, name) in zip(modes, names) {
+                    let button = app.buttons["dashboard.mode.\(mode)"]
+                    for _ in 0..<8 where !button.isHittable { app.scrollViews.firstMatch.swipeUp(velocity: .slow) }
+                    XCTAssertTrue(button.isHittable)
+                    button.tap()
+                    let selected = NSPredicate(format: "selected == true")
+                    expectation(for: selected, evaluatedWith: button)
+                    waitForExpectations(timeout: 5)
+                    let summary = app.staticTexts["dashboard.modeSummary"]
+                    for _ in 0..<8 where !summary.isHittable { app.scrollViews.firstMatch.swipeDown(velocity: .fast) }
+                    XCTAssertTrue(summary.waitForExistence(timeout: 5))
+                    XCTAssertEqual(summary.label, name)
+                    XCTAssertTrue(summary.isHittable)
+                    let card = app.otherElements["dashboard.temperatureCard"]
+                    XCTAssertTrue(card.frame.contains(summary.frame), "Mode summary must stay inside the card")
+                    XCTAssertFalse(summary.frame.intersects(app.buttons["dashboard.increaseTemperature"].frame))
+                    XCTAssertFalse(summary.frame.intersects(app.buttons["dashboard.decreaseTemperature"].frame))
+                    captureModeDashboard(app, name: "Mode \(mode), \(language), largest=\(largestText)")
+                }
+                app.terminate()
+            }
+        }
+    }
+
+    private func captureModeDashboard(_ app: XCUIApplication, name: String) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = name
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
     func testUnitActivityCanBeCleared() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]

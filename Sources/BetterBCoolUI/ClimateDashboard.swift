@@ -296,19 +296,21 @@ public struct ClimateDashboard: View {
                 )
             }
 
-            HStack(spacing: 22) {
-                TemperatureButton(systemName: "minus") {
-                    adjustTemperature(state, by: -temperatureStep)
+#if os(iOS)
+            ViewThatFits(in: .horizontal) {
+                temperatureControls(state)
+                    .fixedSize(horizontal: true, vertical: false)
+                VStack(spacing: 16) {
+                    modeSummary(state.operatingMode)
+                    HStack(spacing: 22) {
+                        decreaseTemperatureButton(state)
+                        increaseTemperatureButton(state)
+                    }
                 }
-                .disabled(!canAdjust(state, by: -temperatureStep))
-
-                modeSummary(state.operatingMode)
-
-                TemperatureButton(systemName: "plus") {
-                    adjustTemperature(state, by: temperatureStep)
-                }
-                .disabled(!canAdjust(state, by: temperatureStep))
             }
+#else
+            temperatureControls(state)
+#endif
         }
         .padding(22)
         .background {
@@ -336,11 +338,46 @@ public struct ClimateDashboard: View {
             radius: 28,
             y: 16
         )
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("dashboard.temperatureCard")
     }
 
+    private func temperatureControls(_ state: ClimateState) -> some View {
+        HStack(spacing: 22) {
+            decreaseTemperatureButton(state)
+            modeSummary(state.operatingMode)
+            increaseTemperatureButton(state)
+        }
+    }
+
+    private func decreaseTemperatureButton(_ state: ClimateState) -> some View {
+        TemperatureButton(systemName: "minus") {
+            adjustTemperature(state, by: -temperatureStep)
+        }
+        .disabled(!canAdjust(state, by: -temperatureStep))
+        .accessibilityIdentifier("dashboard.decreaseTemperature")
+    }
+
+    private func increaseTemperatureButton(_ state: ClimateState) -> some View {
+        TemperatureButton(systemName: "plus") {
+            adjustTemperature(state, by: temperatureStep)
+        }
+        .disabled(!canAdjust(state, by: temperatureStep))
+        .accessibilityIdentifier("dashboard.increaseTemperature")
+    }
+
     private func modeSummary(_ mode: OperatingMode) -> some View {
-        Label(mode.title, systemImage: mode.symbol)
+        Group {
+#if os(iOS)
+            Text(mode.summaryTitle)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 16)
+                .accessibilityIdentifier("dashboard.modeSummary")
+#else
+            Label(mode.title, systemImage: mode.symbol)
+#endif
+        }
             .font(.subheadline.weight(.bold))
             .foregroundStyle(.white)
             .frame(minWidth: 96)
@@ -364,6 +401,7 @@ public struct ClimateDashboard: View {
                         Task { await model.apply(.init(operatingMode: mode)) }
                     }
                     .disabled(!canChangeClimateSettings(state) || model.capabilities?.operatingModes.contains(mode) != true)
+                    .accessibilityIdentifier("dashboard.mode.\(mode.rawValue)")
                 }
             }
         }
@@ -748,9 +786,18 @@ private struct SelectableIcon: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: symbol).font(.system(size: 17, weight: .semibold))
-                Text(title).font(.caption2.weight(.semibold)).lineLimit(1)
+            Group {
+#if os(iOS)
+                Label(title, systemImage: symbol)
+                    .labelStyle(.iconOnly)
+                    .font(.system(size: 20, weight: .semibold))
+                    .frame(minHeight: 28)
+#else
+                VStack(spacing: 8) {
+                    Image(systemName: symbol).font(.system(size: 17, weight: .semibold))
+                    Text(title).font(.caption2.weight(.semibold)).lineLimit(1)
+                }
+#endif
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
@@ -763,6 +810,8 @@ private struct SelectableIcon: View {
                 }
             }
         }
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(selected ? .isSelected : [])
         .buttonStyle(.plain)
         .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable", bundle: AppLanguage.bundle))
     }
@@ -899,6 +948,16 @@ private struct ActivityRow: View {
 }
 
 private extension OperatingMode {
+    var summaryTitle: LocalizedStringKey {
+        switch self {
+        case .auto: "mode.summary.auto"
+        case .cool: "mode.summary.cool"
+        case .dry: "mode.summary.dry"
+        case .fan: "mode.summary.fan"
+        case .heat: "mode.summary.heat"
+        }
+    }
+
     var title: String {
         switch self {
         case .auto: String(localized: "Auto", bundle: AppLanguage.bundle)
