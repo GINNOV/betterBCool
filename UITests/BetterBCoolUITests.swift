@@ -283,6 +283,37 @@ final class BetterBCoolUITests: XCTestCase {
         )
     }
 
+    func testIconOnlyModesKeepLabelsSelectionAndSwitching() {
+        for language in ["en", "it"] {
+            let app = XCUIApplication()
+            app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+            app.launch()
+            let cool = app.buttons["dashboard.mode.cool"]
+            XCTAssertTrue(cool.waitForExistence(timeout: 5))
+            XCTAssertEqual(cool.label, language == "it" ? "Raffredda" : "Cool")
+            XCTAssertTrue(cool.isSelected)
+            let heat = app.buttons["dashboard.mode.heat"]
+            let heatLabel = language == "it" ? "Riscalda" : "Heat"
+            XCTAssertEqual(heat.label, heatLabel)
+            heat.tap()
+            let selected = NSPredicate(format: "selected == true")
+            expectation(for: selected, evaluatedWith: heat)
+            waitForExpectations(timeout: 5)
+            XCTAssertFalse(cool.isSelected)
+            XCTAssertTrue(app.staticTexts[heatLabel].exists)
+            XCTAssertFalse(heat.staticTexts[heatLabel].exists)
+            captureModeDashboard(app, name: "Text-only summary and icon-only selector \(language)")
+            app.terminate()
+        }
+    }
+
+    private func captureModeDashboard(_ app: XCUIApplication, name: String) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = name
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
     func testUnitActivityCanBeCleared() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]

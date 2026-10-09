@@ -338,7 +338,13 @@ public struct ClimateDashboard: View {
     }
 
     private func modeSummary(_ mode: OperatingMode) -> some View {
-        Label(mode.title, systemImage: mode.symbol)
+        Group {
+#if os(iOS)
+            Text(mode.title)
+#else
+            Label(mode.title, systemImage: mode.symbol)
+#endif
+        }
             .font(.subheadline.weight(.bold))
             .foregroundStyle(.white)
             .frame(minWidth: 96)
@@ -362,6 +368,7 @@ public struct ClimateDashboard: View {
                         Task { await model.apply(.init(operatingMode: mode)) }
                     }
                     .disabled(!canChangeClimateSettings(state) || model.capabilities?.operatingModes.contains(mode) != true)
+                    .accessibilityIdentifier("dashboard.mode.\(mode.rawValue)")
                 }
             }
         }
@@ -743,9 +750,18 @@ private struct SelectableIcon: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: symbol).font(.system(size: 17, weight: .semibold))
-                Text(title).font(.caption2.weight(.semibold)).lineLimit(1)
+            Group {
+#if os(iOS)
+                Label(title, systemImage: symbol)
+                    .labelStyle(.iconOnly)
+                    .font(.system(size: 20, weight: .semibold))
+                    .frame(minHeight: 28)
+#else
+                VStack(spacing: 8) {
+                    Image(systemName: symbol).font(.system(size: 17, weight: .semibold))
+                    Text(title).font(.caption2.weight(.semibold)).lineLimit(1)
+                }
+#endif
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
@@ -759,7 +775,9 @@ private struct SelectableIcon: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
         .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable"))
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private var foregroundColor: Color {
