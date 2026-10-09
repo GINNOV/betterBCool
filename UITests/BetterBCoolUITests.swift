@@ -485,7 +485,7 @@ final class BetterBCoolUITests: XCTestCase {
 
     func testUnitActivityCanBeCleared() {
         let app = XCUIApplication()
-        app.launchArguments = ["-ui-testing"]
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
 
         let increaseTemperature = app.buttons["Increase temperature"]
@@ -508,5 +508,45 @@ final class BetterBCoolUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["Unit changes will appear here."].waitForExistence(timeout: 5))
         XCTAssertFalse(clearButton.isEnabled)
+    }
+
+    func testActivityShowsFiveNewestChangesAndCanExpandCollapseAndClear() {
+        for language in ["en", "it"] {
+            let app = XCUIApplication()
+            app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+            app.launch()
+            let increase = app.buttons["dashboard.increaseTemperature"]
+            XCTAssertTrue(increase.waitForExistence(timeout: 5))
+            for step in 1...7 {
+                increase.tap()
+                let setpoint = String(format: "%.1f", 25 + Double(step) * 0.5)
+                XCTAssertTrue(app.staticTexts[setpoint].waitForExistence(timeout: 5))
+            }
+            let expansion = app.descendants(matching: .any).matching(identifier: "dashboard.activityExpansionButton").firstMatch
+            for _ in 0..<12 where !expansion.isHittable {
+                app.scrollViews.firstMatch.swipeUp(velocity: .slow)
+            }
+            let rows = app.descendants(matching: .any).matching(identifier: "dashboard.activityRow")
+            XCTAssertTrue(expansion.isHittable)
+            XCTAssertTrue(expansion.isEnabled)
+            XCTAssertEqual(expansion.value as? String, language == "it" ? "Compresso" : "Collapsed")
+            XCTAssertEqual(rows.count, 5)
+            let newestPrefix = language == "it" ? "Impostato su " : "Set to "
+            XCTAssertTrue(rows.element(boundBy: 0).label.contains(newestPrefix))
+            XCTAssertTrue(rows.element(boundBy: 0).label.contains("28,5°") || rows.element(boundBy: 0).label.contains("28.5°"))
+            captureComfortDashboard(app, name: "Activity collapsed \(language)")
+            expansion.tap()
+            XCTAssertEqual(expansion.value as? String, language == "it" ? "Espanso" : "Expanded")
+            XCTAssertEqual(rows.count, 7)
+            captureComfortDashboard(app, name: "Activity expanded \(language)")
+            expansion.tap()
+            XCTAssertEqual(rows.count, 5)
+            expansion.tap()
+            app.buttons["dashboard.clearActivityButton"].tap()
+            XCTAssertEqual(rows.count, 0)
+            XCTAssertFalse(expansion.isEnabled)
+            XCTAssertEqual(expansion.value as? String, language == "it" ? "Compresso" : "Collapsed")
+            app.terminate()
+        }
     }
 }

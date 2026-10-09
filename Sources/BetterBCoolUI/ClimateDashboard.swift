@@ -7,6 +7,7 @@ import SwiftUI
 public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
+    @State private var isActivityExpanded = false
     @Environment(\.scenePhase) private var scenePhase
     @ScaledMetric(relativeTo: .caption) private var sensorTileWidth = 150
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -546,15 +547,32 @@ public struct ClimateDashboard: View {
     private var activityLogCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Activity").font(.headline)
-                    Text("Recent unit changes").font(.caption).foregroundStyle(.white.opacity(0.45))
+                Button(action: toggleActivityExpansion) {
+                    HStack(alignment: .top, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Activity").font(.headline)
+                            Text("Recent unit changes").font(.caption).foregroundStyle(.white.opacity(0.45))
+                        }
+                        Spacer(minLength: 0)
+                        if model.activities.count > 5 {
+                            Image(systemName: isActivityExpanded ? "chevron.up" : "chevron.down")
+                                .font(.caption.weight(.semibold))
+                                .padding(.top, 4)
+                                .accessibilityHidden(true)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
-
-                Spacer()
+                .buttonStyle(.plain)
+                .disabled(model.activities.count <= 5)
+                .accessibilityLabel(Text("Activity"))
+                .accessibilityValue(isActivityExpanded ? Text("Expanded") : Text("Collapsed"))
+                .accessibilityIdentifier("dashboard.activityExpansionButton")
 
                 Button("Clear") {
                     model.clearActivities()
+                    isActivityExpanded = false
                 }
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(model.activities.isEmpty ? .white.opacity(0.3) : Color.accentBlue)
@@ -575,14 +593,18 @@ public struct ClimateDashboard: View {
                     Spacer()
                 }
             } else {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(model.activities.enumerated()), id: \.element.id) { index, activity in
+                VStack(spacing: 0) {
+                    ForEach(visibleActivities) { activity in
                         ActivityRow(activity: activity)
-                        if index < model.activities.count - 1 {
+                            .accessibilityIdentifier("dashboard.activityRow")
+                        if activity.id != visibleActivities.last?.id {
                             Divider().overlay(.white.opacity(0.08)).padding(.leading, 50)
                         }
                     }
                 }
+                .contentShape(Rectangle())
+                .onTapGesture(perform: toggleActivityExpansion)
+                .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("dashboard.activityLog")
             }
         }
@@ -591,7 +613,17 @@ public struct ClimateDashboard: View {
         .padding(18)
         .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.075)))
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("dashboard.activityCard")
+    }
+
+    private var visibleActivities: [ClimateActivity] {
+        Array(model.activities.prefix(isActivityExpanded ? model.activities.count : 5))
+    }
+
+    private func toggleActivityExpansion() {
+        guard model.activities.count > 5 else { return }
+        isActivityExpanded.toggle()
     }
 
     private var scheduleCard: some View {
