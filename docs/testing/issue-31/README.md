@@ -2,7 +2,7 @@
 
 Issue #31 requests rectangular Comfort controls in two columns instead of a list.
 
-The dashboard now always places Eco and Sleep in the first row, then Vertical swing and Horizontal in the second row. Both columns have equal width. Each card puts a larger icon on the left and its full localized label on the right, with trailing alignment. Text has no line limit and can wrap; the cards grow vertically and align at the top of their row.
+The dashboard now always places Eco and Sleep in the first row, then Vertical swing and Horizontal in the second row. Both columns have equal width. Each card puts a larger icon on the left and its full localized label on the right, with trailing alignment. Each word occupies a single line and scales to fit its width, preventing hyphenation or splitting within words. Cards grow vertically and align at the top of their row.
 
 Off controls display a red dot in the top-right corner, with reserved space so it cannot overlap the text. On controls hide the dot and display a green outline. The screenshots below show the revised layout requested during device testing.
 

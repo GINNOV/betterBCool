@@ -901,11 +901,15 @@ private struct FeatureTile: View {
                     .font(.system(size: min(iconSize, 40), weight: .semibold))
                     .frame(width: min(iconSize, 40))
                     .accessibilityHidden(true)
-                Text(title)
-                    .font(.caption.weight(.semibold))
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.trailing)
-                    .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .trailing, spacing: 2) {
+                    ForEach(title.split(separator: " ").map(String.init), id: \.self) { word in
+                        Text(word)
+                            .font(.caption.weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.1)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.top, 14)
             }

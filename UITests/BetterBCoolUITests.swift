@@ -255,9 +255,11 @@ final class BetterBCoolUITests: XCTestCase {
             let control = revealComfortControl(identifier, in: app)
             XCTAssertTrue(control.isHittable)
             XCTAssertEqual(control.label, title)
-            let renderedTitle = control.staticTexts[title]
-            XCTAssertTrue(renderedTitle.exists)
-            XCTAssertTrue(control.frame.contains(renderedTitle.frame), "Full title must stay inside its card")
+            for word in title.split(separator: " ").map(String.init) {
+                let renderedWord = control.staticTexts[word]
+                XCTAssertTrue(renderedWord.exists)
+                XCTAssertTrue(control.frame.contains(renderedWord.frame), "Each whole word must stay inside its card")
+            }
             XCTAssertGreaterThanOrEqual(control.frame.height, 44)
             let partnerIndex = identifiers.firstIndex(of: identifier)! ^ 1
             let partner = app.buttons[identifiers[partnerIndex]]
