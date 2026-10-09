@@ -179,6 +179,45 @@ final class BetterBCoolUITests: XCTestCase {
         XCTAssertTrue(schedulesButton.isEnabled, "Schedules must remain available while the unit is off")
     }
 
+    func testComfortLabelsAndStatesRemainAccessibleAtLargestTextSize() {
+        verifyComfortControls(language: "en", largestText: false)
+        verifyComfortControls(language: "it", largestText: false)
+        verifyComfortControls(language: "it", largestText: true)
+    }
+
+    private func verifyComfortControls(language: String, largestText: Bool) {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+        if largestText {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        }
+        app.launch()
+        let identifiers = ["dashboard.ecoButton", "dashboard.sleepButton", "dashboard.verticalSwingButton", "dashboard.horizontalSwingButton"]
+        for identifier in identifiers {
+            let control = app.buttons[identifier]
+            for _ in 0..<10 where !control.isHittable { app.swipeUp() }
+            XCTAssertTrue(control.isHittable)
+            XCTAssertFalse(control.label.contains("..."))
+            XCTAssertFalse(control.label.contains("…"))
+            let originalState = control.value as? String
+            let states = language == "it" ? ["Acceso", "Spento"] : ["On", "Off"]
+            XCTAssertTrue(states.contains(originalState ?? ""))
+            control.tap()
+            let changed = NSPredicate(format: "value != %@", originalState ?? "")
+            expectation(for: changed, evaluatedWith: control)
+            waitForExpectations(timeout: 5)
+            captureComfortDashboard(app, name: "Comfort \(language), largest=\(largestText), \(identifier)")
+        }
+        app.terminate()
+    }
+
+    private func captureComfortDashboard(_ app: XCUIApplication, name: String) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = name
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
     func testHalfDegreeTemperatureChangeHolds() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]

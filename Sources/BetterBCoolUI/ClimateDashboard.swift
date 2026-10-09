@@ -8,6 +8,7 @@ public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
     @Environment(\.scenePhase) private var scenePhase
+    @ScaledMetric(relativeTo: .caption) private var comfortTileWidth = 150
     @ObservedObject private var bodyTemperature: BodyTemperatureManager
     private let settingsContent: () -> AnyView
     private let onSettingsTapped: (() -> Void)?
@@ -373,7 +374,7 @@ public struct ClimateDashboard: View {
             subtitle: nil
         ) {
             if let snapshot = bodyTemperature.snapshot {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                LazyVGrid(columns: comfortColumns, spacing: 10) {
                     SensorMetric(
                         title: String(localized: "Wrist"),
                         value: formatted(snapshot.wristTemperatureCelsius, unit: "°C", precision: 1),
@@ -440,12 +441,20 @@ public struct ClimateDashboard: View {
         }
     }
 
+    private var comfortColumns: [GridItem] {
+#if os(iOS)
+        [GridItem(.adaptive(minimum: comfortTileWidth), spacing: 10)]
+#else
+        [GridItem(.flexible()), GridItem(.flexible())]
+#endif
+    }
+
     private func quickActions(_ state: ClimateState) -> some View {
         DashboardCard(
             title: String(localized: "Comfort"),
             subtitle: String(localized: "Status and swing controls")
         ) {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+            LazyVGrid(columns: comfortColumns, spacing: 10) {
                 FeatureTile(
                     title: String(localized: "Eco"),
                     symbol: "leaf.fill",
@@ -814,6 +823,7 @@ private struct FeatureTile: View {
     let enabled: Bool
     var action: (() -> Void)? = nil
     @Environment(\.isEnabled) private var isAvailable
+    @ScaledMetric(relativeTo: .caption) private var iconWidth = 24
 
     var body: some View {
         Group {
@@ -833,6 +843,23 @@ private struct FeatureTile: View {
 
     private var content: some View {
         HStack(spacing: 10) {
+#if os(iOS)
+            Image(systemName: symbol)
+                .font(.caption.weight(.semibold))
+                .frame(width: iconWidth)
+                .accessibilityHidden(true)
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(1)
+            if !enabled {
+                Circle()
+                    .fill(Color.red)
+                    .frame(width: 8, height: 8)
+                    .accessibilityHidden(true)
+            }
+#else
             Image(systemName: symbol)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.38))
@@ -845,9 +872,14 @@ private struct FeatureTile: View {
                 .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.34))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+#endif
         }
         .padding(10)
+#if os(iOS)
+        .foregroundStyle(enabled ? Color.green : .white.opacity(0.65))
+#else
         .foregroundStyle(isAvailable && enabled ? .white : .white.opacity(0.43))
+#endif
         .background(
             .white.opacity(isAvailable && enabled ? 0.075 : 0.035),
             in: RoundedRectangle(cornerRadius: 15)
