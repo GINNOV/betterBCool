@@ -4824,6 +4824,96 @@
           }
         }
       }
+    },
+    "mode.summary.auto" : {
+      "comment" : "Current operating mode in the temperature card. Use the full mode name, not an action verb.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatico"
+          }
+        }
+      }
+    },
+    "mode.summary.cool" : {
+      "comment" : "Current operating mode in the temperature card. Use the full mode name, not an action verb.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cool"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raffreddamento"
+          }
+        }
+      }
+    },
+    "mode.summary.dry" : {
+      "comment" : "Current operating mode in the temperature card. Use the full mode name, not an action verb.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dry"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deumidificazione"
+          }
+        }
+      }
+    },
+    "mode.summary.fan" : {
+      "comment" : "Current operating mode in the temperature card. Use the full mode name, not an action verb.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ventilazione"
+          }
+        }
+      }
+    },
+    "mode.summary.heat" : {
+      "comment" : "Current operating mode in the temperature card. Use the full mode name, not an action verb.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heat"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riscaldamento"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

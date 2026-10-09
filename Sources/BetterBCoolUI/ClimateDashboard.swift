@@ -294,19 +294,21 @@ public struct ClimateDashboard: View {
                 )
             }
 
-            HStack(spacing: 22) {
-                TemperatureButton(systemName: "minus") {
-                    adjustTemperature(state, by: -temperatureStep)
+#if os(iOS)
+            ViewThatFits(in: .horizontal) {
+                temperatureControls(state)
+                    .fixedSize(horizontal: true, vertical: false)
+                VStack(spacing: 16) {
+                    modeSummary(state.operatingMode)
+                    HStack(spacing: 22) {
+                        decreaseTemperatureButton(state)
+                        increaseTemperatureButton(state)
+                    }
                 }
-                .disabled(!canAdjust(state, by: -temperatureStep))
-
-                modeSummary(state.operatingMode)
-
-                TemperatureButton(systemName: "plus") {
-                    adjustTemperature(state, by: temperatureStep)
-                }
-                .disabled(!canAdjust(state, by: temperatureStep))
             }
+#else
+            temperatureControls(state)
+#endif
         }
         .padding(22)
         .background {
@@ -337,10 +339,38 @@ public struct ClimateDashboard: View {
         .accessibilityIdentifier("dashboard.temperatureCard")
     }
 
+    private func temperatureControls(_ state: ClimateState) -> some View {
+        HStack(spacing: 22) {
+            decreaseTemperatureButton(state)
+            modeSummary(state.operatingMode)
+            increaseTemperatureButton(state)
+        }
+    }
+
+    private func decreaseTemperatureButton(_ state: ClimateState) -> some View {
+        TemperatureButton(systemName: "minus") {
+            adjustTemperature(state, by: -temperatureStep)
+        }
+        .disabled(!canAdjust(state, by: -temperatureStep))
+        .accessibilityIdentifier("dashboard.decreaseTemperature")
+    }
+
+    private func increaseTemperatureButton(_ state: ClimateState) -> some View {
+        TemperatureButton(systemName: "plus") {
+            adjustTemperature(state, by: temperatureStep)
+        }
+        .disabled(!canAdjust(state, by: temperatureStep))
+        .accessibilityIdentifier("dashboard.increaseTemperature")
+    }
+
     private func modeSummary(_ mode: OperatingMode) -> some View {
         Group {
 #if os(iOS)
-            Text(mode.title)
+            Text(mode.summaryTitle)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 16)
+                .accessibilityIdentifier("dashboard.modeSummary")
 #else
             Label(mode.title, systemImage: mode.symbol)
 #endif
@@ -912,6 +942,16 @@ private struct ActivityRow: View {
 }
 
 private extension OperatingMode {
+    var summaryTitle: LocalizedStringKey {
+        switch self {
+        case .auto: "mode.summary.auto"
+        case .cool: "mode.summary.cool"
+        case .dry: "mode.summary.dry"
+        case .fan: "mode.summary.fan"
+        case .heat: "mode.summary.heat"
+        }
+    }
+
     var title: String {
         switch self {
         case .auto: String(localized: "Auto")
