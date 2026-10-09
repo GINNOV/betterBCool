@@ -774,10 +774,10 @@ private struct SelectableIcon: View {
                 }
             }
         }
-        .buttonStyle(.plain)
         .accessibilityLabel(title)
-        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable"))
         .accessibilityAddTraits(selected ? .isSelected : [])
+        .buttonStyle(.plain)
+        .accessibilityValue(isEnabled ? "" : String(localized: "Unavailable"))
     }
 
     private var foregroundColor: Color {
