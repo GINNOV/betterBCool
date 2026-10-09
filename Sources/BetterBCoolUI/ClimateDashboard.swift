@@ -8,7 +8,7 @@ public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
     @Environment(\.scenePhase) private var scenePhase
-    @ScaledMetric(relativeTo: .caption) private var comfortTileWidth = 150
+    @ScaledMetric(relativeTo: .caption) private var sensorTileWidth = 150
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ObservedObject private var bodyTemperature: BodyTemperatureManager
     private let settingsContent: () -> AnyView
@@ -412,7 +412,7 @@ public struct ClimateDashboard: View {
             subtitle: nil
         ) {
             if let snapshot = bodyTemperature.snapshot {
-                LazyVGrid(columns: comfortColumns, spacing: 10) {
+                LazyVGrid(columns: sensorColumns, spacing: 10) {
                     SensorMetric(
                         title: String(localized: "Wrist", bundle: AppLanguage.bundle),
                         value: formatted(snapshot.wristTemperatureCelsius, unit: "°C", precision: 1),
@@ -479,9 +479,9 @@ public struct ClimateDashboard: View {
         }
     }
 
-    private var comfortColumns: [GridItem] {
+    private var sensorColumns: [GridItem] {
 #if os(iOS)
-        [GridItem(.adaptive(minimum: comfortTileWidth), spacing: 10)]
+        [GridItem(.adaptive(minimum: sensorTileWidth), spacing: 10)]
 #else
         [GridItem(.flexible()), GridItem(.flexible())]
 #endif
@@ -492,7 +492,7 @@ public struct ClimateDashboard: View {
             title: String(localized: "Comfort", bundle: AppLanguage.bundle),
             subtitle: String(localized: "Status and swing controls", bundle: AppLanguage.bundle)
         ) {
-            LazyVGrid(columns: comfortColumns, spacing: 10) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(minimum: 0), spacing: 10, alignment: .top), count: 2), spacing: 10) {
                 FeatureTile(
                     title: String(localized: "Eco", bundle: AppLanguage.bundle),
                     symbol: "leaf.fill",
@@ -875,7 +875,7 @@ private struct FeatureTile: View {
     let enabled: Bool
     var action: (() -> Void)? = nil
     @Environment(\.isEnabled) private var isAvailable
-    @ScaledMetric(relativeTo: .caption) private var iconWidth = 24
+    @ScaledMetric(relativeTo: .body) private var iconSize = 30
 
     var body: some View {
         Group {
@@ -894,36 +894,42 @@ private struct FeatureTile: View {
     }
 
     private var content: some View {
-        HStack(spacing: 10) {
+        Group {
 #if os(iOS)
-            Image(systemName: symbol)
-                .font(.caption.weight(.semibold))
-                .frame(width: iconWidth)
-                .accessibilityHidden(true)
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .layoutPriority(1)
-            if !enabled {
-                Circle()
-                    .fill(Color.red)
-                    .frame(width: 8, height: 8)
+            HStack(spacing: 10) {
+                Image(systemName: symbol)
+                    .font(.system(size: min(iconSize, 40), weight: .semibold))
+                    .frame(width: min(iconSize, 40))
                     .accessibilityHidden(true)
+                VStack(alignment: .trailing, spacing: 2) {
+                    ForEach(title.split(separator: " ").map(String.init), id: \.self) { word in
+                        Text(word)
+                            .font(.caption.weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.1)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.top, 14)
             }
+            .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
 #else
-            Image(systemName: symbol)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.38))
-                .frame(width: 30, height: 30)
-                .background(.white.opacity(0.06), in: Circle())
-            Text(title).font(.caption.weight(.semibold)).lineLimit(1)
-            Spacer(minLength: 0)
-            Text(statusTitle)
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.34))
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
+            HStack(spacing: 10) {
+                Image(systemName: symbol)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.38))
+                    .frame(width: 30, height: 30)
+                    .background(.white.opacity(0.06), in: Circle())
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+                Text(statusTitle)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(isAvailable && enabled ? Color.mint : .white.opacity(0.34))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 #endif
         }
         .padding(10)
@@ -936,6 +942,23 @@ private struct FeatureTile: View {
             .white.opacity(isAvailable && enabled ? 0.075 : 0.035),
             in: RoundedRectangle(cornerRadius: 15)
         )
+        .overlay {
+            if enabled {
+                RoundedRectangle(cornerRadius: 15)
+                    .strokeBorder(Color.green, lineWidth: 1.5)
+            }
+        }
+#if os(iOS)
+        .overlay(alignment: .topTrailing) {
+            if !enabled {
+                Circle()
+                    .fill(Color.red)
+                    .frame(width: 8, height: 8)
+                    .padding(10)
+                    .accessibilityHidden(true)
+            }
+        }
+#endif
         .opacity(isAvailable ? 1 : 0.5)
         .contentShape(RoundedRectangle(cornerRadius: 15))
     }

@@ -236,6 +236,7 @@ final class BetterBCoolUITests: XCTestCase {
     func testComfortLabelsAndStatesRemainAccessibleAtLargestTextSize() {
         verifyComfortControls(language: "en", largestText: false)
         verifyComfortControls(language: "it", largestText: false)
+        verifyComfortControls(language: "en", largestText: true)
         verifyComfortControls(language: "it", largestText: true)
     }
 
@@ -247,11 +248,28 @@ final class BetterBCoolUITests: XCTestCase {
         }
         app.launch()
         let identifiers = ["dashboard.ecoButton", "dashboard.sleepButton", "dashboard.verticalSwingButton", "dashboard.horizontalSwingButton"]
-        for identifier in identifiers {
+        let titles = language == "it"
+            ? ["Eco", "Sonno", "Oscillazione verticale", "Orizzontale"]
+            : ["Eco", "Sleep", "Vertical swing", "Horizontal"]
+        for (identifier, title) in zip(identifiers, titles) {
             let control = revealComfortControl(identifier, in: app)
             XCTAssertTrue(control.isHittable)
-            XCTAssertFalse(control.label.contains("..."))
-            XCTAssertFalse(control.label.contains("…"))
+            XCTAssertEqual(control.label, title)
+            for word in title.split(separator: " ").map(String.init) {
+                let renderedWord = control.staticTexts[word]
+                XCTAssertTrue(renderedWord.exists)
+                XCTAssertTrue(control.frame.contains(renderedWord.frame), "Each whole word must stay inside its card")
+            }
+            XCTAssertGreaterThanOrEqual(control.frame.height, 44)
+            let partnerIndex = identifiers.firstIndex(of: identifier)! ^ 1
+            let partner = app.buttons[identifiers[partnerIndex]]
+            XCTAssertTrue(partner.exists)
+            XCTAssertEqual(control.frame.minY, partner.frame.minY, accuracy: 2, "Each pair must share a row")
+            XCTAssertEqual(control.frame.width, partner.frame.width, accuracy: 2)
+            XCTAssertFalse(control.frame.intersects(partner.frame), "Cards must not overlap")
+            let leading = partnerIndex % 2 == 1 ? control : partner
+            let trailing = partnerIndex % 2 == 1 ? partner : control
+            XCTAssertLessThan(leading.frame.maxX, trailing.frame.minX)
             let originalState = control.value as? String
             let states = language == "it" ? ["Acceso", "Spento"] : ["On", "Off"]
             XCTAssertTrue(states.contains(originalState ?? ""))
