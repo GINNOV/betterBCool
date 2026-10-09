@@ -92,7 +92,7 @@ final class ScheduleController: ObservableObject {
                 for id in deletedIDs { try await remoteService.delete(scheduleID: id) }
                 errorMessage = nil
             } catch {
-                errorMessage = String(localized: "The routine was removed locally, but cloud deletion will need to be retried.")
+                errorMessage = String(localized: "The routine was removed locally, but cloud deletion will need to be retried.", bundle: AppLanguage.bundle)
             }
         }
     }
@@ -150,7 +150,7 @@ final class ScheduleController: ObservableObject {
             } catch is CancellationError {
                 return
             } catch {
-                errorMessage = String(localized: "A scheduled change could not be applied. Retrying shortly.")
+                errorMessage = String(localized: "A scheduled change could not be applied. Retrying shortly.", bundle: AppLanguage.bundle)
                 try? await Task.sleep(for: .seconds(60))
             }
         }
@@ -171,7 +171,7 @@ final class ScheduleController: ObservableObject {
                 )
                 errorMessage = nil
             } catch {
-                errorMessage = String(localized: "Cloud schedules could not be synchronized. The app will retry when reopened.")
+                errorMessage = String(localized: "Cloud schedules could not be synchronized. The app will retry when reopened.", bundle: AppLanguage.bundle)
             }
         }
     }
@@ -183,7 +183,7 @@ final class ScheduleController: ObservableObject {
                 try await remoteService.sync(schedule: schedule, timezone: TimeZone.current.identifier)
                 errorMessage = nil
             } catch {
-                errorMessage = String(localized: "This routine is saved locally but has not reached the cloud yet.")
+                errorMessage = String(localized: "This routine is saved locally but has not reached the cloud yet.", bundle: AppLanguage.bundle)
             }
         }
     }
@@ -246,13 +246,13 @@ struct ScheduleListView: View {
                 }
                 .accessibilityValue(
                     controller.usesCloud
-                        ? String(localized: "On")
-                        : String(localized: "Off")
+                        ? String(localized: "On", bundle: AppLanguage.bundle)
+                        : String(localized: "Off", bundle: AppLanguage.bundle)
                 )
             } footer: {
                 Text(controller.usesCloud
-                     ? String(localized: "Routines run in the cloud with durable waits and automatic retries, even while this iPhone is offline.")
-                     : String(localized: "Cloud scheduling is off. Enable Cloud schedule in Settings so routines keep running even while this iPhone is offline."))
+                     ? String(localized: "Routines run in the cloud with durable waits and automatic retries, even while this iPhone is offline.", bundle: AppLanguage.bundle)
+                     : String(localized: "Cloud scheduling is off. Enable Cloud schedule in Settings so routines keep running even while this iPhone is offline.", bundle: AppLanguage.bundle))
             }
         }
         .navigationTitle("Schedules")
@@ -275,12 +275,12 @@ struct ScheduleListView: View {
 
     private func newSchedule() -> ClimateSchedule {
         .init(
-            name: String(localized: "My routine"),
+            name: String(localized: "My routine", bundle: AppLanguage.bundle),
             startMinutes: 22 * 60,
             weekdays: Set(ScheduleWeekday.allCases),
             steps: [
                 .init(
-                    name: String(localized: "Start cooling"),
+                    name: String(localized: "Start cooling", bundle: AppLanguage.bundle),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .auto, temperatureSetpoint: 24),
                     durationMinutes: nil
                 )
@@ -300,12 +300,12 @@ private struct ScheduleRow: View {
                 Text(
                     schedule.steps.count == 1
                         ? String(
-                            format: String(localized: "%@ · 1 step"),
+                            format: String(localized: "%@ · 1 step", bundle: AppLanguage.bundle),
                             locale: .current,
                             schedule.startMinutes.clockText
                         )
                         : String(
-                            format: String(localized: "%1$@ · %2$lld steps"),
+                            format: String(localized: "%1$@ · %2$lld steps", bundle: AppLanguage.bundle),
                             locale: .current,
                             schedule.startMinutes.clockText,
                             Int64(schedule.steps.count)
@@ -366,7 +366,7 @@ private struct ScheduleEditor: View {
 
                 Button {
                     editingStep = .init(
-                        name: String(localized: "Next step"),
+                        name: String(localized: "Next step", bundle: AppLanguage.bundle),
                         patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .quiet, temperatureSetpoint: 25)
                     )
                 } label: {
@@ -497,7 +497,7 @@ private struct TimelineStepRow: View {
                 Text(
                     step.durationMinutes.map {
                         String(
-                            format: String(localized: "For %@"),
+                            format: String(localized: "For %@", bundle: AppLanguage.bundle),
                             locale: .current,
                             $0.durationText
                         )
@@ -512,10 +512,10 @@ private struct TimelineStepRow: View {
     }
 
     private var finalStepDescription: String {
-        guard isLast else { return String(localized: "Until changed") }
+        guard isLast else { return String(localized: "Until changed", bundle: AppLanguage.bundle) }
         return step.patch.powerEnabled == false
-            ? String(localized: "Stay off until changed")
-            : String(localized: "Keep this setting until changed")
+            ? String(localized: "Stay off until changed", bundle: AppLanguage.bundle)
+            : String(localized: "Keep this setting until changed", bundle: AppLanguage.bundle)
     }
 }
 
@@ -556,8 +556,8 @@ private struct ScheduleStepEditor: View {
                 if isFinalStep {
                     Label(
                         step.patch.powerEnabled == false
-                            ? String(localized: "Stay off until changed")
-                            : String(localized: "Keep this setting until changed"),
+                            ? String(localized: "Stay off until changed", bundle: AppLanguage.bundle)
+                            : String(localized: "Keep this setting until changed", bundle: AppLanguage.bundle),
                         systemImage: "infinity"
                     )
                 } else {
@@ -605,23 +605,23 @@ private struct ScheduleStepEditor: View {
     private var afterStepExplanation: String {
         if isFinalStep {
             return step.patch.powerEnabled == false
-                ? String(localized: "The unit stays off until you turn it on manually or another routine changes it.")
-                : String(localized: "This setting stays active until you change it manually or another routine changes it.")
+                ? String(localized: "The unit stays off until you turn it on manually or another routine changes it.", bundle: AppLanguage.bundle)
+                : String(localized: "This setting stays active until you change it manually or another routine changes it.", bundle: AppLanguage.bundle)
         }
         if step.patch.powerEnabled == false {
-            return String(localized: "The unit stays off for this duration, then the next step begins. To keep it off, make this the final step.")
+            return String(localized: "The unit stays off for this duration, then the next step begins. To keep it off, make this the final step.", bundle: AppLanguage.bundle)
         }
-        return String(localized: "The next step begins automatically when this duration ends.")
+        return String(localized: "The next step begins automatically when this duration ends.", bundle: AppLanguage.bundle)
     }
 }
 
 extension ClimateScheduleStep {
     fileprivate var summary: String {
-        guard patch.powerEnabled != false else { return String(localized: "Turn off") }
+        guard patch.powerEnabled != false else { return String(localized: "Turn off", bundle: AppLanguage.bundle) }
         var values = [
             patch.operatingMode?.scheduleTitle,
             patch.fanSpeed.map {
-                String(format: String(localized: "%@ fan"), locale: .current, $0.scheduleTitle)
+                String(format: String(localized: "%@ fan", bundle: AppLanguage.bundle), locale: .current, $0.scheduleTitle)
             }
         ].compactMap { $0 }
         if let temperature = patch.temperatureSetpoint { values.append(String(format: "%.1f°", temperature)) }
@@ -640,13 +640,13 @@ extension Int {
 
     fileprivate var durationText: String {
         if self < 60 {
-            return String(format: String(localized: "%lld min"), locale: .current, Int64(self))
+            return String(format: String(localized: "%lld min", bundle: AppLanguage.bundle), locale: .current, Int64(self))
         }
         if self % 60 == 0 {
-            return String(format: String(localized: "%lld hr"), locale: .current, Int64(self / 60))
+            return String(format: String(localized: "%lld hr", bundle: AppLanguage.bundle), locale: .current, Int64(self / 60))
         }
         return String(
-            format: String(localized: "%1$lld hr %2$lld min"),
+            format: String(localized: "%1$lld hr %2$lld min", bundle: AppLanguage.bundle),
             locale: .current,
             Int64(self / 60),
             Int64(self % 60)
@@ -656,11 +656,11 @@ extension Int {
 
 extension Set where Element == ScheduleWeekday {
     fileprivate var repeatSummary: String {
-        if count == 7 { return String(localized: "Every day") }
+        if count == 7 { return String(localized: "Every day", bundle: AppLanguage.bundle) }
         if self == Set([.monday, .tuesday, .wednesday, .thursday, .friday]) {
-            return String(localized: "Weekdays")
+            return String(localized: "Weekdays", bundle: AppLanguage.bundle)
         }
-        if self == Set([.saturday, .sunday]) { return String(localized: "Weekends") }
+        if self == Set([.saturday, .sunday]) { return String(localized: "Weekends", bundle: AppLanguage.bundle) }
         return ScheduleWeekday.allCases.filter(contains).map(\.shortName).joined(separator: ", ")
     }
 }
@@ -668,11 +668,11 @@ extension Set where Element == ScheduleWeekday {
 extension OperatingMode {
     fileprivate var scheduleTitle: String {
         switch self {
-        case .auto: String(localized: "Auto")
-        case .cool: String(localized: "Cool")
-        case .dry: String(localized: "Dry")
-        case .fan: String(localized: "Fan")
-        case .heat: String(localized: "Heat")
+        case .auto: String(localized: "Auto", bundle: AppLanguage.bundle)
+        case .cool: String(localized: "Cool", bundle: AppLanguage.bundle)
+        case .dry: String(localized: "Dry", bundle: AppLanguage.bundle)
+        case .fan: String(localized: "Fan", bundle: AppLanguage.bundle)
+        case .heat: String(localized: "Heat", bundle: AppLanguage.bundle)
         }
     }
 }
@@ -680,12 +680,12 @@ extension OperatingMode {
 extension FanSpeed {
     fileprivate var scheduleTitle: String {
         switch self {
-        case .auto: String(localized: "Auto")
-        case .quiet: String(localized: "Quiet")
-        case .low: String(localized: "Low")
-        case .medium: String(localized: "Medium")
-        case .high: String(localized: "High")
-        case .turbo: String(localized: "Turbo")
+        case .auto: String(localized: "Auto", bundle: AppLanguage.bundle)
+        case .quiet: String(localized: "Quiet", bundle: AppLanguage.bundle)
+        case .low: String(localized: "Low", bundle: AppLanguage.bundle)
+        case .medium: String(localized: "Medium", bundle: AppLanguage.bundle)
+        case .high: String(localized: "High", bundle: AppLanguage.bundle)
+        case .turbo: String(localized: "Turbo", bundle: AppLanguage.bundle)
         }
     }
 }

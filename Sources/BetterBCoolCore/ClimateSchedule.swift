@@ -7,13 +7,13 @@ public enum ScheduleWeekday: Int, Codable, CaseIterable, Hashable, Sendable {
 
     public var shortName: String {
         switch self {
-        case .sunday: String(localized: "Sun")
-        case .monday: String(localized: "Mon")
-        case .tuesday: String(localized: "Tue")
-        case .wednesday: String(localized: "Wed")
-        case .thursday: String(localized: "Thu")
-        case .friday: String(localized: "Fri")
-        case .saturday: String(localized: "Sat")
+        case .sunday: String(localized: "Sun", bundle: AppLanguage.bundle)
+        case .monday: String(localized: "Mon", bundle: AppLanguage.bundle)
+        case .tuesday: String(localized: "Tue", bundle: AppLanguage.bundle)
+        case .wednesday: String(localized: "Wed", bundle: AppLanguage.bundle)
+        case .thursday: String(localized: "Thu", bundle: AppLanguage.bundle)
+        case .friday: String(localized: "Fri", bundle: AppLanguage.bundle)
+        case .saturday: String(localized: "Sat", bundle: AppLanguage.bundle)
         }
     }
 }
@@ -171,27 +171,27 @@ public extension ClimateSchedule {
         let start = calendar.date(bySettingHour: 22, minute: 0, second: 0, of: now) ?? now
         let components = calendar.dateComponents([.hour, .minute], from: start)
         return ClimateSchedule(
-            name: String(localized: "Night comfort"),
+            name: String(localized: "Night comfort", bundle: AppLanguage.bundle),
             startMinutes: (components.hour ?? 22) * 60 + (components.minute ?? 0),
             weekdays: Set(ScheduleWeekday.allCases),
             steps: [
                 .init(
-                    name: String(localized: "Cool down"),
+                    name: String(localized: "Cool down", bundle: AppLanguage.bundle),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .medium, temperatureSetpoint: 24),
                     durationMinutes: 120
                 ),
                 .init(
-                    name: String(localized: "Silent sleep"),
+                    name: String(localized: "Silent sleep", bundle: AppLanguage.bundle),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .quiet, temperatureSetpoint: 25),
                     durationMinutes: 240
                 ),
                 .init(
-                    name: String(localized: "Pause"),
+                    name: String(localized: "Pause", bundle: AppLanguage.bundle),
                     patch: .init(powerEnabled: false),
                     durationMinutes: 30
                 ),
                 .init(
-                    name: String(localized: "Resume silent"),
+                    name: String(localized: "Resume silent", bundle: AppLanguage.bundle),
                     patch: .init(powerEnabled: true, operatingMode: .cool, fanSpeed: .quiet, temperatureSetpoint: 25)
                 )
             ]

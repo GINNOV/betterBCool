@@ -108,7 +108,7 @@ public final class ClimateViewModel: ObservableObject {
                     localized: "Your Bosch session has expired. Reconnect to continue."
                 )
             } catch {
-                errorMessage = String(localized: "Unable to load climate data.")
+                errorMessage = String(localized: "Unable to load climate data.", bundle: AppLanguage.bundle)
             }
         }
     }
@@ -141,10 +141,10 @@ public final class ClimateViewModel: ObservableObject {
         do {
             try capabilities.validate(patch)
         } catch ClimateServiceError.readOnly {
-            errorMessage = String(localized: "Controls are read-only until the Bosch API is verified.")
+            errorMessage = String(localized: "Controls are read-only until the Bosch API is verified.", bundle: AppLanguage.bundle)
             return
         } catch {
-            errorMessage = String(localized: "The requested setting is not supported.")
+            errorMessage = String(localized: "The requested setting is not supported.", bundle: AppLanguage.bundle)
             return
         }
 
@@ -174,12 +174,12 @@ public final class ClimateViewModel: ObservableObject {
             guard generation == applyGeneration else { return }
             state = previousState
             publish(previousState)
-            errorMessage = String(localized: "Controls are read-only until the Bosch API is verified.")
+            errorMessage = String(localized: "Controls are read-only until the Bosch API is verified.", bundle: AppLanguage.bundle)
         } catch {
             guard generation == applyGeneration else { return }
             state = previousState
             publish(previousState)
-            errorMessage = String(localized: "The device did not accept that setting.")
+            errorMessage = String(localized: "The device did not accept that setting.", bundle: AppLanguage.bundle)
         }
     }
 
@@ -194,17 +194,17 @@ public final class ClimateViewModel: ObservableObject {
         if let enabled = patch.powerEnabled {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Power"),
-                detail: enabled ? String(localized: "Unit turned on") : String(localized: "Unit turned off"),
+                title: String(localized: "Power", bundle: AppLanguage.bundle),
+                detail: enabled ? String(localized: "Unit turned on", bundle: AppLanguage.bundle) : String(localized: "Unit turned off", bundle: AppLanguage.bundle),
                 symbol: "power"
             ))
         }
         if let mode = patch.operatingMode {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Mode"),
+                title: String(localized: "Mode", bundle: AppLanguage.bundle),
                 detail: String(
-                    format: String(localized: "Set to %@"),
+                    format: String(localized: "Set to %@", bundle: AppLanguage.bundle),
                     locale: .current,
                     mode.activityTitle
                 ),
@@ -214,9 +214,9 @@ public final class ClimateViewModel: ObservableObject {
         if let speed = patch.fanSpeed {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Fan speed"),
+                title: String(localized: "Fan speed", bundle: AppLanguage.bundle),
                 detail: String(
-                    format: String(localized: "Set to %@"),
+                    format: String(localized: "Set to %@", bundle: AppLanguage.bundle),
                     locale: .current,
                     speed.activityTitle
                 ),
@@ -226,9 +226,9 @@ public final class ClimateViewModel: ObservableObject {
         if let temperature = patch.temperatureSetpoint {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Temperature"),
+                title: String(localized: "Temperature", bundle: AppLanguage.bundle),
                 detail: String(
-                    format: String(localized: "Set to %@"),
+                    format: String(localized: "Set to %@", bundle: AppLanguage.bundle),
                     locale: .current,
                     "\(temperature.formatted(.number.precision(.fractionLength(1))))°"
                 ),
@@ -238,32 +238,32 @@ public final class ClimateViewModel: ObservableObject {
         if let enabled = patch.ecoEnabled {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Eco"),
-                detail: enabled ? String(localized: "Enabled") : String(localized: "Disabled"),
+                title: String(localized: "Eco", bundle: AppLanguage.bundle),
+                detail: enabled ? String(localized: "Enabled", bundle: AppLanguage.bundle) : String(localized: "Disabled", bundle: AppLanguage.bundle),
                 symbol: "leaf.fill"
             ))
         }
         if let enabled = patch.sleepEnabled {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Sleep"),
-                detail: enabled ? String(localized: "Enabled") : String(localized: "Disabled"),
+                title: String(localized: "Sleep", bundle: AppLanguage.bundle),
+                detail: enabled ? String(localized: "Enabled", bundle: AppLanguage.bundle) : String(localized: "Disabled", bundle: AppLanguage.bundle),
                 symbol: "moon.stars.fill"
             ))
         }
         if let enabled = patch.horizontalSwingEnabled {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Horizontal swing"),
-                detail: enabled ? String(localized: "Enabled") : String(localized: "Disabled"),
+                title: String(localized: "Horizontal swing", bundle: AppLanguage.bundle),
+                detail: enabled ? String(localized: "Enabled", bundle: AppLanguage.bundle) : String(localized: "Disabled", bundle: AppLanguage.bundle),
                 symbol: "arrow.left.and.right"
             ))
         }
         if let enabled = patch.verticalSwingEnabled {
             newActivities.append(.init(
                 timestamp: timestamp,
-                title: String(localized: "Vertical swing"),
-                detail: enabled ? String(localized: "Enabled") : String(localized: "Disabled"),
+                title: String(localized: "Vertical swing", bundle: AppLanguage.bundle),
+                detail: enabled ? String(localized: "Enabled", bundle: AppLanguage.bundle) : String(localized: "Disabled", bundle: AppLanguage.bundle),
                 symbol: "arrow.up.and.down"
             ))
         }
@@ -291,11 +291,11 @@ private extension ClimatePatch {
 private extension OperatingMode {
     var activityTitle: String {
         switch self {
-        case .auto: String(localized: "Auto")
-        case .cool: String(localized: "Cool")
-        case .dry: String(localized: "Dry")
-        case .fan: String(localized: "Fan")
-        case .heat: String(localized: "Heat")
+        case .auto: String(localized: "Auto", bundle: AppLanguage.bundle)
+        case .cool: String(localized: "Cool", bundle: AppLanguage.bundle)
+        case .dry: String(localized: "Dry", bundle: AppLanguage.bundle)
+        case .fan: String(localized: "Fan", bundle: AppLanguage.bundle)
+        case .heat: String(localized: "Heat", bundle: AppLanguage.bundle)
         }
     }
 
@@ -313,12 +313,12 @@ private extension OperatingMode {
 private extension FanSpeed {
     var activityTitle: String {
         switch self {
-        case .auto: String(localized: "Auto")
-        case .quiet: String(localized: "Quiet")
-        case .low: String(localized: "Low")
-        case .medium: String(localized: "Medium")
-        case .high: String(localized: "High")
-        case .turbo: String(localized: "Turbo")
+        case .auto: String(localized: "Auto", bundle: AppLanguage.bundle)
+        case .quiet: String(localized: "Quiet", bundle: AppLanguage.bundle)
+        case .low: String(localized: "Low", bundle: AppLanguage.bundle)
+        case .medium: String(localized: "Medium", bundle: AppLanguage.bundle)
+        case .high: String(localized: "High", bundle: AppLanguage.bundle)
+        case .turbo: String(localized: "Turbo", bundle: AppLanguage.bundle)
         }
     }
 }
