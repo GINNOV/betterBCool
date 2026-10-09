@@ -52,6 +52,33 @@ final class BetterBCoolUITests: XCTestCase {
         )
     }
 
+    func testTemperatureCardHasNoCoolingOrOffStatusBadge() {
+        for language in ["en", "it"] {
+            for poweredOff in [false, true] {
+                let app = XCUIApplication()
+                app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
+                if poweredOff { app.launchArguments.append("-ui-testing-power-off") }
+                app.launch()
+                let card = app.otherElements["dashboard.temperatureCard"]
+                XCTAssertTrue(card.waitForExistence(timeout: 5))
+                for label in ["COOLING", "OFF", "RAFFREDDAMENTO", "SPENTO"] {
+                    XCTAssertFalse(card.staticTexts[label].exists)
+                }
+                XCTAssertTrue(app.buttons["dashboard.powerButton"].isEnabled)
+                XCTAssertTrue(app.buttons["dashboard.schedulesButton"].exists)
+                captureStatusDashboard(app, name: "Temperature card \(language), off=\(poweredOff)")
+                app.terminate()
+            }
+        }
+    }
+
+    private func captureStatusDashboard(_ app: XCUIApplication, name: String) {
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = name
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
     func testSettingsDoneDismissesSettings() {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
