@@ -510,42 +510,50 @@ final class BetterBCoolUITests: XCTestCase {
         XCTAssertFalse(clearButton.isEnabled)
     }
 
-    func testActivityShowsFiveNewestChangesAndCanExpandCollapseAndClear() {
+    func testSixthActivityCollapsesHistoryAndChevronExpandsAndClearResets() {
         for language in ["en", "it"] {
             let app = XCUIApplication()
             app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(language))"]
             app.launch()
             let increase = app.buttons["dashboard.increaseTemperature"]
             XCTAssertTrue(increase.waitForExistence(timeout: 5))
-            for step in 1...7 {
+            for step in 1...5 {
                 increase.tap()
-                let setpoint = String(format: "%.1f", 25 + Double(step) * 0.5)
-                XCTAssertTrue(app.staticTexts[setpoint].waitForExistence(timeout: 5))
+                XCTAssertTrue(app.staticTexts[String(format: "%.1f", 25 + Double(step) * 0.5)].waitForExistence(timeout: 5))
             }
-            let expansion = app.descendants(matching: .any).matching(identifier: "dashboard.activityExpansionButton").firstMatch
-            for _ in 0..<12 where !expansion.isHittable {
-                app.scrollViews.firstMatch.swipeUp(velocity: .slow)
-            }
+            let clear = app.buttons["dashboard.clearActivityButton"]
+            let expansion = app.buttons["dashboard.activityExpansionButton"]
             let rows = app.descendants(matching: .any).matching(identifier: "dashboard.activityRow")
-            XCTAssertTrue(expansion.isHittable)
-            XCTAssertTrue(expansion.isEnabled)
-            XCTAssertEqual(expansion.value as? String, language == "it" ? "Compresso" : "Collapsed")
+            for _ in 0..<12 where !clear.isHittable { app.scrollViews.firstMatch.swipeUp(velocity: .slow) }
+            XCTAssertTrue(clear.isHittable)
             XCTAssertEqual(rows.count, 5)
-            let newestPrefix = language == "it" ? "Impostato su " : "Set to "
-            XCTAssertTrue(rows.element(boundBy: 0).label.contains(newestPrefix))
-            XCTAssertTrue(rows.element(boundBy: 0).label.contains("28,5°") || rows.element(boundBy: 0).label.contains("28.5°"))
+            XCTAssertFalse(expansion.exists)
+            XCTAssertFalse(clear.staticTexts[language == "it" ? "Cancella" : "Clear"].exists)
+            captureComfortDashboard(app, name: "Activity five entries \(language)")
+
+            for _ in 0..<12 where !increase.isHittable { app.scrollViews.firstMatch.swipeDown(velocity: .slow) }
+            increase.tap()
+            XCTAssertTrue(app.staticTexts["28.0"].waitForExistence(timeout: 5))
+            for _ in 0..<12 where !expansion.isHittable { app.scrollViews.firstMatch.swipeUp(velocity: .slow) }
+            XCTAssertTrue(expansion.isHittable)
+            XCTAssertEqual(expansion.value as? String, language == "it" ? "Compresso" : "Collapsed")
+            XCTAssertEqual(rows.count, 0)
+            XCTAssertLessThan(clear.frame.maxX, expansion.frame.minX)
             captureComfortDashboard(app, name: "Activity collapsed \(language)")
             expansion.tap()
             XCTAssertEqual(expansion.value as? String, language == "it" ? "Espanso" : "Expanded")
-            XCTAssertEqual(rows.count, 7)
+            XCTAssertEqual(rows.count, 6)
+            let newestPrefix = language == "it" ? "Impostato su " : "Set to "
+            XCTAssertTrue(rows.element(boundBy: 0).label.contains(newestPrefix))
+            XCTAssertTrue(rows.element(boundBy: 0).label.contains("28,0°") || rows.element(boundBy: 0).label.contains("28.0°"))
             captureComfortDashboard(app, name: "Activity expanded \(language)")
-            rows.element(boundBy: 0).tap()
-            XCTAssertEqual(rows.count, 5)
             expansion.tap()
-            app.buttons["dashboard.clearActivityButton"].tap()
             XCTAssertEqual(rows.count, 0)
-            XCTAssertFalse(expansion.isEnabled)
-            XCTAssertEqual(expansion.value as? String, language == "it" ? "Compresso" : "Collapsed")
+            expansion.tap()
+            clear.tap()
+            XCTAssertEqual(rows.count, 0)
+            XCTAssertFalse(expansion.exists)
+            XCTAssertFalse(clear.isEnabled)
             app.terminate()
         }
     }
