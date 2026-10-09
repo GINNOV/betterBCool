@@ -336,6 +336,7 @@ public struct ClimateDashboard: View {
             radius: 28,
             y: 16
         )
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("dashboard.temperatureCard")
     }
 
