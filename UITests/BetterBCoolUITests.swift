@@ -337,6 +337,17 @@ final class BetterBCoolUITests: XCTestCase {
                     XCTAssertTrue(card.frame.contains(summary.frame), "Mode summary must stay inside the card")
                     XCTAssertFalse(summary.frame.intersects(app.buttons["dashboard.increaseTemperature"].frame))
                     XCTAssertFalse(summary.frame.intersects(app.buttons["dashboard.decreaseTemperature"].frame))
+                    let decrease = app.buttons["dashboard.decreaseTemperature"]
+                    let increase = app.buttons["dashboard.increaseTemperature"]
+                    XCTAssertLessThan(decrease.frame.maxX, summary.frame.minX)
+                    XCTAssertLessThan(summary.frame.maxX, increase.frame.minX)
+                    XCTAssertEqual(summary.frame.midY, decrease.frame.midY, accuracy: 2)
+                    XCTAssertEqual(summary.frame.midY, increase.frame.midY, accuracy: 2)
+                    for control in [decrease, increase] {
+                        XCTAssertGreaterThanOrEqual(control.frame.width, 44)
+                        XCTAssertGreaterThanOrEqual(control.frame.height, 44)
+                        XCTAssertTrue(card.frame.contains(control.frame))
+                    }
                     captureModeDashboard(app, name: "Mode \(mode), \(language), largest=\(largestText)")
                 }
                 app.terminate()

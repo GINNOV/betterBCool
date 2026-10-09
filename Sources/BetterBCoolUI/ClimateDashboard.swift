@@ -8,6 +8,7 @@ public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ObservedObject private var bodyTemperature: BodyTemperatureManager
     private let settingsContent: () -> AnyView
     private let onSettingsTapped: (() -> Void)?
@@ -294,21 +295,7 @@ public struct ClimateDashboard: View {
                 )
             }
 
-#if os(iOS)
-            ViewThatFits(in: .horizontal) {
-                temperatureControls(state)
-                    .fixedSize(horizontal: true, vertical: false)
-                VStack(spacing: 16) {
-                    modeSummary(state.operatingMode)
-                    HStack(spacing: 22) {
-                        decreaseTemperatureButton(state)
-                        increaseTemperatureButton(state)
-                    }
-                }
-            }
-#else
             temperatureControls(state)
-#endif
         }
         .padding(22)
         .background {
@@ -340,8 +327,16 @@ public struct ClimateDashboard: View {
         .accessibilityIdentifier("dashboard.temperatureCard")
     }
 
+    private var temperatureControlSpacing: CGFloat {
+#if os(iOS)
+        12
+#else
+        22
+#endif
+    }
+
     private func temperatureControls(_ state: ClimateState) -> some View {
-        HStack(spacing: 22) {
+        HStack(spacing: temperatureControlSpacing) {
             decreaseTemperatureButton(state)
             modeSummary(state.operatingMode)
             increaseTemperatureButton(state)
@@ -369,8 +364,11 @@ public struct ClimateDashboard: View {
 #if os(iOS)
             Text(mode.summaryTitle)
                 .multilineTextAlignment(.center)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.75)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 8)
+                .frame(maxWidth: .infinity)
                 .accessibilityIdentifier("dashboard.modeSummary")
 #else
             Label(mode.title, systemImage: mode.symbol)
