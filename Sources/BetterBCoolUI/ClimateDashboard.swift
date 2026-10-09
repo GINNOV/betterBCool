@@ -7,6 +7,7 @@ import SwiftUI
 public struct ClimateDashboard: View {
     @StateObject private var model: ClimateViewModel
     @StateObject private var scheduleController: ScheduleController
+    @State private var isActivityExpanded = false
     @Environment(\.scenePhase) private var scenePhase
     @ScaledMetric(relativeTo: .caption) private var sensorTileWidth = 150
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -545,21 +546,38 @@ public struct ClimateDashboard: View {
 
     private var activityLogCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 8) {
                     Text("Activity").font(.headline)
-                    Text("Recent unit changes").font(.caption).foregroundStyle(.white.opacity(0.45))
-                }
+                    Button {
+                        model.clearActivities()
+                        isActivityExpanded = false
+                    } label: {
+                        Label("Clear", systemImage: "trash")
+                            .labelStyle(.iconOnly)
+                            .font(.body)
+                            .frame(minWidth: 44, minHeight: 44)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.red)
+                    .disabled(model.activities.isEmpty)
+                    .accessibilityIdentifier("dashboard.clearActivityButton")
 
-                Spacer()
+                    Spacer(minLength: 0)
 
-                Button("Clear") {
-                    model.clearActivities()
+                    if model.activities.count > 5 {
+                        Button(action: toggleActivityExpansion) {
+                            Image(systemName: isActivityExpanded ? "chevron.up" : "chevron.down")
+                                .font(.body.weight(.semibold))
+                                .frame(minWidth: 44, minHeight: 44)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(Text("Activity"))
+                        .accessibilityValue(isActivityExpanded ? Text("Expanded") : Text("Collapsed"))
+                        .accessibilityIdentifier("dashboard.activityExpansionButton")
+                    }
                 }
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(model.activities.isEmpty ? .white.opacity(0.3) : Color.accentBlue)
-                .disabled(model.activities.isEmpty)
-                .accessibilityIdentifier("dashboard.clearActivityButton")
+                Text("Recent unit changes").font(.caption).foregroundStyle(.white.opacity(0.45))
             }
 
             if model.activities.isEmpty {
@@ -574,15 +592,17 @@ public struct ClimateDashboard: View {
                         .foregroundStyle(.white.opacity(0.5))
                     Spacer()
                 }
-            } else {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(model.activities.enumerated()), id: \.element.id) { index, activity in
+            } else if !visibleActivities.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(visibleActivities) { activity in
                         ActivityRow(activity: activity)
-                        if index < model.activities.count - 1 {
+                            .accessibilityIdentifier("dashboard.activityRow")
+                        if activity.id != visibleActivities.last?.id {
                             Divider().overlay(.white.opacity(0.08)).padding(.leading, 50)
                         }
                     }
                 }
+                .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("dashboard.activityLog")
             }
         }
@@ -591,7 +611,22 @@ public struct ClimateDashboard: View {
         .padding(18)
         .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(.white.opacity(0.075)))
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("dashboard.activityCard")
+        .onChange(of: model.activities.count) { oldCount, newCount in
+            if newCount <= 5 || (oldCount <= 5 && newCount > 5) {
+                isActivityExpanded = false
+            }
+        }
+    }
+
+    private var visibleActivities: [ClimateActivity] {
+        model.activities.count <= 5 || isActivityExpanded ? model.activities : []
+    }
+
+    private func toggleActivityExpansion() {
+        guard model.activities.count > 5 else { return }
+        isActivityExpanded.toggle()
     }
 
     private var scheduleCard: some View {
