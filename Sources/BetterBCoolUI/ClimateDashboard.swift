@@ -221,7 +221,9 @@ public struct ClimateDashboard: View {
     private func temperatureCard(_ state: ClimateState) -> some View {
         VStack(spacing: 22) {
             HStack {
+#if !os(iOS)
                 StatusPill(isOn: state.powerEnabled)
+#endif
                 Spacer()
                 if let snapshot = bodyTemperature.snapshot {
                     Label(
@@ -696,6 +698,7 @@ private struct SensorMetric: View {
     }
 }
 
+#if !os(iOS)
 private struct StatusPill: View {
     let isOn: Bool
     var body: some View {
@@ -710,6 +713,8 @@ private struct StatusPill: View {
         .background(.black.opacity(0.16), in: Capsule())
     }
 }
+
+#endif
 
 private struct TemperatureButton: View {
     let systemName: String
