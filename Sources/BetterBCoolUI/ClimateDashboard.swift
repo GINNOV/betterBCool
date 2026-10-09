@@ -875,6 +875,7 @@ private struct FeatureTile: View {
     let enabled: Bool
     var action: (() -> Void)? = nil
     @Environment(\.isEnabled) private var isAvailable
+    @ScaledMetric(relativeTo: .body) private var iconSize = 30
 
     var body: some View {
         Group {
@@ -895,24 +896,18 @@ private struct FeatureTile: View {
     private var content: some View {
         Group {
 #if os(iOS)
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Image(systemName: symbol)
-                        .font(.body.weight(.semibold))
-                        .accessibilityHidden(true)
-                    Spacer(minLength: 0)
-                    if !enabled {
-                        Circle()
-                            .fill(Color.red)
-                            .frame(width: 8, height: 8)
-                            .accessibilityHidden(true)
-                    }
-                }
+            HStack(spacing: 10) {
+                Image(systemName: symbol)
+                    .font(.system(size: min(iconSize, 40), weight: .semibold))
+                    .frame(width: min(iconSize, 40))
+                    .accessibilityHidden(true)
                 Text(title)
                     .font(.caption.weight(.semibold))
                     .lineLimit(nil)
+                    .multilineTextAlignment(.trailing)
                     .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.top, 14)
             }
             .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
 #else
@@ -943,6 +938,23 @@ private struct FeatureTile: View {
             .white.opacity(isAvailable && enabled ? 0.075 : 0.035),
             in: RoundedRectangle(cornerRadius: 15)
         )
+        .overlay {
+            if enabled {
+                RoundedRectangle(cornerRadius: 15)
+                    .strokeBorder(Color.green, lineWidth: 1.5)
+            }
+        }
+#if os(iOS)
+        .overlay(alignment: .topTrailing) {
+            if !enabled {
+                Circle()
+                    .fill(Color.red)
+                    .frame(width: 8, height: 8)
+                    .padding(10)
+                    .accessibilityHidden(true)
+            }
+        }
+#endif
         .opacity(isAvailable ? 1 : 0.5)
         .contentShape(RoundedRectangle(cornerRadius: 15))
     }
